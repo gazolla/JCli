@@ -1,0 +1,26 @@
+{
+  "weather" : {
+    "semanticKeywords" : [ "meteorologia", "forecast" ],
+    "patterns" : [ "weather", "clima", "previsão", "temperatura" ],
+    "name" : "weather",
+    "multiStepCapable" : false,
+    "description" : "Informações meteorológicas e previsões do tempo",
+    "commonTools" : [ "get_weather" ]
+  },
+  "time" : {
+    "semanticKeywords" : [ "timezone", "calendar" ],
+    "patterns" : [ "time", "tempo", "data", "hora" ],
+    "name" : "time",
+    "multiStepCapable" : false,
+    "description" : "Date, time, timezone operations",
+    "commonTools" : [ "get_current_time" ]
+  },
+  "filesystem" : {
+    "semanticKeywords" : [ "read", "write", "create" ],
+    "patterns" : [ "arquivo", "file", "diretório", "pasta", "edit", "file", "list", "directory", "write", "file", "move", "file", "create", "directory", "directory", "tree", "read", "multiple", "files", "search", "files", "list", "allowed", "directories", "read", "file", "list", "directory", "with", "sizes", "get", "file", "info" ],
+    "name" : "filesystem",
+    "multiStepCapable" : true,
+    "description" : "filesystem Operations",
+    "commonTools" : [ "edit_file", "list_directory", "write_file", "move_file", "create_directory", "directory_tree", "read_multiple_files", "search_files", "list_allowed_directories", "read_file", "list_directory_with_sizes", "get_file_info" ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "mcpServers" : {
+    "time" : {
+      "args" : [ ],
+      "description" : "Servidor para ferramentas de tempo e fuso horário",
+      "env" : {
+        "REQUIRES_UVX" : "true"
+      },
+      "priority" : 1,
+      "command" : "uvx mcp-server-time",
+      "enabled" : true
+    },
+    "weather-nws" : {
+      "args" : [ ],
+      "description" : "Previsões meteorológicas via NWS",
+      "env" : {
+        "REQUIRES_NODEJS" : "true",
+        "REQUIRES_ONLINE" : "true"
+      },
+      "priority" : 1,
+      "command" : "npx @h1deya/mcp-server-weather",
+      "enabled" : true
+    },
+    "filesystem" : {
+      "args" : [ ],
+      "description" : "Sistema de arquivos - Documents",
+      "env" : {
+        "REQUIRES_NODEJS" : "true"
+      },
+      "priority" : 3,
+      "command" : "npx -y @modelcontextprotocol/server-filesystem ./documents",
+      "enabled" : true
+    }
+  }
+}
