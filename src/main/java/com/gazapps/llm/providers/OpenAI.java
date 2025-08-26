@@ -33,7 +33,7 @@ import io.modelcontextprotocol.spec.McpSchema.Tool;
 public class OpenAI implements Llm {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAI.class);
-    private static final Logger conversationLogger = LoggerFactory.getLogger(OpenAI.class); //Config.getLlmConversationLogger("openai");
+    private static final Logger conversationLogger = LoggerFactory.getLogger("com.gazapps.llm.providers.OpenAI.conversations");
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     private String baseUrl;

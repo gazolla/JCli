@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gazapps.config.Config;
 import com.gazapps.inference.Inference;
 import com.gazapps.inference.InferenceFactory;
 import com.gazapps.inference.InferenceStrategy;
@@ -14,21 +15,18 @@ import com.gazapps.llm.LlmBuilder;
 
 import com.gazapps.mcp.MCPManager;
 
-/**
- * Aplicação de teste que demonstra o uso do LLM Gemini com inference simple
- * para responder perguntas sobre horário em Brasília, DF.
- */
+
 public class AppTime {
     
     private static final Logger logger = LoggerFactory.getLogger(AppTime.class);
     
     public static void main(String[] args) {
-        logger.info("=== Teste LLM Gemini + Inference Simple ===");
+        logger.info("=== Teste LLM Gemini + Inference Simple - JavaCLI/log structure ===");
         
 
         String configDirectory = "./config";
-        
-        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGroq(null))) {
+        new Config();
+        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGemini(null))) {
            
             Llm geminiLlm = mcpManager.getLlm();
             
@@ -102,6 +100,6 @@ public class AppTime {
             System.exit(1);
         }
         
-        logger.info("=== Teste finalizado ===");
+        logger.info("=== Teste finalizado - logs salvos em JavaCLI/log/ ===");
     }
 }

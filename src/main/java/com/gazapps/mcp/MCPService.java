@@ -384,7 +384,7 @@ public class MCPService {
             }
         }
         
-        logger.info("MCPService inicializado: {}/{} servidores conectados com sucesso", 
+        logger.info("MCPService inicializado: {}/{} servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log", 
                    successCount, serverConfigs.size());
         
         if (successCount == 0) {

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.mcp.rules.RuleEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,6 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SemanticMatcher {
 
 	private static final Logger logger = LoggerFactory.getLogger(SemanticMatcher.class);
+	private final RuleEngine ruleEngine;
+
+	public SemanticMatcher(RuleEngine ruleEngine) {
+		this.ruleEngine = ruleEngine;
+	}
 
 	/**
 	 * Encontra correspondências semânticas para uma query dentro de uma lista de
@@ -70,6 +76,13 @@ public class SemanticMatcher {
 
 		prompt.append("\nResponda apenas com os números das ferramentas relevantes, separados por vírgula.");
 		prompt.append("\nExemplo: 1,3");
+
+		// Apply rules if available
+		if (ruleEngine != null && ruleEngine.isEnabled()) {
+			String serverName = inferServerFromTools(tools);
+			List<String> parameters = extractParameterNames(tools);
+			return ruleEngine.enhancePrompt(prompt.toString(), serverName, parameters);
+		}
 
 		return prompt.toString();
 	}
@@ -174,7 +187,15 @@ public class SemanticMatcher {
 		prompt.append("Responda em JSON:\n");
 		prompt.append("{\n  \"tool_number\": 1,\n  \"parameters\": {\"param\": \"value\"}\n}");
 
-		return prompt.toString();
+		// Apply rules if available
+		String basePrompt = prompt.toString();
+		if (ruleEngine != null && ruleEngine.isEnabled()) {
+			String serverName = inferServerFromTools(tools);
+			List<String> parameters = extractParameterNames(tools);
+			return ruleEngine.enhancePrompt(basePrompt, serverName, parameters);
+		}
+
+		return basePrompt;
 	}
 
 	private Map<Tool, Map<String, Object>> parseToolSelectionWithParams(String llmResponse, List<Tool> tools) {
@@ -297,7 +318,15 @@ public class SemanticMatcher {
 		prompt.append("    {\"tool_number\": 2, \"parameters\": {\"param\": \"value\"}}\n");
 		prompt.append("  ]\n}");
 
-		return prompt.toString();
+		// Apply rules if available
+		String basePrompt = prompt.toString();
+		if (ruleEngine != null && ruleEngine.isEnabled()) {
+			String serverName = inferServerFromTools(tools);
+			List<String> parameters = extractParameterNames(tools);
+			return ruleEngine.enhancePrompt(basePrompt, serverName, parameters);
+		}
+
+		return basePrompt;
 	}
 
 	private Map<Tool, Map<String, Object>> parseMultiToolSelection(String llmResponse, List<Tool> tools,
@@ -331,6 +360,33 @@ public class SemanticMatcher {
 		}
 
 		return Collections.emptyMap();
+	}
+
+	private String inferServerFromTools(List<Tool> tools) {
+		if (tools == null || tools.isEmpty()) {
+			return null;
+		}
+		// Usa o domínio da primeira ferramenta como aproximação do servidor
+		String domain = tools.get(0).getDomain();
+		if ("time".equals(domain)) {
+			return "mcp-server-time";
+		} else if ("filesystem".equals(domain)) {
+			return "server-filesystem";
+		} else if ("weather".equals(domain)) {
+			return "server-weather";
+		}
+		return domain;
+	}
+
+	private List<String> extractParameterNames(List<Tool> tools) {
+		List<String> parameters = new ArrayList<>();
+		for (Tool tool : tools) {
+			Map<String, Object> properties = tool.getProperties();
+			if (properties != null) {
+				parameters.addAll(properties.keySet());
+			}
+		}
+		return parameters;
 	}
 
 }

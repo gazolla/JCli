@@ -18,6 +18,7 @@ import com.gazapps.mcp.domain.Tool;
 public class Simple implements Inference {
     
     private static final Logger logger = LoggerFactory.getLogger(Simple.class);
+    private static final Logger conversationLogger = LoggerFactory.getLogger("com.gazapps.inference.simple.Simple.conversations");
     
     private final MCPManager mcpManager;
     private final Llm llm;
@@ -26,12 +27,18 @@ public class Simple implements Inference {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
         this.llm = Objects.requireNonNull(llm, "Llm is required");
         
-        logger.info("[SIMPLE] Initialized with LLM: {}", llm.getProviderName());
+        logger.info("[SIMPLE] Initialized with LLM: {} - logs em JavaCLI/log/inference/simple-conversations.log", llm.getProviderName());
     }
 
     @Override
     public String processQuery(String query) {
         logger.debug("Processing query: {}", query);
+        
+        // Log inicial da conversação
+        if (conversationLogger.isInfoEnabled()) {
+            conversationLogger.info("=== SIMPLE INFERENCE START ===");
+            conversationLogger.info("Query: {}", query);
+        }
         
         try {
 
@@ -39,25 +46,50 @@ public class Simple implements Inference {
             
             boolean isMultiStep = isMultiStep(query, llm);
             
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("Multi-step analysis: {}", isMultiStep);
+            }
+            
             if (isMultiStep) {
             	selections = mcpManager.findMultiStepTools(query);
             } else {
             	selections = mcpManager.findSingleStepTools(query);
             }
             
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("Found {} tool(s) for execution", selections.size());
+                for (Map.Entry<Tool, Map<String, Object>> entry : selections.entrySet()) {
+                    conversationLogger.info("  - Tool: {} with params: {}", 
+                        entry.getKey().getName(), entry.getValue());
+                }
+            }
+            
+            String result;
             if (selections.isEmpty()) {
-                return generateDirectResponse(query);
-            }
-            
-            if (selections.size() == 1) {
+                result = generateDirectResponse(query);
+            } else if (selections.size() == 1) {
                 Map.Entry<Tool, Map<String, Object>> selection = selections.entrySet().iterator().next();
-                return executeSingleTool(query, selection.getKey(), selection.getValue());
+                result = executeSingleTool(query, selection.getKey(), selection.getValue());
+            } else {
+                result = executeMultiStep(query, selections);
             }
             
-            return executeMultiStep(query, selections);
+            // Log final da conversação
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("=== SIMPLE INFERENCE END ===");
+                conversationLogger.info("Final result: {}", result);
+                conversationLogger.info("==============================");
+            }
+            
+            return result;
             
         } catch (Exception e) {
             logger.error("Error processing query", e);
+            if (conversationLogger.isErrorEnabled()) {
+                conversationLogger.error("=== SIMPLE INFERENCE ERROR ===");
+                conversationLogger.error("Error: {}", e.getMessage());
+                conversationLogger.error("===============================");
+            }
             return "Error processing query: " + e.getMessage();
         }
     }
@@ -207,6 +239,6 @@ public class Simple implements Inference {
     
     @Override
     public void close() {
-        logger.debug("[SIMPLE] Inference strategy closed");
+        logger.debug("[SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/");
     }
 }

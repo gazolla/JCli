@@ -10,12 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.gazapps.mcp.MCPConfig;
+
 /**
  * Manages configuration for all LLM providers.
  * Loads settings from a properties file and provides them to the application.
  */
 public class LlmConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(MCPConfig.class);
     private final Properties properties = new Properties();
     private final String configPath = "config/llm.properties";
 
@@ -30,8 +36,8 @@ public class LlmConfig {
             try (InputStream input = new FileInputStream(configFile)) {
                 properties.load(input);
             }
-        } catch (IOException e) {
-            // Handle exception
+        } catch (IOException e) {           
+        	logger.error("Error loading configuration: {}", e.getMessage());
         }
     }
 
@@ -39,30 +45,27 @@ public class LlmConfig {
         configFile.getParentFile().mkdirs();
         try (OutputStream output = new FileOutputStream(configFile)) {
             Properties defaultProps = new Properties();
-            // Default Gemini Config
+           
             defaultProps.setProperty("gemini.baseUrl", "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent");
-            defaultProps.setProperty("gemini.apiKey", "YOUR_GEMINI_API_KEY");
+            defaultProps.setProperty("gemini.apiKey", "");
             defaultProps.setProperty("gemini.model", "gemini-2.0-flash");
             defaultProps.setProperty("gemini.timeout", "60");
             defaultProps.setProperty("gemini.debug", "false");
 
-            // Default Groq Config
             defaultProps.setProperty("groq.baseUrl", "https://api.groq.com/openai/v1/chat/completions");
-            defaultProps.setProperty("groq.apiKey", "YOUR_GROQ_API_KEY");
+            defaultProps.setProperty("groq.apiKey", "");
             defaultProps.setProperty("groq.model", "llama3-8b-8192");
             defaultProps.setProperty("groq.timeout", "60");
             defaultProps.setProperty("groq.debug", "false");
 
-            // Default OpenAI Config
             defaultProps.setProperty("openai.baseUrl", "https://api.openai.com/v1/chat/completions");
-            defaultProps.setProperty("openai.apiKey", "YOUR_OPENAI_API_KEY");
+            defaultProps.setProperty("openai.apiKey", "");
             defaultProps.setProperty("openai.model", "gpt-4");
             defaultProps.setProperty("openai.timeout", "60");
             defaultProps.setProperty("openai.debug", "false");
 
-            // Default Claude Config
             defaultProps.setProperty("claude.baseUrl", "https://api.anthropic.com/v1/messages");
-            defaultProps.setProperty("claude.apiKey", "YOUR_CLAUDE_API_KEY");
+            defaultProps.setProperty("claude.apiKey", "");
             defaultProps.setProperty("claude.model", "claude-3-opus-20240229");
             defaultProps.setProperty("claude.timeout", "60");
             defaultProps.setProperty("claude.debug", "false");

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.domain.Tool;
 import com.gazapps.mcp.matching.SemanticMatcher;
+import com.gazapps.mcp.rules.RuleEngine;
 
 /**
  * Coordenador de estratégias de matching de ferramentas que utiliza uma
@@ -24,7 +25,11 @@ public class ToolMatcher {
     private final SemanticMatcher semanticMatcher;
 
     public ToolMatcher() {
-        this.semanticMatcher = new SemanticMatcher();
+        this.semanticMatcher = new SemanticMatcher(null);
+    }
+
+    public ToolMatcher(RuleEngine ruleEngine) {
+        this.semanticMatcher = new SemanticMatcher(ruleEngine);
     }
 
     /**

@@ -1,47 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    
-    <!-- Console Appender -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <property name="LOG_DIR" value="log" />
+    <property name="APPLICATION_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+    <property name="MCP_PATTERN" value="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n" />
+
+    <!-- Application logs -->
+    <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/application.log</file>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${APPLICATION_PATTERN}</pattern>
         </encoder>
-    </appender>
-    
-    <!-- File Appender -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/mcp-system.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/mcp-system.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>300MB</totalSizeCap>
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
-        </encoder>
     </appender>
-    
-    <!-- Specific loggers -->
-    <logger name="com.gazapps.mcp" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+
+    <!-- Error logs -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/errors.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/errors.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <!-- MCP operations logs -->
+    <appender name="MCP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/mcp-operations.log</file>
+        <encoder>
+            <pattern>${MCP_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/mcp-operations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- LLM Provider specific logs -->
+    <appender name="CLAUDE_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/llm/claude-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/llm/claude-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="GEMINI_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/llm/gemini-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/llm/gemini-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="GROQ_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/llm/groq-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/llm/groq-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="OPENAI_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/llm/openai-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/llm/openai-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Inference strategy specific logs -->
+    <appender name="SIMPLE_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/inference/simple-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/inference/simple-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="REACT_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/inference/react-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/inference/react-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="REFLECTION_CONVERSATIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/inference/reflection-conversations.log</file>
+        <encoder>
+            <pattern>${APPLICATION_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/inference/reflection-conversations.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Package level loggers -->
+    <logger name="com.gazapps.mcp" level="DEBUG" additivity="false">
+        <appender-ref ref="MCP" />
+        <appender-ref ref="APPLICATION" />
     </logger>
-    
-    <logger name="com.gazapps.mcp.MCPService" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+
+    <logger name="com.gazapps.llm" level="DEBUG" additivity="false">
+        <appender-ref ref="APPLICATION" />
     </logger>
-    
-    <logger name="io.modelcontextprotocol" level="WARN" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+
+    <logger name="com.gazapps.inference" level="DEBUG" additivity="false">
+        <appender-ref ref="APPLICATION" />
     </logger>
-    
-    <!-- Root logger -->
+
+    <logger name="com.gazapps.config" level="INFO" additivity="false">
+        <appender-ref ref="APPLICATION" />
+    </logger>
+
+    <!-- LLM Provider specific loggers -->
+    <logger name="com.gazapps.llm.providers.Claude.conversations" level="INFO" additivity="false">
+        <appender-ref ref="CLAUDE_CONVERSATIONS" />
+    </logger>
+
+    <logger name="com.gazapps.llm.providers.Gemini.conversations" level="INFO" additivity="false">
+        <appender-ref ref="GEMINI_CONVERSATIONS" />
+    </logger>
+
+    <logger name="com.gazapps.llm.providers.Groq.conversations" level="INFO" additivity="false">
+        <appender-ref ref="GROQ_CONVERSATIONS" />
+    </logger>
+
+    <logger name="com.gazapps.llm.providers.OpenAI.conversations" level="INFO" additivity="false">
+        <appender-ref ref="OPENAI_CONVERSATIONS" />
+    </logger>
+
+    <!-- Inference strategy specific loggers -->
+    <logger name="com.gazapps.inference.simple.Simple.conversations" level="INFO" additivity="false">
+        <appender-ref ref="SIMPLE_CONVERSATIONS" />
+    </logger>
+
+    <logger name="com.gazapps.inference.react.ReAct.conversations" level="INFO" additivity="false">
+        <appender-ref ref="REACT_CONVERSATIONS" />
+    </logger>
+
+    <logger name="com.gazapps.inference.reflection.Reflection.conversations" level="INFO" additivity="false">
+        <appender-ref ref="REFLECTION_CONVERSATIONS" />
+    </logger>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="APPLICATION" />
+        <appender-ref ref="ERROR" />
     </root>
-    
+
 </configuration>

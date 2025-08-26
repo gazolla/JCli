@@ -4,6 +4,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gazapps.config.Config;
 import com.gazapps.inference.Inference;
 import com.gazapps.inference.InferenceFactory;
 import com.gazapps.llm.Llm;
@@ -16,9 +17,10 @@ public class AppWeather {
 	private static final Logger logger = LoggerFactory.getLogger(AppWeather.class);
 	
 	public static void main(String[] args) {
-		logger.info("=== Teste LLM Gemini + Inference Simple ===");
+		logger.info("=== Teste LLM Gemini + Inference Simple - JavaCLI/log structure ===");
 		
         String configDirectory = "./config";
+        new Config();
         try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGroq(null))) {
            
             Llm llm = mcpManager.getLlm();

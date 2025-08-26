@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.domain.Server;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.mcp.rules.RuleEngine;
 
 
 /**
@@ -31,6 +32,7 @@ public class MCPManager implements AutoCloseable {
     
     private final MCPConfig config;
     private final MCPService mcpService;
+    private final RuleEngine ruleEngine;
     private final ToolMatcher toolMatcher;
     private final DomainRegistry domainRegistry;
     private final ScheduledExecutorService scheduler;
@@ -41,7 +43,8 @@ public class MCPManager implements AutoCloseable {
     public MCPManager(String configDirectory, Llm llm) {
         this.config = new MCPConfig(configDirectory);
         this.mcpService = new MCPService(config);
-        this.toolMatcher = new ToolMatcher();
+        this.ruleEngine = new RuleEngine(config.getRulesPath(), config.isRulesEnabled());
+        this.toolMatcher = new ToolMatcher(ruleEngine);
         this.llm = Objects.requireNonNull(llm, "LLM cannot be null");
         
         String domainConfigPath = configDirectory + "/mcp/domains.json";
@@ -415,7 +418,7 @@ public class MCPManager implements AutoCloseable {
             );
             
             initialized = true;
-            logger.info("MCPManager inicializado com sucesso");
+            logger.info("MCPManager inicializado com sucesso - logs em JavaCLI/log/");
             
         } catch (Exception e) {
             logger.error("Erro ao inicializar MCPManager", e);
@@ -433,6 +436,22 @@ public class MCPManager implements AutoCloseable {
         }
         
         return null;
+    }
+    
+    /**
+     * Recarrega as regras do sistema.
+     */
+    public void reloadRules() {
+        if (ruleEngine != null) {
+            ruleEngine.reload();
+        }
+    }
+    
+    /**
+     * Verifica se o sistema de regras está habilitado.
+     */
+    public boolean isRulesEnabled() {
+        return ruleEngine != null && ruleEngine.isEnabled();
     }
     
     /**

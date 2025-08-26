@@ -1,0 +1,20 @@
+{
+  "name": "mcp-server-time",
+  "description": "Regras para servidor de tempo",
+  "version": "1.0",
+  "items": [
+    {
+      "name": "timezone-inference",
+      "triggers": ["timezone", "tz"],
+      "contentKeywords": ["hora", "tempo", "data", "fuso horário", "datahora", "marcotemporal", "agendamento", "calendário", "duração", "intervalo", "recorrência", "time", "date", "timezone", "datetime", "timestamp", "UTC", "scheduling", "calendar", "duration", "interval", "recurrence"],
+      "rules": {
+        "parameter_replace": {
+          "timezone": {
+            "pattern": "Use '[^']*' as local timezone[^.]*\\.",
+            "replacement": "Busque infromações sobre timezone IANA. Use apenas timezones IANA válidas existentes. Não invente timezones."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -31,6 +31,11 @@ public class MCPConfig {
     private String llmProvider = "groq";
     private long refreshIntervalMs = 300000; // 5 minutos (mais razoável)
     
+    // Configurações de regras
+    private boolean rulesEnabled = true;
+    private String rulesPath = "config/rules";
+    private boolean rulesAutoReload = false;
+    
     public MCPConfig(String configDirectory) {
         this.configDirectory = Objects.requireNonNull(configDirectory, "Config directory cannot be null");
         this.objectMapper = new ObjectMapper();
@@ -129,6 +134,32 @@ public class MCPConfig {
         this.refreshIntervalMs = refreshIntervalMs;
     }
     
+    // Getters e setters para regras
+    
+    public boolean isRulesEnabled() {
+        return rulesEnabled;
+    }
+    
+    public void setRulesEnabled(boolean rulesEnabled) {
+        this.rulesEnabled = rulesEnabled;
+    }
+    
+    public String getRulesPath() {
+        return rulesPath;
+    }
+    
+    public void setRulesPath(String rulesPath) {
+        this.rulesPath = Objects.requireNonNull(rulesPath, "Rules path cannot be null");
+    }
+    
+    public boolean isRulesAutoReload() {
+        return rulesAutoReload;
+    }
+    
+    public void setRulesAutoReload(boolean rulesAutoReload) {
+        this.rulesAutoReload = rulesAutoReload;
+    }
+    
     
     public void removeDomain(String domain) {
         if (domains.remove(domain) != null) {
@@ -146,15 +177,135 @@ public class MCPConfig {
             Path mcpPath = configPath.resolve("mcp");
             Files.createDirectories(mcpPath);
             
+            Path rulesPath = configPath.resolve("rules");
+            Files.createDirectories(rulesPath);
+
+            createDefaultRuleFiles(rulesPath);
+            
         } catch (IOException e) {
             throw new MCPConfigException("Não foi possível criar diretório de configuração: " + configDirectory, e);
         }
     }
     
-    private void loadConfiguration() {
+    private void createDefaultRuleFiles(Path rulesPath) {
+        try {
+            createFilesystemRules(rulesPath); 
+            createTimeRules(rulesPath);
+            logger.info("Arquivos de regras padrão criados em: {}", rulesPath);
+            
+        } catch (Exception e) {
+            logger.warn("Erro ao criar arquivos de regras padrão", e);
+        }
+    }
+
+    private void createFilesystemRules(Path rulesPath) throws IOException {
+        Path filesystemRulesFile = rulesPath.resolve("server-filesystem.json");
+        
+        if (!Files.exists(filesystemRulesFile)) {
+            Map<String, Object> filesystemRules = new HashMap<>();
+            filesystemRules.put("name", "server-filesystem");
+            filesystemRules.put("description", "Regras para sistema de arquivos");
+            filesystemRules.put("version", "1.0");
+            
+            Map<String, Object> relativePathsItem = new HashMap<>();
+            relativePathsItem.put("name", "relative-paths");
+            relativePathsItem.put("triggers", List.of("path", "filename"));
+            relativePathsItem.put("contentKeywords", List.of(
+                "arquivo", "salvar", "criar", "documents", "pasta", "diretório", "path", 
+                "filesystem", "file", "folder", "directory", "caminho", "sistema de arquivos", 
+                "leitura", "escrita", "writing", "reading", "storage", "armazenamento"
+            ));
+            
+            Map<String, Object> relativePathsRules = new HashMap<>();
+            relativePathsRules.put("context_add", 
+                "\n\nIMPORTANTE: Use sempre caminhos relativos simples (documents/arquivo.txt, não /documents/arquivo.txt).");
+            relativePathsItem.put("rules", relativePathsRules);
+            
+            filesystemRules.put("items", List.of(relativePathsItem));
+            
+            String jsonContent = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(filesystemRules);
+            Files.writeString(filesystemRulesFile, jsonContent);
+            
+            logger.debug("Criado arquivo de regras: {}", filesystemRulesFile);
+        }
+    }
+
+    private void createTimeRules(Path rulesPath) throws IOException {
+        Path timeRulesFile = rulesPath.resolve("mcp-server-time.json");
+        
+        if (!Files.exists(timeRulesFile)) {
+            Map<String, Object> timeRules = new HashMap<>();
+            timeRules.put("name", "mcp-server-time");
+            timeRules.put("description", "Regras para servidor de tempo");
+            timeRules.put("version", "1.0");
+            
+            Map<String, Object> timezoneItem = new HashMap<>();
+            timezoneItem.put("name", "timezone-inference");
+            timezoneItem.put("triggers", List.of("timezone", "tz"));
+            timezoneItem.put("contentKeywords", List.of(
+                "hora", "tempo", "data", "fuso horário", "datahora", "marcotemporal", 
+                "agendamento", "calendário", "duração", "intervalo", "recorrência", 
+                "time", "date", "timezone", "datetime", "timestamp", "UTC", 
+                "scheduling", "calendar", "duration", "interval", "recurrence"
+            ));
+            
+            Map<String, Object> timezoneRules = new HashMap<>();
+            Map<String, Object> parameterReplace = new HashMap<>();
+            Map<String, Object> timezoneReplace = new HashMap<>();
+            timezoneReplace.put("pattern", "Use '[^']*' as local timezone[^.]*\\.");
+            timezoneReplace.put("replacement", 
+                "Busque infromações sobre timezone IANA. Use apenas timezones IANA válidas existentes. Não invente timezones.");
+            parameterReplace.put("timezone", timezoneReplace);
+            timezoneRules.put("parameter_replace", parameterReplace);
+            
+            timezoneItem.put("rules", timezoneRules);
+            
+            timeRules.put("items", List.of(timezoneItem));
+            
+            String jsonContent = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(timeRules);
+            Files.writeString(timeRulesFile, jsonContent);
+            
+            logger.debug("Criado arquivo de regras: {}", timeRulesFile);
+        }
+    }
+
+
+	private void loadConfiguration() {
+        loadApplicationProperties();
         loadServersFromFile();
         loadDomainsFromFile();
         loadDefaultDomains(); 
+    }
+    
+    private void loadApplicationProperties() {
+        Path propsFile = Paths.get(configDirectory, "application.properties");
+        
+        if (!Files.exists(propsFile)) {
+            logger.info("Arquivo application.properties não encontrado, usando configurações padrão");
+            return;
+        }
+        
+        try {
+            Properties props = new Properties();
+            props.load(Files.newInputStream(propsFile));
+            
+            // Carregar propriedades de regras
+            rulesEnabled = Boolean.parseBoolean(props.getProperty("mcp.rules.enabled", "true"));
+            rulesPath = props.getProperty("mcp.rules.path", "config/rules");
+            rulesAutoReload = Boolean.parseBoolean(props.getProperty("mcp.rules.auto.reload", "false"));
+            
+            // Carregar outras propriedades existentes
+            llmProvider = props.getProperty("llm.provider", "groq");
+            autoDiscoveryEnabled = Boolean.parseBoolean(props.getProperty("mcp.auto.discovery", "true"));
+            refreshIntervalMs = Long.parseLong(props.getProperty("mcp.refresh.interval", "300000"));
+            
+            logger.info("Propriedades carregadas: rules.enabled={}, rules.path={}", rulesEnabled, rulesPath);
+            
+        } catch (Exception e) {
+            logger.warn("Erro ao carregar application.properties, usando configurações padrão", e);
+        }
     }
     
     private void loadServersFromFile() {

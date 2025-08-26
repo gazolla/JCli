@@ -1,0 +1,15 @@
+{
+  "name": "server-filesystem",
+  "description": "Regras para sistema de arquivos",
+  "version": "1.0",
+  "items": [
+    {
+      "name": "relative-paths",
+      "triggers": ["path", "filename"],
+      "contentKeywords": ["arquivo", "salvar", "criar", "documents", "pasta", "diretório", "path", "filesystem", "file", "folder", "directory", "caminho", "sistema de arquivos", "leitura", "escrita", "leitura", "writing", "reading", "storage", "armazenamento"],
+      "rules": {
+        "context_add": "\n\nIMPORTANTE: Use sempre caminhos relativos simples (documents/arquivo.txt, não /documents/arquivo.txt)."
+      }
+    }
+  ]
+}

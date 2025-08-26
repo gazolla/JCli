@@ -1,0 +1,174 @@
+2025-08-26 17:04:02.280 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-08-26 17:04:02.280 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-08-26 17:04:02.280 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analise a query e determine se a sua execução exige uma ou mais ferramentas.
+
+Para fazer essa avaliação, procure por:
+1. **Verbos ou Ações Múltiplas:** Identifique se a query contém múltiplos verbos que implicam ações distintas (ex: "criar" e "mover", "pesquisar" e "enviar").
+2. **Conjunções e Conectores:** Procure por palavras como "e", "ou", "então", "depois" ou "além disso", que conectam diferentes partes da solicitação.
+3. **Dependências:** Verifique se uma tarefa depende da conclusão de outra (ex: primeiro encontrar um dado e só então usá-lo em outra ação).
+
+Com base nessa análise, responda de forma clara e objetiva se a query requer uma única ferramenta ou múltiplas.
+Responda apenas com `true` ou `false`.
+
+Query: Qual a previsão do tempo hoje em NYC?
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - Content: false
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-08-26 17:04:03.257 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analise a query e determine os scores de relevância:
+
+Query: "Qual a previsão do tempo hoje em NYC?"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+2025-08-26 17:04:03.807 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-08-26 17:04:03.807 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-08-26 17:04:03.807 [main] INFO  c.g.llm.providers.Groq.conversations - Content: {"weather": 1.0, "time": 0.2, "filesystem": 0.0}
+2025-08-26 17:04:03.807 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-08-26 17:04:03.815 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-08-26 17:04:03.815 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-08-26 17:04:03.815 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analise a query e selecione a ferramenta mais relevante.
+Se a ferramenta selecionada tiver parâmetros obrigatórios
+que não estão presentes na query, use seu conhecimento para
+encontrar as informações ausentes e preencha os parâmetros
+antes de retornar o JSON.
+
+Query: "Qual a previsão do tempo hoje em NYC?"
+
+1. get-forecast - Get weather forecast for a location in the US
+parameter: latitude, value: {type=number, description=Latitude of the location}
+parameter: longitude, value: {type=number, description=Longitude of the location}
+
+2. get-alerts - Get weather alerts for a US state
+parameter: state, value: {type=string, description=Two-letter US state code (e.g. CA, NY)}
+
+NÃO EXPLIQUE NADA
+Responda em JSON:
+{
+  "tool_number": 1,
+  "parameters": {"param": "value"}
+}
+2025-08-26 17:04:04.391 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-08-26 17:04:04.391 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-08-26 17:04:04.391 [main] INFO  c.g.llm.providers.Groq.conversations - Content: ```
+{
+  "tool_number": 1,
+  "parameters": {
+    "latitude": 40.7128,
+    "longitude": -74.0060
+  }
+}
+```
+2025-08-26 17:04:04.391 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-08-26 17:04:04.919 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-08-26 17:04:04.919 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-08-26 17:04:04.919 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Based on the tool execution result, provide a comprehensive response:
+
+Original query: Qual a previsão do tempo hoje em NYC?
+Tool used: get-forecast
+Result: Forecast for 40.7128, -74.006:
+
+This Afternoon:
+Temperature: 77°F
+Wind: 10 mph W
+Mostly Sunny
+---
+Tonight:
+Temperature: 62°F
+Wind: 10 mph NW
+Isolated Rain Showers then Partly Cloudy
+---
+Wednesday:
+Temperature: 77°F
+Wind: 12 mph NW
+Sunny
+---
+Wednesday Night:
+Temperature: 62°F
+Wind: 5 to 12 mph NW
+Mostly Clear
+---
+Thursday:
+Temperature: 75°F
+Wind: 3 to 12 mph SW
+Partly Sunny
+---
+Thursday Night:
+Temperature: 67°F
+Wind: 12 mph SW
+Partly Cloudy then Slight Chance Rain Showers
+---
+Friday:
+Temperature: 75°F
+Wind: 10 mph SW
+Chance Rain Showers
+---
+Friday Night:
+Temperature: 61°F
+Wind: 10 mph NW
+Chance Showers And Thunderstorms
+---
+Saturday:
+Temperature: 73°F
+Wind: 9 mph NW
+Sunny
+---
+Saturday Night:
+Temperature: 62°F
+Wind: 8 mph NW
+Mostly Clear
+---
+Sunday:
+Temperature: 74°F
+Wind: 8 mph NE
+Mostly Sunny
+---
+Sunday Night:
+Temperature: 64°F
+Wind: 8 mph SW
+Mostly Clear
+---
+Labor Day:
+Temperature: 75°F
+Wind: 6 to 10 mph NE
+Mostly Sunny
+---
+Monday Night:
+Temperature: 64°F
+Wind: 6 to 10 mph NE
+Partly Cloudy
+---
+
+Provide a natural, helpful response incorporating the tool result.
+2025-08-26 17:04:06.714 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-08-26 17:04:06.714 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-08-26 17:04:06.714 [main] INFO  c.g.llm.providers.Groq.conversations - Content: A previsão do tempo para Nova York (NYC) hoje é a seguinte:
+
+Para esta tarde, espera-se uma temperatura de 77°F, com ventos de 10 mph vindos do oeste e um céu majoritariamente ensolarado.
+
+À noite, a temperatura deve cair para 62°F, com ventos de 10 mph vindos do noroeste e chuvas isoladas seguidas de céu parcialmente nublado.
+
+Para os próximos dias, aqui está o que você pode esperar:
+
+- Quarta-feira: Temperatura de 77°F, ventos de 12 mph do noroeste e céu ensolarado.
+- Quarta-feira à noite: Temperatura de 62°F, ventos de 5 a 12 mph do noroeste e céu majoritariamente claro.
+- Quinta-feira: Temperatura de 75°F, ventos de 3 a 12 mph do sudoeste e céu parcialmente nublado.
+- Quinta-feira à noite: Temperatura de 67°F, ventos de 12 mph do sudoeste e chuvas isoladas.
+- Sexta-feira: Temperatura de 75°F, ventos de 10 mph do sudoeste e chance de chuvas.
+- Sexta-feira à noite: Temperatura de 61°F, ventos de 10 mph do noroeste e chance de chuvas e tempestades.
+- Sábado: Temperatura de 73°F, ventos de 9 mph do noroeste e céu ensolarado.
+- Sábado à noite: Temperatura de 62°F, ventos de 8 mph do noroeste e céu majoritariamente claro.
+- Domingo: Temperatura de 74°F, ventos de 8 mph do nordeste e céu majoritariamente ensolarado.
+- Domingo à noite: Temperatura de 64°F, ventos de 8 mph do sudoeste e céu majoritariamente claro.
+- Feriado do Trabalho (Segunda-feira): Temperatura de 75°F, ventos de 6 a 10 mph do nordeste e céu majoritariamente ensolarado.
+- Segunda-feira à noite: Temperatura de 64°F, ventos de 6 a 10 mph do nordeste e céu parcialmente nublado.
+
+Espero que isso ajude você a planejar melhor seus planos em NYC!
+2025-08-26 17:04:06.714 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===

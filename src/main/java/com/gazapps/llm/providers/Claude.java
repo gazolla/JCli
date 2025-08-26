@@ -34,7 +34,7 @@ import io.modelcontextprotocol.spec.McpSchema.Tool;
 public class Claude implements Llm {
 
     private static final Logger logger = LoggerFactory.getLogger(Claude.class);
-    private static final Logger conversationLogger = LoggerFactory.getLogger(Claude.class); //Config.getLlmConversationLogger("claude");
+    private static final Logger conversationLogger = LoggerFactory.getLogger("com.gazapps.llm.providers.Claude.conversations");
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     private String baseUrl;

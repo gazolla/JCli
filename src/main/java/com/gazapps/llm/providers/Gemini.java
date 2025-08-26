@@ -35,7 +35,8 @@ import io.modelcontextprotocol.spec.McpSchema.Tool;
 public class Gemini implements Llm {
 
 	private static final Logger logger = LoggerFactory.getLogger(Gemini.class);
-	private static final Logger conversationLogger = LoggerFactory.getLogger(Gemini.class); // Config.getLlmConversationLogger("gemini");
+	private static final Logger conversationLogger = LoggerFactory
+			.getLogger("com.gazapps.llm.providers.Gemini.conversations");
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	private String baseUrl;
@@ -52,26 +53,19 @@ public class Gemini implements Llm {
 	}
 
 	public Gemini() {
-		
-		this.apiKey = System.getenv("GEMINI_API_KEY");
-		if (this.apiKey != null && !this.apiKey.trim().isEmpty()) {
-			
-			LlmConfig config = new LlmConfig();
-			Map<String, String> geminiConfig = config.getGeminiConfig();
-			this.apiKey = this.apiKey == null ? geminiConfig.get("api.Key") : this.apiKey;
-			this.baseUrl = geminiConfig.get("base.url");
-			this.model = geminiConfig.get("model");
-			this.timeout = Integer.parseInt(geminiConfig.getOrDefault("timeout", "60"));
-			this.debug = Boolean.parseBoolean(geminiConfig.getOrDefault("debug", "false"));
-		}
-		
-		System.out.println(this);
 
-		// Definir capacidades do Gemini
+		this.apiKey = System.getenv("GEMINI_API_KEY");
+		LlmConfig config = new LlmConfig();
+		Map<String, String> geminiConfig = config.getGeminiConfig();
+		this.apiKey = this.apiKey == null ? geminiConfig.get("api.Key") : this.apiKey;
+		this.baseUrl = geminiConfig.get("base.url");
+		this.model = geminiConfig.get("model");
+		this.timeout = Integer.parseInt(geminiConfig.getOrDefault("timeout", "60"));
+		this.debug = Boolean.parseBoolean(geminiConfig.getOrDefault("debug", "false"));
+
 		this.capabilities = LlmCapabilities.builder().functionCalling(true).systemMessages(true).streaming(false)
 				.maxTokens(32000).supportedFormats(java.util.Set.of("text", "json")).build();
 
-		// Validar apenas se usando arquivo de configuração
 		if (this.apiKey == null || this.apiKey.startsWith("YOUR_")) {
 			throw new LlmException(LlmProvider.GEMINI, LlmException.ErrorType.AUTHENTICATION,
 					"GEMINI_API_KEY não configurada ou inválida");

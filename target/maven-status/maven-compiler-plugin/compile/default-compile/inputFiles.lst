@@ -1,9 +1,12 @@
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\DomainDefinition.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmCapabilities.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\reflection\Reflection.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\RuleItem.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\config\Config.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\InferenceFactory.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Server.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\simple\Simple.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\RuleEngine.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Gemini.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\OpenAI.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\SemanticMatcher.java
@@ -28,6 +31,7 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\C
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppFile.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ParameterExtractor.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Tool.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\ServerRules.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppMultiToolWeatherFile.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmBuilder.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\InferenceStrategy.java

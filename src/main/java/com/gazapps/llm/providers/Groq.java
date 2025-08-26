@@ -33,7 +33,8 @@ import io.modelcontextprotocol.spec.McpSchema.Tool;
 public class Groq implements Llm {
 
 	private static final Logger logger = LoggerFactory.getLogger(Groq.class);
-	private static final Logger conversationLogger = LoggerFactory.getLogger(Groq.class); // Config.getLlmConversationLogger("groq");
+	private static final Logger conversationLogger = LoggerFactory
+			.getLogger("com.gazapps.llm.providers.Groq.conversations");
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	private String baseUrl;
@@ -52,34 +53,28 @@ public class Groq implements Llm {
 	public Groq() {
 
 		this.apiKey = System.getenv("GROQ_API_KEY");
-		if (this.apiKey != null && !this.apiKey.trim().isEmpty()) {
+		LlmConfig config = new LlmConfig();
+		Map<String, String> groqConfig = config.getGroqConfig();
+		this.apiKey = this.apiKey == null ? groqConfig.get("api.Key") : this.apiKey;
+		this.baseUrl = groqConfig.get("base.url");
+		this.model = groqConfig.get("model");
+		this.timeout = Integer.parseInt(groqConfig.get("timeout"));
+		this.debug = Boolean.parseBoolean(groqConfig.get("debug"));
 
-			LlmConfig config = new LlmConfig();
-			Map<String, String> groqConfig = config.getGroqConfig();
-			this.apiKey = this.apiKey == null ? groqConfig.get("api.Key") : this.apiKey;
-			this.baseUrl = groqConfig.get("base.url");
-			this.model = groqConfig.get("model");
-			this.timeout = Integer.parseInt(groqConfig.get("timeout"));
-			this.debug = Boolean.parseBoolean(groqConfig.get("debug"));
+		this.capabilities = LlmCapabilities.builder().functionCalling(true).systemMessages(true).streaming(false)
+				.maxTokens(50000).supportedFormats(java.util.Set.of("text", "json")).build();
 
-			// Definir capacidades do Groq
-			this.capabilities = LlmCapabilities.builder().functionCalling(true).systemMessages(true).streaming(false)
-					.maxTokens(50000).supportedFormats(java.util.Set.of("text", "json")).build();
+		System.out.println(this);
 
-			System.out.println(this);
+		if (this.apiKey == null || this.apiKey.startsWith("YOUR_")) {
+			throw new LlmException(LlmProvider.GROQ, LlmException.ErrorType.AUTHENTICATION,
+					"GROQ_API_KEY não configurada ou inválida");
+		}
 
-
-			// Validar apenas se usando arquivo de configuração
-			if (this.apiKey == null || this.apiKey.startsWith("YOUR_")) {
-				throw new LlmException(LlmProvider.GROQ, LlmException.ErrorType.AUTHENTICATION,
-						"GROQ_API_KEY não configurada ou inválida");
-			}
-
-			if (debug) {
-				logger.debug("🔧 Gemini initialized with capabilities: {}", capabilities);
-				logger.debug("🔧 Using baseUrl: {}", baseUrl);
-				logger.debug("🔧 Using model: {}", model);
-			}
+		if (debug) {
+			logger.debug("🔧 Gemini initialized with capabilities: {}", capabilities);
+			logger.debug("🔧 Using baseUrl: {}", baseUrl);
+			logger.debug("🔧 Using model: {}", model);
 		}
 	}
 
