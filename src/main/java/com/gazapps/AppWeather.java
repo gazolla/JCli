@@ -19,13 +19,13 @@ public class AppWeather {
 		logger.info("=== Teste LLM Gemini + Inference Simple ===");
 		
         String configDirectory = "./config";
-        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.gemini(null))) {
+        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGroq(null))) {
            
-            Llm geminiLlm = mcpManager.getLlm();
+            Llm llm = mcpManager.getLlm();
 
             Map<String, Object> inferenceOptions = Map.of("maxIterations", 10, "debug", false);
             Inference inference = InferenceFactory.createSimple(mcpManager, 
-            													geminiLlm, 
+            													llm, 
             													inferenceOptions);
             
             String userInput = "Qual a previsão do tempo hoje em NYC?";

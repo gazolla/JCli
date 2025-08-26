@@ -11,7 +11,7 @@ import com.gazapps.inference.InferenceFactory;
 import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
-import com.gazapps.llm.LlmProvider;
+
 import com.gazapps.mcp.MCPManager;
 
 /**
@@ -28,7 +28,7 @@ public class AppTime {
 
         String configDirectory = "./config";
         
-        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.gemini(null))) {
+        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGroq(null))) {
            
             Llm geminiLlm = mcpManager.getLlm();
             

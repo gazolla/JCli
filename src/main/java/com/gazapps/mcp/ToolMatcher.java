@@ -81,6 +81,26 @@ public class ToolMatcher {
         }
         return result;
     }
+    
+    /**
+     * Encontra múltiplas ferramentas relevantes com parâmetros extraídos (para multi-step).
+     */
+    public Map<Tool, Map<String, Object>> findMultipleToolsWithParams(String query, Llm llm, List<Tool> availableTools, MCPManager.MatchingOptions options) {
+        if (query == null || query.trim().isEmpty() || availableTools.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        if (llm != null) {
+            try {
+                return semanticMatcher.findMultipleSemanticMatchesWithParams(query, availableTools, llm);
+            } catch (Exception e) {
+                logger.error("Erro durante o matching multi-tool", e);
+                return Collections.emptyMap();
+            }
+        }
+        
+        return Collections.emptyMap();
+    }
 
     /**
      * Encontra a melhor ferramenta para uma query dentro de um domínio específico.

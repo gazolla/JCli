@@ -1,7 +1,13 @@
 package com.gazapps.mcp;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -10,10 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gazapps.llm.Llm;
-import com.gazapps.mcp.domain.DomainDefinition;
 import com.gazapps.mcp.domain.Server;
 import com.gazapps.mcp.domain.Tool;
-import com.gazapps.mcp.matching.MultiStepDetector;
+
 
 /**
  * Facade principal do sistema MCP que encapsula toda a complexidade de interação
@@ -28,7 +33,6 @@ public class MCPManager implements AutoCloseable {
     private final MCPService mcpService;
     private final ToolMatcher toolMatcher;
     private final DomainRegistry domainRegistry;
-    private final MultiStepDetector multiStepDetector;
     private final ScheduledExecutorService scheduler;
     private boolean initialized;
     private final Llm llm;
@@ -38,7 +42,6 @@ public class MCPManager implements AutoCloseable {
         this.config = new MCPConfig(configDirectory);
         this.mcpService = new MCPService(config);
         this.toolMatcher = new ToolMatcher();
-        this.multiStepDetector = new MultiStepDetector();
         this.llm = Objects.requireNonNull(llm, "LLM cannot be null");
         
         String domainConfigPath = configDirectory + "/mcp/domains.json";
@@ -50,52 +53,68 @@ public class MCPManager implements AutoCloseable {
     }
     
     
-    /**
-     * Busca ferramentas relevantes para uma query usando matching básico.
-     */
-    public List<Tool> findTools(String query) {
+     public List<Tool> findTools(String query) {
         return findTools(query, MatchingOptions.defaultOptions());
     }
     
-    /**
-     * Busca ferramentas com parâmetros extraídos para uma query.
-     */
-    public Map<Tool, Map<String, Object>> findToolsWithParameters(String query) {
-        return findToolsWithParameters(query, MatchingOptions.defaultOptions());
+        public Map<Tool, Map<String, Object>> findSingleStepTools(String query){
+    	return findSingleStepTools(query, MatchingOptions.defaultOptions());
     }
     
-    /**
-     * Busca ferramentas com parâmetros extraídos para uma query com opções específicas.
-     */
-    public Map<Tool, Map<String, Object>> findToolsWithParameters(String query, MatchingOptions options) {
-        Objects.requireNonNull(query, "Query cannot be null");
-        Objects.requireNonNull(options, "Matching options cannot be null");
-
-        if (query.trim().isEmpty()) {
+    private Map<Tool, Map<String, Object>> findSingleStepTools(String query, MatchingOptions options) {
+        String bestDomain = findBestDomain(query);
+        
+        List<Tool> domainTools = getToolsByDomain(bestDomain);
+        if (domainTools.isEmpty()) {
+            logger.warn("Nenhuma ferramenta disponível no domínio: {}", bestDomain);
             return Collections.emptyMap();
         }
 
-        try {
-            // 1. Domain filtering primeiro
-            String bestDomain = findBestDomain(query);
-            
-            // 2. Ferramentas do domínio
-            List<Tool> domainTools = getToolsByDomain(bestDomain);
-            if (domainTools.isEmpty()) {
-                logger.warn("Nenhuma ferramenta disponível no domínio: {}", bestDomain);
-                return Collections.emptyMap();
+        Map<Tool, Map<String, Object>> matches = toolMatcher.findRelevantToolsWithParams(query, llm, domainTools, options);
+        logger.debug("Encontradas {} ferramentas single-step para query: '{}'", matches.size(), query);
+        return matches;
+    }
+    
+    public Map<Tool, Map<String, Object>> findMultiStepTools(String query){
+    	return findMultiStepTools(query, MatchingOptions.defaultOptions());
+    }
+    
+    private Map<Tool, Map<String, Object>> findMultiStepTools(String query, MatchingOptions options) {
+        Map<String, Double> domainScores = domainRegistry.calculateDomainMatches(query, llm, true); // isMultiStep = true
+        List<Tool> relevantTools = new ArrayList<>();
+        
+        // Coletar ferramentas de TODOS os domínios relevantes
+        for (Map.Entry<String, Double> entry : domainScores.entrySet()) {
+            if (entry.getValue() > 0.6) {
+                relevantTools.addAll(getToolsByDomain(entry.getKey()));
             }
-
-            // 3. LLM selection + parameter extraction
-            Map<Tool, Map<String, Object>> matches = toolMatcher.findRelevantToolsWithParams(query, llm, domainTools, options);
-
-            logger.debug("Encontradas {} ferramentas com parâmetros para query: '{}'", matches.size(), query);
-            return matches;
-
-        } catch (Exception e) {
-            logger.error("Erro ao buscar ferramentas com parâmetros para query: '{}'", query, e);
+        }
+        
+        if (relevantTools.isEmpty()) {
+            logger.warn("Nenhuma ferramenta disponível para multi-step: {}", query);
             return Collections.emptyMap();
         }
+        
+        Map<Tool, Map<String, Object>> matches = toolMatcher.findMultipleToolsWithParams(query, llm, relevantTools, options);
+        logger.debug("Encontradas {} ferramentas multi-step para query: '{}'", matches.size(), query);
+        return matches;
+    }
+    
+    public boolean isMultiStep(String query, Llm llm) {
+        if (llm == null) return false;
+        
+        String prompt = "Analise a query e determine se a sua execução exige uma ou mais ferramentas.\n\n" +
+                "Para fazer essa avaliação, procure por:\n" +
+                "1. **Verbos ou Ações Múltiplas:** Identifique se a query contém múltiplos verbos que implicam ações distintas (ex: \"criar\" e \"mover\", \"pesquisar\" e \"enviar\").\n" +
+                "2. **Conjunções e Conectores:** Procure por palavras como \"e\", \"ou\", \"então\", \"depois\" ou \"além disso\", que conectam diferentes partes da solicitação.\n" +
+                "3. **Dependências:** Verifique se uma tarefa depende da conclusão de outra (ex: primeiro encontrar um dado e só então usá-lo em outra ação).\n\n" +
+                "Com base nessa análise, responda de forma clara e objetiva se a query requer uma única ferramenta ou múltiplas.\n" +
+                "Responda apenas com `true` ou `false`.\n\n" +
+                "Query: " + query;
+        
+        var response = llm.generateResponse(prompt);
+        
+        return response.isSuccess() && response.getContent().toLowerCase().contains("true");
     }
     
     /**
@@ -175,17 +194,7 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Busca ferramentas que podem ser executadas sequencialmente.
-     */
-    public List<Tool> findSequentialTools(String query) {
-        if (llm == null) {
-            logger.warn("LLM não está disponível, retornando resultados de matching básico para query sequencial.");
-            return findTools(query);
-        }
-        List<Tool> availableTools = mcpService.getAllAvailableTools();
-        return multiStepDetector.detectSequentialTools(query, availableTools, llm);
-    }
+    
     
     /**
      * Retorna conjunto de todos os domínios disponíveis.
@@ -217,7 +226,7 @@ public class MCPManager implements AutoCloseable {
         List<Tool> allTools = mcpService.getAllAvailableTools();
         
         if (domain == null) {
-            return allTools; // Todas as ferramentas se sem domínio
+            return allTools; 
         }
         
         List<Tool> domainTools = new ArrayList<>();
@@ -324,11 +333,11 @@ public class MCPManager implements AutoCloseable {
                         logger.info("Domínio '{}' descoberto para servidor '{}'", discoveredDomain, entry.getKey());
                         
                         // Atualizar ferramentas com o domínio descoberto
-                        for (Tool tool : serverTools) {
-                            if (tool.getDomain() == null || tool.getDomain().isEmpty()) {
-                                domainRegistry.addToolToDomain(discoveredDomain, tool);
-                            }
-                        }
+                       // for (Tool tool : serverTools) {
+                        //    if (tool.getDomain() == null || tool.getDomain().isEmpty()) {
+                        //        domainRegistry.addToolToDomain(discoveredDomain, tool);
+                         //   }
+                      // }
                     }
                 }
                 
@@ -491,44 +500,15 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Resultado da execução de uma ferramenta.
-     * @deprecated Use MCPService.ToolExecutionResult instead
-     */
-    @Deprecated
-    public static class ToolExecutionResult {
-        public final boolean success;
-        public final Tool tool;
-        public final String message;
-        public final Exception error;
-        
-        private ToolExecutionResult(boolean success, Tool tool, String message, Exception error) {
-            this.success = success;
-            this.tool = tool;
-            this.message = message;
-            this.error = error;
-        }
-        
-        public static ToolExecutionResult success(Tool tool, String message) {
-            return new ToolExecutionResult(true, tool, message, null);
-        }
-        
-        public static ToolExecutionResult error(String message) {
-            return new ToolExecutionResult(false, null, message, null);
-        }
-        
-        public static ToolExecutionResult error(String message, Exception error) {
-            return new ToolExecutionResult(false, null, message, error);
-        }
-    }
-    
-    
+
     
     /**
      * Exceção específica para erros do MCPManager.
      */
     public static class MCPManagerException extends RuntimeException {
-        public MCPManagerException(String message) {
+        private static final long serialVersionUID = 1L;
+
+		public MCPManagerException(String message) {
             super(message);
         }
         

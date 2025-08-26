@@ -1,0 +1,73 @@
+17:25:04.957 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI REQUEST ===
+17:25:04.957 [main] INFO  com.gazapps.llm.providers.Gemini - Model: gemini-2.0-flash
+17:25:04.957 [main] INFO  com.gazapps.llm.providers.Gemini - Prompt: A query requer múltiplas ferramentas ou operações? Responda apenas: true/false
+
+Query: verifique o clima em NYC e salve no arquivo nyc.txt em documents
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI RESPONSE ===
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - Success: true
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - Content: true
+
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - === END GEMINI ===
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI REQUEST ===
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - Model: gemini-2.0-flash
+17:25:06.084 [main] INFO  com.gazapps.llm.providers.Gemini - Prompt: Analise a query e determine os scores de relevância:
+
+Query: "verifique o clima em NYC e salve no arquivo nyc.txt em documents"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+17:25:07.137 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI RESPONSE ===
+17:25:07.137 [main] INFO  com.gazapps.llm.providers.Gemini - Success: true
+17:25:07.137 [main] INFO  com.gazapps.llm.providers.Gemini - Content: ```json
+{"weather": 1.0, "time": 0.0, "filesystem": 1.0}
+```
+17:25:07.137 [main] INFO  com.gazapps.llm.providers.Gemini - === END GEMINI ===
+17:25:07.144 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'verifique o clima em NYC e salve no arquivo nyc.txt em documents': {weather=1.0, filesystem=1.0}
+17:25:07.145 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI REQUEST ===
+17:25:07.145 [main] INFO  com.gazapps.llm.providers.Gemini - Model: gemini-2.0-flash
+17:25:07.145 [main] INFO  com.gazapps.llm.providers.Gemini - Prompt: Analise a query e selecione TODAS as ferramentas necessárias.
+
+Query: "verifique o clima em NYC e salve no arquivo nyc.txt em documents"
+
+1. get-forecast - Get weather forecast for a location in the US
+parameter: latitude, value: {type=number, description=Latitude of the location}
+parameter: longitude, value: {type=number, description=Longitude of the location}
+
+2. get-alerts - Get weather alerts for a US state
+parameter: state, value: {type=string, description=Two-letter US state code (e.g. CA, NY)}
+
+...
+
+14. get_file_info - Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.
+parameter: path, value: {type=string}
+
+Responda em JSON com TODAS as ferramentas necessárias:
+{
+  "tools": [
+    {"tool_number": 1, "parameters": {"param": "value"}},
+    {"tool_number": 2, "parameters": {"param": "value"}}
+  ]
+}
+17:25:08.401 [main] INFO  com.gazapps.llm.providers.Gemini - === GEMINI RESPONSE ===
+17:25:08.401 [main] INFO  com.gazapps.llm.providers.Gemini - Success: true
+17:25:08.401 [main] INFO  com.gazapps.llm.providers.Gemini - Content: ```json
+{
+  "tools": [
+    {"tool_number": 1, "parameters": {"latitude": "value", "longitude": "value"}},
+    {"tool_number": 5, "parameters": {"path": "value", "content": "value"}}
+  ]
+}
+```
+
+17:25:08.401 [main] INFO  com.gazapps.llm.providers.Gemini - === END GEMINI ===
+
+============================================================
+PERGUNTA: verifique o clima em NYC e salve no arquivo nyc.txt em documents
+============================================================
+RESPOSTA:
+Step 1 failed: Argumentos inválidos para ferramenta get-forecast. Parâmetros obrigatórios faltando: []

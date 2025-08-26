@@ -20,6 +20,7 @@ public class Server {
     
     // Estado dinâmico
     private boolean connected;
+    private String domain;
     private final Map<String, Tool> tools;
     private Instant lastHeartbeat;
     private Map<String, Object> metrics;
@@ -40,6 +41,7 @@ public class Server {
         this.tools = new HashMap<>();
         this.lastHeartbeat = null;
         this.metrics = new HashMap<>();
+        this.domain = null; // Será setado pela configuração
     }
     
     /**
@@ -207,26 +209,12 @@ public class Server {
         this.lastHeartbeat = Instant.now();
     }
     
-    /**
-     * Determina o domínio do servidor baseado nas ferramentas disponíveis.
-     * Por enquanto usa uma heurística simples.
-     */
     public String getDomain() {
-        if (tools.isEmpty()) {
-            return "unknown";
-        }
-        
-        // Heurística: pega o domínio mais comum das ferramentas
-        Map<String, Integer> domainCount = new HashMap<>();
-        for (Tool tool : tools.values()) {
-            String domain = tool.getDomain();
-            domainCount.put(domain, domainCount.getOrDefault(domain, 0) + 1);
-        }
-        
-        return domainCount.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("unknown");
+        return domain;
+    }
+    
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
     
     @Override

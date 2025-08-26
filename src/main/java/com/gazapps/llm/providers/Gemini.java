@@ -52,10 +52,10 @@ public class Gemini implements Llm {
 	}
 
 	public Gemini() {
-		// Obter configuração de variáveis de ambiente primeiro
+		
 		this.apiKey = System.getenv("GEMINI_API_KEY");
 		if (this.apiKey != null && !this.apiKey.trim().isEmpty()) {
-			// Fallback para arquivo de configuração
+			
 			LlmConfig config = new LlmConfig();
 			Map<String, String> geminiConfig = config.getGeminiConfig();
 			this.apiKey = this.apiKey == null ? geminiConfig.get("api.Key") : this.apiKey;

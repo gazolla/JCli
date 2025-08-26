@@ -444,6 +444,7 @@ public class MCPService {
             // Converter e adicionar ferramentas ao servidor
             for (io.modelcontextprotocol.spec.McpSchema.Tool mcpTool : toolsResult.tools()) {
                 Tool tool = Tool.fromMcp(mcpTool, server.getId());
+                tool.setDomain(server.getDomain()); // Herda domínio do servidor
                 server.addTool(tool);
             }
             
@@ -464,7 +465,7 @@ public class MCPService {
                 
             } catch (Exception e) {
                 lastException = e;
-                logger.warn("Tentativa {} de {} falhou para ferramenta '{}': {}", 
+                logger.error("Tentativa {} de {} falhou para ferramenta '{}': {}", 
                            attempt, MAX_RETRY_ATTEMPTS, tool.getName(), e.getMessage());
                 
                 if (attempt < MAX_RETRY_ATTEMPTS) {

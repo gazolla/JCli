@@ -158,7 +158,7 @@ public class MCPConfig {
     }
     
     private void loadServersFromFile() {
-        Path serversFile = Paths.get(configDirectory, "mcp", ".mcp.json");
+        Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
         
         if (!Files.exists(serversFile)) {
             logger.info("Arquivo de configuração de servidores não encontrado, criando configuração padrão");
@@ -263,7 +263,7 @@ public class MCPConfig {
         
         // Salvar arquivo
         try {
-            Path serversFile = Paths.get(configDirectory, "mcp", ".mcp.json");
+            Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
             String jsonContent = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootConfig);
             Files.writeString(serversFile, jsonContent);
             
@@ -287,7 +287,6 @@ public class MCPConfig {
                 .addPattern("temperatura")
                 .addSemanticKeyword("meteorologia")
                 .addSemanticKeyword("forecast")
-                .addTool("get_weather")
                 .build());
             
             domains.put("filesystem", DomainDefinition.builder()
@@ -300,9 +299,6 @@ public class MCPConfig {
                 .addSemanticKeyword("read")
                 .addSemanticKeyword("write")
                 .addSemanticKeyword("create")
-                .addTool("read_file")
-                .addTool("write_file")
-                .multiStepCapable(true)
                 .build());
             
             domains.put("time", DomainDefinition.builder()
@@ -314,7 +310,6 @@ public class MCPConfig {
                 .addPattern("hora")
                 .addSemanticKeyword("timezone")
                 .addSemanticKeyword("calendar")
-                .addTool("get_current_time")
                 .build());
         }
     }
@@ -331,7 +326,7 @@ public class MCPConfig {
         
         rootConfig.put("mcpServers", serversConfig);
         
-        Path serversFile = Paths.get(configDirectory, "mcp", ".mcp.json");
+        Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
         String jsonContent = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootConfig);
         Files.writeString(serversFile, jsonContent);
     }
@@ -418,9 +413,10 @@ public class MCPConfig {
         public final Map<String, String> env;
         public final int priority;
         public final boolean enabled;
+        public final String domain;
         
         public ServerConfig(String id, String description, String command, List<String> args,
-                           Map<String, String> env, int priority, boolean enabled) {
+                           Map<String, String> env, int priority, boolean enabled, String domain) {
             this.id = Objects.requireNonNull(id, "Server ID cannot be null");
             this.description = description != null ? description : "";
             this.command = Objects.requireNonNull(command, "Server command cannot be null");
@@ -428,6 +424,7 @@ public class MCPConfig {
             this.env = env != null ? Map.copyOf(env) : Collections.emptyMap();
             this.priority = priority;
             this.enabled = enabled;
+            this.domain = domain; // Pode ser null
         }
         
         @SuppressWarnings("unchecked")
@@ -438,8 +435,9 @@ public class MCPConfig {
             Map<String, String> env = (Map<String, String>) data.getOrDefault("env", Collections.emptyMap());
             Integer priority = (Integer) data.getOrDefault("priority", 1);
             Boolean enabled = (Boolean) data.getOrDefault("enabled", true);
+            String domain = (String) data.get("domain"); // Pode ser null
             
-            return new ServerConfig(id, description, command, args, env, priority, enabled);
+            return new ServerConfig(id, description, command, args, env, priority, enabled, domain);
         }
         
         public Map<String, Object> toMap() {
@@ -450,11 +448,14 @@ public class MCPConfig {
             map.put("env", env);
             map.put("priority", priority);
             map.put("enabled", enabled);
+            if (domain != null) {
+                map.put("domain", domain);
+            }
             return map;
         }
         
         public Server toServer() {
-            return Server.builder()
+            Server server = Server.builder()
                 .id(id)
                 .name(id) // Por padrão, usar ID como nome
                 .description(description)
@@ -464,6 +465,12 @@ public class MCPConfig {
                 .priority(priority)
                 .enabled(enabled)
                 .build();
+            
+            if (domain != null) {
+                server.setDomain(domain);
+            }
+            
+            return server;
         }
     }
     

@@ -1,6 +1,6 @@
 package com.gazapps.inference.simple;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,12 +21,10 @@ public class Simple implements Inference {
     
     private final MCPManager mcpManager;
     private final Llm llm;
-    private final Map<String, Object> options;
 
     public Simple(MCPManager mcpManager, Llm llm, Map<String, Object> options) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
         this.llm = Objects.requireNonNull(llm, "Llm is required");
-        this.options = options;
         
         logger.info("[SIMPLE] Initialized with LLM: {}", llm.getProviderName());
     }
@@ -36,8 +34,16 @@ public class Simple implements Inference {
         logger.debug("Processing query: {}", query);
         
         try {
-            // Usar novo método com parâmetros
-            Map<Tool, Map<String, Object>> selections = mcpManager.findToolsWithParameters(query);
+
+            Map<Tool, Map<String, Object>> selections; 
+            
+            boolean isMultiStep = isMultiStep(query, llm);
+            
+            if (isMultiStep) {
+            	selections = mcpManager.findMultiStepTools(query);
+            } else {
+            	selections = mcpManager.findSingleStepTools(query);
+            }
             
             if (selections.isEmpty()) {
                 return generateDirectResponse(query);
@@ -88,18 +94,26 @@ public class Simple implements Inference {
         logger.debug("Executing multi-step with {} tools", selections.size());
         
         StringBuilder results = new StringBuilder();
+        Map<String, String> stepResults = new HashMap<>(); // Para encadeamento
         int step = 1;
         
         for (Map.Entry<Tool, Map<String, Object>> entry : selections.entrySet()) {
             if (step > 3) break; // Limit to 3 tools
             
             Tool tool = entry.getKey();
-            Map<String, Object> parameters = entry.getValue();
-            MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, parameters);
+            Map<String, Object> originalParams = entry.getValue();
+            
+            // RESOLVER REFERÊNCIAS {{RESULT_N}}
+            Map<String, Object> resolvedParams = resolveParameterReferences(originalParams, stepResults);
+            
+            MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, resolvedParams);
             
             if (!result.success) {
                 return String.format("Step %d failed: %s", step, result.message);
             }
+            
+            // ARMAZENAR RESULTADO PARA PRÓXIMOS STEPS
+            stepResults.put("RESULT_" + step, result.message);
             
             results.append(String.format("Step %d (%s): %s\n", 
                          step, tool.getName(), result.message));
@@ -107,6 +121,31 @@ public class Simple implements Inference {
         }
         
         return generateConsolidatedResponse(query, results.toString());
+    }
+    
+    // NOVO MÉTODO
+    private Map<String, Object> resolveParameterReferences(Map<String, Object> params, Map<String, String> stepResults) {
+        Map<String, Object> resolved = new HashMap<>();
+        
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            Object value = entry.getValue();
+            
+            if (value instanceof String) {
+                String strValue = (String) value;
+                // Resolver referências {{RESULT_N}}
+                for (Map.Entry<String, String> resultEntry : stepResults.entrySet()) {
+                    String placeholder = "{{" + resultEntry.getKey() + "}}";
+                    if (strValue.contains(placeholder)) {
+                        strValue = strValue.replace(placeholder, resultEntry.getValue());
+                    }
+                }
+                resolved.put(entry.getKey(), strValue);
+            } else {
+                resolved.put(entry.getKey(), value);
+            }
+        }
+        
+        return resolved;
     }
     
     private String generateContextualResponse(String query, Tool tool, String toolResult) {
@@ -137,6 +176,24 @@ public class Simple implements Inference {
         return response.isSuccess() ? response.getContent() 
                                     : "Multi-step execution completed:\n" + results;
     }
+    
+    public boolean isMultiStep(String query, Llm llm) {
+        if (llm == null) return false;
+        
+        String prompt = "Analise a query e determine se a sua execução exige uma ou mais ferramentas.\n\n" +
+                "Para fazer essa avaliação, procure por:\n" +
+                "1. **Verbos ou Ações Múltiplas:** Identifique se a query contém múltiplos verbos que implicam ações distintas (ex: \"criar\" e \"mover\", \"pesquisar\" e \"enviar\").\n" +
+                "2. **Conjunções e Conectores:** Procure por palavras como \"e\", \"ou\", \"então\", \"depois\" ou \"além disso\", que conectam diferentes partes da solicitação.\n" +
+                "3. **Dependências:** Verifique se uma tarefa depende da conclusão de outra (ex: primeiro encontrar um dado e só então usá-lo em outra ação).\n\n" +
+                "Com base nessa análise, responda de forma clara e objetiva se a query requer uma única ferramenta ou múltiplas.\n" +
+                "Responda apenas com `true` ou `false`.\n\n" +
+                "Query: " + query;
+        
+        var response = llm.generateResponse(prompt);
+        
+        return response.isSuccess() && response.getContent().toLowerCase().contains("true");
+    }
+    
 
     @Override
     public String buildSystemPrompt() {

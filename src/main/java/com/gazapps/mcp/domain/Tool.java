@@ -23,7 +23,7 @@ public class Tool {
         this.schema = schema != null ? Map.copyOf(schema) : Collections.emptyMap();
         this.requiredParams = extractRequiredParams();
         this.optionalParams = extractOptionalParams();
-        this.domain = inferDomain();
+        this.domain = null; // Será setado pelo servidor
     }
     
     /**
@@ -105,6 +105,10 @@ public class Tool {
     
     public String getDomain() {
         return domain;
+    }
+    
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
     
     public String getServerId() {
@@ -269,7 +273,7 @@ public class Tool {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         if (schema.containsKey("properties")) {
             try {
                 return (Map<String, Object>) schema.get("properties");
@@ -280,18 +284,7 @@ public class Tool {
         return Collections.emptyMap();
     }
     
-    private String inferDomain() {
-        // Heurística simples para inferir domínio baseado no nome da ferramenta
-        String toolName = name.toLowerCase();
-        
-        if (toolName.contains("weather") || toolName.contains("clima")) return "weather";
-        if (toolName.contains("file") || toolName.contains("filesystem") || toolName.contains("read") || toolName.contains("write")) return "filesystem";
-        if (toolName.contains("time") || toolName.contains("date") || toolName.contains("calendar")) return "time";
-        if (toolName.contains("http") || toolName.contains("request") || toolName.contains("api")) return "web";
-        if (toolName.contains("calc") || toolName.contains("math")) return "math";
-        
-        return "general";
-    }
+
     
     private boolean validateParameterType(String paramName, Object value, Map<String, Object> properties) {
         if (value == null) return true; // null values são validados em outro lugar
