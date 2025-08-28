@@ -3,12 +3,14 @@ package com.gazapps.mcp;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gazapps.llm.Llm;
+import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.domain.Tool;
 import com.gazapps.mcp.matching.SemanticMatcher;
 import com.gazapps.mcp.rules.RuleEngine;
@@ -23,6 +25,9 @@ public class ToolMatcher {
     private static final Logger logger = LoggerFactory.getLogger(ToolMatcher.class);
 
     private final SemanticMatcher semanticMatcher;
+    
+    // Cache para otimização de performance
+    private final Map<String, Map<Tool, Map<String, Object>>> toolMatchCache = new ConcurrentHashMap<>();
 
     public ToolMatcher() {
         this.semanticMatcher = new SemanticMatcher(null);
@@ -68,22 +73,38 @@ public class ToolMatcher {
             return Collections.emptyMap();
         }
 
+        // Cache key para evitar recálculos
+        String cacheKey = query + "|" + availableTools.size() + "|" + options.hashCode();
+        
+        // Verificar cache primeiro
+        Map<Tool, Map<String, Object>> cached = toolMatchCache.get(cacheKey);
+        if (cached != null) {
+            logger.debug("Cache hit para findRelevantToolsWithParams: {}", query);
+            return cached;
+        }
+
+        Map<Tool, Map<String, Object>> result;
+        
         // Usar sempre matching semântico quando LLM disponível
         if (options.useSemanticMatching && llm != null) {
             try {
-                return semanticMatcher.findSemanticMatchesWithParams(query, availableTools, llm);
+                result = semanticMatcher.findSemanticMatchesWithParams(query, availableTools, llm);
             } catch (Exception e) {
                 logger.error("Erro durante o matching semântico com parâmetros", e);
                 return Collections.emptyMap();
             }
+        } else {
+            // Fallback: matching básico apenas se semantic matching desabilitado
+            List<Tool> basicMatches = findBasicMatches(query, availableTools);
+            result = new HashMap<>();
+            for (Tool tool : basicMatches) {
+                result.put(tool, Collections.emptyMap());
+            }
         }
-
-        // Fallback: converter matching básico para Map
-        List<Tool> basicMatches = findBasicMatches(query, availableTools);
-        Map<Tool, Map<String, Object>> result = new HashMap<>();
-        for (Tool tool : basicMatches) {
-            result.put(tool, Collections.emptyMap());
-        }
+        
+        // Armazenar no cache
+        toolMatchCache.put(cacheKey, result);
+        
         return result;
     }
     
@@ -178,6 +199,62 @@ public class ToolMatcher {
         }
 
         return score;
+    }
+    
+    /**
+     * Avalia se uma observação contém dados úteis para responder à query original.
+     * 
+     * @param observation A observação a ser avaliada
+     * @param originalQuery A query original do usuário
+     * @param llm A instância do LLM para processamento semântico
+     * @return true se a observação contém dados úteis, false caso contrário
+     */
+    public boolean evaluateObservationUtility(String observation, String originalQuery, Llm llm) {
+        if (observation == null || originalQuery == null || llm == null) {
+            return false;
+        }
+        
+        if (observation.trim().isEmpty()) {
+            return false;
+        }
+        
+        try {
+            String prompt = createObservationEvaluationPrompt(observation, originalQuery);
+            LlmResponse response = llm.generateResponse(prompt);
+            
+            if (response.isSuccess()) {
+                return parseUtilityEvaluation(response.getContent());
+            }
+            
+        } catch (Exception e) {
+            logger.error("Erro na avaliação de utilidade da observação", e);
+        }
+        
+        return false;
+    }
+    
+    private String createObservationEvaluationPrompt(String observation, String originalQuery) {
+        return String.format(
+            "Analise se esta observação contém dados úteis para responder à pergunta original.\n\n" +
+            "Pergunta original: \"%s\"\n\n" +
+            "Observação: \"%s\"\n\n" +
+            "A observação contém informações específicas e úteis que ajudam a responder a pergunta?\n" +
+            "Considere:\n" +
+            "- Contém dados concretos (números, nomes, detalhes específicos)?\n" +
+            "- É relevante para o contexto da pergunta?\n" +
+            "- Não é apenas uma mensagem genérica de status?\n\n" +
+            "Responda apenas: SIM ou NÃO",
+            originalQuery, observation
+        );
+    }
+    
+    private boolean parseUtilityEvaluation(String llmResponse) {
+        if (llmResponse == null) {
+            return false;
+        }
+        
+        String response = llmResponse.toLowerCase().trim();
+        return response.contains("sim") || response.startsWith("yes");
     }
 
     private static class ToolMatch {

@@ -21,12 +21,12 @@ public class AppWeather {
 		
         String configDirectory = "./config";
         new Config();
-        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGroq(null))) {
+        try (MCPManager mcpManager = new MCPManager(configDirectory, LlmBuilder.createGemini(null))) {
            
             Llm llm = mcpManager.getLlm();
 
             Map<String, Object> inferenceOptions = Map.of("maxIterations", 10, "debug", false);
-            Inference inference = InferenceFactory.createSimple(mcpManager, 
+            Inference inference = InferenceFactory.createReAct(mcpManager, 
             													llm, 
             													inferenceOptions);
             

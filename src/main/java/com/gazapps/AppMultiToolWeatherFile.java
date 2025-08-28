@@ -26,7 +26,7 @@ public class AppMultiToolWeatherFile {
             Llm llm = mcpManager.getLlm();
 
             Map<String, Object> inferenceOptions = Map.of("maxIterations", 10, "debug", false);
-            Inference inference = InferenceFactory.createSimple(mcpManager, 
+            Inference inference = InferenceFactory.createReAct(mcpManager, 
             													llm, 
             													inferenceOptions);
             

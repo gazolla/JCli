@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,11 @@ public class MCPManager implements AutoCloseable {
     private final ScheduledExecutorService scheduler;
     private boolean initialized;
     private final Llm llm;
+    
+    // Cache para otimização de performance
+    private final Map<String, Map<Tool, Map<String, Object>>> toolSelectionCache = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> observationUtilityCache = new ConcurrentHashMap<>();
+    
     public Llm getLlm() { return llm; }
     
     public MCPManager(String configDirectory, Llm llm) {
@@ -65,6 +71,16 @@ public class MCPManager implements AutoCloseable {
     }
     
     private Map<Tool, Map<String, Object>> findSingleStepTools(String query, MatchingOptions options) {
+        // Cache key para evitar recálculos
+        String cacheKey = query + "|" + options.hashCode();
+        
+        // Verificar cache primeiro
+        Map<Tool, Map<String, Object>> cached = toolSelectionCache.get(cacheKey);
+        if (cached != null) {
+            logger.debug("Cache hit para findSingleStepTools: {}", query);
+            return cached;
+        }
+        
         String bestDomain = findBestDomain(query);
         
         List<Tool> domainTools = getToolsByDomain(bestDomain);
@@ -74,6 +90,10 @@ public class MCPManager implements AutoCloseable {
         }
 
         Map<Tool, Map<String, Object>> matches = toolMatcher.findRelevantToolsWithParams(query, llm, domainTools, options);
+        
+        // Armazenar no cache
+        toolSelectionCache.put(cacheKey, matches);
+        
         logger.debug("Encontradas {} ferramentas single-step para query: '{}'", matches.size(), query);
         return matches;
     }
@@ -285,6 +305,42 @@ public class MCPManager implements AutoCloseable {
      */
     public List<Server> getConnectedServers() {
         return new ArrayList<>(mcpService.getConnectedServers().values());
+    }
+    
+    /**
+     * Avalia se uma observação contém dados úteis para responder à query original.
+     * Usa análise semântica via LLM para determinar utilidade.
+     */
+    public boolean isObservationUseful(String observation, String originalQuery) {
+        Objects.requireNonNull(observation, "Observation cannot be null");
+        Objects.requireNonNull(originalQuery, "Original query cannot be null");
+        
+        if (observation.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Cache key para evitar reavaliações
+        String cacheKey = observation.hashCode() + "|" + originalQuery.hashCode();
+        
+        // Verificar cache primeiro
+        Boolean cached = observationUtilityCache.get(cacheKey);
+        if (cached != null) {
+            logger.debug("Cache hit para isObservationUseful");
+            return cached;
+        }
+        
+        try {
+            // Usar o ToolMatcher para análise semântica
+            boolean result = toolMatcher.evaluateObservationUtility(observation, originalQuery, llm);
+            
+            // Armazenar no cache
+            observationUtilityCache.put(cacheKey, result);
+            
+            return result;
+        } catch (Exception e) {
+            logger.error("Erro ao avaliar utilidade da observação", e);
+            return false;
+        }
     }
     
     /**
