@@ -32,6 +32,32 @@ public class Config {
 
 		logger.info("\ud83d\udccb Logging configured via logback.xml - JavaCLI/log structure");
 	}
+	
+	/**
+	 * Cria estrutura completa de configuração necessária para o JCli Chat.
+	 */
+	public void createConfigStructure() {
+		try {
+			// Criar diretórios base
+			Files.createDirectories(Paths.get("config"));
+			Files.createDirectories(Paths.get("config/mcp"));
+			Files.createDirectories(Paths.get("log"));
+			Files.createDirectories(Paths.get("log/llm"));
+			Files.createDirectories(Paths.get("log/inference"));
+			Files.createDirectories(Paths.get("documents"));
+			
+			// Criar application.properties se não existir
+			createConfigFileIfNeeded();
+			
+			// Criar .mcp.json básico se não existir
+			createMcpConfigIfNeeded();
+			
+			logger.info("✅ Config structure created successfully");
+			
+		} catch (IOException e) {
+			logger.error("❌ Error creating config structure: {}", e.getMessage());
+		}
+	}
 
 	private void loadApplicationProperties() {
 		properties = new Properties();
@@ -91,6 +117,59 @@ public class Config {
 
 		try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
 			writer.write(defaultContent);
+		}
+	}
+	
+	/**
+	 * Cria arquivo .mcp.json básico se não existir.
+	 */
+	private void createMcpConfigIfNeeded() throws IOException {
+		Path mcpConfigPath = Paths.get("config/mcp/.mcp.json");
+		
+		if (!Files.exists(mcpConfigPath)) {
+			String mcpConfig = """
+				{
+				  "mcpServers": {
+				    "weather-nws": {
+				      "description": "Weather forecasts via NWS",
+				      "command": "npx",
+				      "args": ["@h1deya/mcp-server-weather"],
+				      "priority": 1,
+				      "enabled": true,
+				      "env": {
+				        "REQUIRES_NODEJS": "true",
+				        "REQUIRES_ONLINE": "true"
+				      }
+				    },
+				    "filesystem": {
+				      "description": "File system operations",
+				      "command": "npx",
+				      "args": ["@modelcontextprotocol/server-filesystem", "documents"],
+				      "priority": 2,
+				      "enabled": true,
+				      "env": {
+				        "REQUIRES_NODEJS": "true"
+				      }
+				    },
+				    "time": {
+				      "description": "Time and timezone operations",
+				      "command": "uvx",
+				      "args": ["mcp-server-time"],
+				      "priority": 3,
+				      "enabled": true,
+				      "env": {
+				        "REQUIRES_PYTHON": "true"
+				      }
+				    }
+				  }
+				}
+				""";
+			
+			try (FileWriter writer = new FileWriter(mcpConfigPath.toFile())) {
+				writer.write(mcpConfig);
+			}
+			
+			logger.info("✅ Default .mcp.json created");
 		}
 	}
 

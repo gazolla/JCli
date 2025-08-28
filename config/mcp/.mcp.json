@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "weather-nws": {
+      "description": "Weather forecasts via NWS",
+      "command": "npx",
+      "args": ["@h1deya/mcp-server-weather"],
+      "priority": 1,
+      "enabled": true,
+      "env": {
+        "REQUIRES_NODEJS": "true",
+        "REQUIRES_ONLINE": "true"
+      }
+    },
+    "filesystem": {
+      "description": "File system operations",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "documents"],
+      "priority": 2,
+      "enabled": true,
+      "env": {
+        "REQUIRES_NODEJS": "true"
+      }
+    },
+    "time": {
+      "description": "Time and timezone operations",
+      "command": "uvx",
+      "args": ["mcp-server-time"],
+      "priority": 3,
+      "enabled": true,
+      "env": {
+        "REQUIRES_PYTHON": "true"
+      }
+    }
+  }
+}

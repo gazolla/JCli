@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -30,6 +31,7 @@ import com.gazapps.mcp.rules.RuleEngine;
 public class MCPManager implements AutoCloseable {
     
  	private static final Logger logger = LoggerFactory.getLogger(MCPManager.class);
+    private static final double DOMAIN_RELEVANCE_THRESHOLD = 0.3;
     
     private final MCPConfig config;
     private final MCPService mcpService;
@@ -66,11 +68,11 @@ public class MCPManager implements AutoCloseable {
         return findTools(query, MatchingOptions.defaultOptions());
     }
     
-        public Map<Tool, Map<String, Object>> findSingleStepTools(String query){
+        public Optional<Map<Tool, Map<String, Object>>> findSingleStepTools(String query){
     	return findSingleStepTools(query, MatchingOptions.defaultOptions());
     }
     
-    private Map<Tool, Map<String, Object>> findSingleStepTools(String query, MatchingOptions options) {
+    private Optional<Map<Tool, Map<String, Object>>> findSingleStepTools(String query, MatchingOptions options) {
         // Cache key para evitar recálculos
         String cacheKey = query + "|" + options.hashCode();
         
@@ -78,15 +80,21 @@ public class MCPManager implements AutoCloseable {
         Map<Tool, Map<String, Object>> cached = toolSelectionCache.get(cacheKey);
         if (cached != null) {
             logger.debug("Cache hit para findSingleStepTools: {}", query);
-            return cached;
+            return Optional.of(cached);
         }
         
-        String bestDomain = findBestDomain(query);
+        DomainSelectionResult domainResult = findBestDomainWithScore(query);
+        if (domainResult.maxScore < DOMAIN_RELEVANCE_THRESHOLD) {
+            logger.info("Domain threshold not met - max score {} < threshold {}", 
+                        domainResult.maxScore, DOMAIN_RELEVANCE_THRESHOLD);
+            return Optional.empty();
+        }
+        String bestDomain = domainResult.domainName;
         
         List<Tool> domainTools = getToolsByDomain(bestDomain);
         if (domainTools.isEmpty()) {
             logger.warn("Nenhuma ferramenta disponível no domínio: {}", bestDomain);
-            return Collections.emptyMap();
+            return Optional.empty();
         }
 
         Map<Tool, Map<String, Object>> matches = toolMatcher.findRelevantToolsWithParams(query, llm, domainTools, options);
@@ -95,15 +103,28 @@ public class MCPManager implements AutoCloseable {
         toolSelectionCache.put(cacheKey, matches);
         
         logger.debug("Encontradas {} ferramentas single-step para query: '{}'", matches.size(), query);
-        return matches;
+        return Optional.of(matches);
     }
     
-    public Map<Tool, Map<String, Object>> findMultiStepTools(String query){
+    public Optional<Map<Tool, Map<String, Object>>> findMultiStepTools(String query){
     	return findMultiStepTools(query, MatchingOptions.defaultOptions());
     }
     
-    private Map<Tool, Map<String, Object>> findMultiStepTools(String query, MatchingOptions options) {
+    private Optional<Map<Tool, Map<String, Object>>> findMultiStepTools(String query, MatchingOptions options) {
         Map<String, Double> domainScores = domainRegistry.calculateDomainMatches(query, llm, true); // isMultiStep = true
+        
+        // Verificar threshold
+        double maxScore = domainScores.values().stream()
+            .mapToDouble(Double::doubleValue)
+            .max()
+            .orElse(0.0);
+        
+        if (maxScore < DOMAIN_RELEVANCE_THRESHOLD) {
+            logger.info("Multi-step domain threshold not met - max score {} < threshold {}", 
+                        maxScore, DOMAIN_RELEVANCE_THRESHOLD);
+            return Optional.empty();
+        }
+        
         List<Tool> relevantTools = new ArrayList<>();
         
         // Coletar ferramentas de TODOS os domínios relevantes
@@ -115,12 +136,12 @@ public class MCPManager implements AutoCloseable {
         
         if (relevantTools.isEmpty()) {
             logger.warn("Nenhuma ferramenta disponível para multi-step: {}", query);
-            return Collections.emptyMap();
+            return Optional.empty();
         }
         
         Map<Tool, Map<String, Object>> matches = toolMatcher.findMultipleToolsWithParams(query, llm, relevantTools, options);
         logger.debug("Encontradas {} ferramentas multi-step para query: '{}'", matches.size(), query);
-        return matches;
+        return Optional.of(matches);
     }
     
     public boolean isMultiStep(String query, Llm llm) {
@@ -459,6 +480,20 @@ public class MCPManager implements AutoCloseable {
         return null; // Sem filtering se não há domainRegistry
     }
     
+    private DomainSelectionResult findBestDomainWithScore(String query) {
+        if (domainRegistry != null) {
+            Map<String, Double> scores = domainRegistry.calculateDomainMatches(query, llm);
+            
+            var bestEntry = scores.entrySet().stream()
+                .max(Map.Entry.comparingByValue());
+            
+            if (bestEntry.isPresent()) {
+                return new DomainSelectionResult(bestEntry.get().getKey(), bestEntry.get().getValue());
+            }
+        }
+        return new DomainSelectionResult(null, 0.0);
+    }
+    
     private void initialize() {
         try {
             // Validar configuração
@@ -466,12 +501,12 @@ public class MCPManager implements AutoCloseable {
             
             // Agendar refresh periódico
             long refreshInterval = config.getRefreshIntervalMs();
-            scheduler.scheduleAtFixedRate(
+            /*scheduler.scheduleAtFixedRate(
                 this::refreshDomains,
                 refreshInterval,
                 refreshInterval,
                 TimeUnit.MILLISECONDS
-            );
+            );*/
             
             initialized = true;
             logger.info("MCPManager inicializado com sucesso - logs em JavaCLI/log/");
@@ -575,7 +610,18 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-
+    /**
+     * Classe auxiliar para encapsular resultado da seleção de domínio.
+     */
+    private static class DomainSelectionResult {
+        public final String domainName;
+        public final double maxScore;
+        
+        public DomainSelectionResult(String domainName, double maxScore) {
+            this.domainName = domainName;
+            this.maxScore = maxScore;
+        }
+    }
     
     /**
      * Exceção específica para erros do MCPManager.

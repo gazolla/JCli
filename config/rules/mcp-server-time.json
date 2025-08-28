@@ -11,7 +11,7 @@
         "parameter_replace": {
           "timezone": {
             "pattern": "Use '[^']*' as local timezone[^.]*\\.",
-            "replacement": "Busque infromações sobre timezone IANA. Use apenas timezones IANA válidas existentes. Não invente timezones."
+            "replacement": "Qual a timezone IANA da região pesquisada?. Use apenas timezones IANA válidas existentes. Não invente timezones."
           }
         }
       }

@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gazapps.inference.Inference;
+import com.gazapps.inference.InferenceObserver;
 import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmResponse;
@@ -27,6 +29,7 @@ public class ReAct implements Inference {
     private final Map<String, Object> options;
     private final int maxIterations;
     private final boolean debug;
+    private InferenceObserver observer;
     
     // Cache simples para tool selection
     private String cachedQuery;
@@ -39,6 +42,7 @@ public class ReAct implements Inference {
         this.options = Objects.requireNonNull(options, "Options is required");
         this.maxIterations = (Integer) options.getOrDefault("maxIterations", 5);
         this.debug = (Boolean) options.getOrDefault("debug", false);
+        this.observer = (InferenceObserver) options.get("observer");
         
         logger.info("[REACT] Initialized with LLM: {} - logs em JavaCLI/log/inference/react-conversations.log", llm.getProviderName());
     }
@@ -46,6 +50,11 @@ public class ReAct implements Inference {
     @Override
     public String processQuery(String query) {
         logger.debug("Processing query with ReAct: {}", query);
+        
+        // Notificar observer do início
+        if (observer != null) {
+            observer.onInferenceStart(query, "ReAct");
+        }
         
         if (conversationLogger.isInfoEnabled()) {
             conversationLogger.info("=== REACT INFERENCE START ===");
@@ -63,10 +72,21 @@ public class ReAct implements Inference {
                 conversationLogger.info("===============================");
             }
             
+            // Notificar observer da conclusão
+            if (observer != null) {
+                observer.onInferenceComplete(result.finalAnswer);
+            }
+            
             return result.finalAnswer;
             
         } catch (Exception e) {
             logger.error("Error processing query with ReAct", e);
+            
+            // Notificar observer do erro
+            if (observer != null) {
+                observer.onError("Error processing query with ReAct", e);
+            }
+            
             if (conversationLogger.isErrorEnabled()) {
                 conversationLogger.error("=== REACT INFERENCE ERROR ===");
                 conversationLogger.error("Error: {}", e.getMessage());
@@ -89,6 +109,11 @@ public class ReAct implements Inference {
             String thought = generateThought(query, context);
             if (conversationLogger.isInfoEnabled()) {
                 conversationLogger.info("Thought: {}", thought);
+            }
+            
+            // Notificar observer do pensamento
+            if (observer != null) {
+                observer.onThought(thought);
             }
             
             // ACTION
@@ -148,24 +173,31 @@ public class ReAct implements Inference {
     }
 
     private ActionDecision decideAction(String thought, String query, String context) {
-        // Detectar se query requer múltiplas ferramentas
+       
         boolean isMultiStep = mcpManager.isMultiStep(query, llm);
         
-        // Cache simples: reutilizar tool selection se query é idêntica
+
         Map<Tool, Map<String, Object>> availableTools;
         if (query.equals(cachedQuery) && cachedTools != null) {
             availableTools = cachedTools;
         } else {
-            availableTools = isMultiStep 
-                ? mcpManager.findMultiStepTools(query)
-                : mcpManager.findSingleStepTools(query);
+            Optional<Map<Tool, Map<String, Object>>> toolsOptional = isMultiStep
+                    ? mcpManager.findMultiStepTools(query)
+                    : mcpManager.findSingleStepTools(query);
+            
+            availableTools = toolsOptional.orElse(Map.of());
             cachedQuery = query;
             cachedTools = availableTools;
         }
+
+        if (availableTools.isEmpty()) {
+            return new ActionDecision("FINAL_ANSWER", null, new HashMap<>(), 
+                    "Nenhuma ferramenta relevante disponível - respondendo com conhecimento base.");
+        }        
+   
         
         String toolsInfo = buildToolsInfo(availableTools);
-        
-        // Analisar progresso atual para ajustar comportamento
+
         boolean hasUsefulData = context.contains("Dados úteis coletados: 1") || context.contains("Dados úteis coletados: 2");
         boolean hasRepeatedTool = context.contains("(2x)") || context.contains("(3x)");
         

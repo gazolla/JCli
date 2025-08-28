@@ -1,10 +1,10 @@
 package com.gazapps.inference.reflection;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,12 +146,12 @@ public class Reflection implements Inference {
 
     private Map<Tool, Map<String, Object>> findRelevantTools(String query) {
         boolean isMultiStep = mcpManager.isMultiStep(query, llm);
-        
-        if (isMultiStep) {
-            return mcpManager.findMultiStepTools(query);
-        } else {
-            return mcpManager.findSingleStepTools(query);
-        }
+
+        Optional<Map<Tool, Map<String, Object>>> toolsOptional = isMultiStep 
+                ? mcpManager.findMultiStepTools(query) 
+                : mcpManager.findSingleStepTools(query);
+
+        return toolsOptional.orElse(Map.of());
     }
 
     private String generateToolBasedResponse(String query, Map<Tool, Map<String, Object>> tools) {

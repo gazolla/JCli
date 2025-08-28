@@ -3,11 +3,13 @@ package com.gazapps.inference.simple;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gazapps.inference.Inference;
+import com.gazapps.inference.InferenceObserver;
 import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmResponse;
@@ -22,10 +24,12 @@ public class Simple implements Inference {
     
     private final MCPManager mcpManager;
     private final Llm llm;
+    private InferenceObserver observer;
 
     public Simple(MCPManager mcpManager, Llm llm, Map<String, Object> options) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
         this.llm = Objects.requireNonNull(llm, "Llm is required");
+        this.observer = (InferenceObserver) options.get("observer");
         
         logger.info("[SIMPLE] Initialized with LLM: {} - logs em JavaCLI/log/inference/simple-conversations.log", llm.getProviderName());
     }
@@ -33,8 +37,7 @@ public class Simple implements Inference {
     @Override
     public String processQuery(String query) {
         logger.debug("Processing query: {}", query);
-        
-        // Log inicial da conversação
+
         if (conversationLogger.isInfoEnabled()) {
             conversationLogger.info("=== SIMPLE INFERENCE START ===");
             conversationLogger.info("Query: {}", query);
@@ -42,7 +45,7 @@ public class Simple implements Inference {
         
         try {
 
-            Map<Tool, Map<String, Object>> selections; 
+            Optional<Map<Tool, Map<String, Object>>> optionalSelections;
             
             boolean isMultiStep = isMultiStep(query, llm);
             
@@ -51,9 +54,18 @@ public class Simple implements Inference {
             }
             
             if (isMultiStep) {
-            	selections = mcpManager.findMultiStepTools(query);
+            	optionalSelections = mcpManager.findMultiStepTools(query);
             } else {
-            	selections = mcpManager.findSingleStepTools(query);
+            	optionalSelections = mcpManager.findSingleStepTools(query);
+            }
+            
+            Map<Tool, Map<String, Object>> selections = optionalSelections.orElse(Map.of());
+            
+            // Notificar observer sobre discovery de ferramentas
+            if (observer != null && !selections.isEmpty()) {
+                var toolNames = selections.keySet().stream()
+                    .map(Tool::getName).toList();
+                observer.onToolDiscovery(toolNames);
             }
             
             if (conversationLogger.isInfoEnabled()) {
@@ -74,7 +86,10 @@ public class Simple implements Inference {
                 result = executeMultiStep(query, selections);
             }
             
-            // Log final da conversação
+            if (observer != null) {
+                observer.onInferenceComplete(result);
+            } 
+            
             if (conversationLogger.isInfoEnabled()) {
                 conversationLogger.info("=== SIMPLE INFERENCE END ===");
                 conversationLogger.info("Final result: {}", result);
@@ -85,6 +100,12 @@ public class Simple implements Inference {
             
         } catch (Exception e) {
             logger.error("Error processing query", e);
+            
+            // Notificar observer do erro
+            if (observer != null) {
+                observer.onError("Error processing query", e);
+            }
+            
             if (conversationLogger.isErrorEnabled()) {
                 conversationLogger.error("=== SIMPLE INFERENCE ERROR ===");
                 conversationLogger.error("Error: {}", e.getMessage());
@@ -108,8 +129,16 @@ public class Simple implements Inference {
     private String executeSingleTool(String query, Tool tool, Map<String, Object> parameters) {
         logger.debug("Executing single tool: {} with parameters: {}", tool.getName(), parameters);
         
+        if (observer != null) {
+            observer.onToolSelection(tool.getName(), parameters);
+        }
+        
         try {
             MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, parameters);
+            
+            if (observer != null) {
+                observer.onToolExecution(tool.getName(), result.success ? result.content : result.message);
+            }
             
             if (!result.success) {
                 return "Tool execution failed: " + result.content;
@@ -138,7 +167,15 @@ public class Simple implements Inference {
             // RESOLVER REFERÊNCIAS {{RESULT_N}}
             Map<String, Object> resolvedParams = resolveParameterReferences(originalParams, stepResults);
             
+            if (observer != null) {
+                observer.onToolSelection(tool.getName(), resolvedParams);
+            }
+            
             MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, resolvedParams);
+            
+            if (observer != null) {
+                observer.onToolExecution(tool.getName(), result.success ? result.message : result.message);
+            }
             
             if (!result.success) {
                 return String.format("Step %d failed: %s", step, result.message);
