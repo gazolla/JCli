@@ -158,15 +158,13 @@ public class ChatProcessor implements InferenceObserver {
         try {
             logger.info("Changing LLM from {} to {}", oldLlm.getProviderName(), newLlm.getProviderName());
             
-            MCPManager newMcpManager = new MCPManager("./config", newLlm);
-            if (!newMcpManager.isHealthy()) {
+            this.llm = newLlm;
+            this.mcpManager.setLlm(newLlm);
+            if (!this.mcpManager.isHealthy()) {
                 logger.warn("New MCPManager is not healthy, rolling back");
-                newMcpManager.close();
+                this.mcpManager.close();
                 return false;
             }
-            this.llm = newLlm;
-            this.mcpManager = newMcpManager;
-            oldMcpManager.close();
             
             logger.info("Successfully changed LLM to {}", newLlm.getProviderName());
             return true;

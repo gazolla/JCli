@@ -1,0 +1,72 @@
+Forecast for 40.7128, -74.006:
+
+This Afternoon:
+Temperature: 77°F
+Wind: 10 mph W
+Slight Chance Rain Showers
+---
+Tonight:
+Temperature: 59°F
+Wind: 13 mph NW
+Mostly Clear
+---
+Saturday:
+Temperature: 73°F
+Wind: 10 mph NW
+Sunny
+---
+Saturday Night:
+Temperature: 61°F
+Wind: 9 mph NW
+Mostly Clear
+---
+Sunday:
+Temperature: 75°F
+Wind: 7 mph NE
+Sunny
+---
+Sunday Night:
+Temperature: 64°F
+Wind: 1 to 7 mph SE
+Partly Cloudy
+---
+Labor Day:
+Temperature: 74°F
+Wind: 6 to 10 mph NE
+Mostly Sunny
+---
+Monday Night:
+Temperature: 64°F
+Wind: 3 to 9 mph NW
+Mostly Clear
+---
+Tuesday:
+Temperature: 75°F
+Wind: 5 to 10 mph E
+Sunny
+---
+Tuesday Night:
+Temperature: 64°F
+Wind: 6 to 10 mph S
+Partly Cloudy
+---
+Wednesday:
+Temperature: 76°F
+Wind: 5 to 13 mph SW
+Mostly Sunny
+---
+Wednesday Night:
+Temperature: 66°F
+Wind: 7 to 13 mph S
+Partly Cloudy
+---
+Thursday:
+Temperature: 74°F
+Wind: 7 to 15 mph SE
+Chance Rain Showers
+---
+Thursday Night:
+Temperature: 65°F
+Wind: 10 to 15 mph NE
+Chance Rain Showers
+---

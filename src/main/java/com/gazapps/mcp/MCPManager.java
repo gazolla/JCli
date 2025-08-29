@@ -35,12 +35,16 @@ public class MCPManager implements AutoCloseable {
     private final DomainRegistry domainRegistry;
     private final ScheduledExecutorService scheduler;
     private boolean initialized;
-    private final Llm llm;
+    private Llm llm;
     
     // Cache para otimização de performance
     private final Map<String, Map<Tool, Map<String, Object>>> toolSelectionCache = new ConcurrentHashMap<>();
     private final Map<String, Boolean> observationUtilityCache = new ConcurrentHashMap<>();
     
+    public void setLlm(Llm newLlm) {
+        this.llm = Objects.requireNonNull(newLlm);
+        toolSelectionCache.clear();
+    }
     public Llm getLlm() { return llm; }
     
     public MCPManager(String configDirectory, Llm llm) {

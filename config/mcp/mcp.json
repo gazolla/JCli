@@ -1,5 +1,28 @@
 {
   "mcpServers" : {
+    "calculator" : {
+      "args" : [ ],
+      "domain" : "math",
+      "description" : "Calculadora matemática",
+      "env" : {
+        "REQUIRES_PYTHON" : "true"
+      },
+      "priority" : 1,
+      "command" : "uvx calculator-mcp-server",
+      "enabled" : true
+    },
+    "web-fetch" : {
+      "args" : [ ],
+      "domain" : "internet",
+      "description" : "Busca web oficial sem browser",
+      "env" : {
+        "REQUIRES_PYTHON" : "true",
+        "REQUIRES_ONLINE" : "true"
+      },
+      "priority" : 2,
+      "command" : "uvx mcp-server-fetch",
+      "enabled" : true
+    },
     "time" : {
       "args" : [ ],
       "domain" : "time",
@@ -16,8 +39,8 @@
       "domain" : "weather",
       "description" : "Previsões meteorológicas via NWS",
       "env" : {
-        "REQUIRES_ONLINE" : "true",
-        "REQUIRES_NODEJS" : "true"
+        "REQUIRES_NODEJS" : "true",
+        "REQUIRES_ONLINE" : "true"
       },
       "priority" : 1,
       "command" : "npx @h1deya/mcp-server-weather",
@@ -32,6 +55,18 @@
       },
       "priority" : 3,
       "command" : "npx -y @modelcontextprotocol/server-filesystem ./documents",
+      "enabled" : true
+    },
+    "rss-feeds" : {
+      "args" : [ ],
+      "domain" : "internet",
+      "description" : "Feeds RSS básicos",
+      "env" : {
+        "REQUIRES_PYTHON" : "true",
+        "REQUIRES_ONLINE" : "true"
+      },
+      "priority" : 1,
+      "command" : "uvx mcp-server-rss",
       "enabled" : true
     }
   }

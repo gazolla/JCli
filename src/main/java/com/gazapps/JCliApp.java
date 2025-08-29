@@ -29,10 +29,11 @@ public class JCliApp implements AutoCloseable {
     private final Llm llm;
     private final ChatProcessor chatProcessor;
     private final Scanner scanner;
+    private final Config config;
     
     public JCliApp() throws Exception {
     	starting();
-        new Config().createConfigStructure();
+        this.config = new Config();
         this.llm = LlmBuilder.gemini(null);
         this.mcpManager = new MCPManager("./config", llm);
         this.chatProcessor = new ChatProcessor(mcpManager, llm);

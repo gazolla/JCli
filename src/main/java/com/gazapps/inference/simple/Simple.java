@@ -1,6 +1,8 @@
 package com.gazapps.inference.simple;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -158,32 +160,45 @@ public class Simple implements Inference {
     private String executeMultiStep(String query, Map<Tool, Map<String, Object>> selections) {
         logger.debug("Executing multi-step with {} tools", selections.size());
         
+        StringBuilder results = new StringBuilder();
+        Map<String, String> stepResults = new HashMap<>();
+        
+        // NOVA IMPLEMENTAÇÃO: Ordenar ferramentas por dependências
+        List<Map.Entry<Tool, Map<String, Object>>> orderedEntries = orderToolsByDependencies(selections);
+        
+        // NOVO LOG: Mostrar ordem de execução planejada
         if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== MULTI-STEP EXECUTION START ===");
-            conversationLogger.info("Total steps planned: {}", selections.size());
+            conversationLogger.info("=== TOOL EXECUTION ORDER ===");
+            for (int i = 0; i < orderedEntries.size(); i++) {
+                Tool tool = orderedEntries.get(i).getKey();
+                int depLevel = extractDependencyLevel(orderedEntries.get(i).getValue());
+                conversationLogger.info("Step {}: {} (dependency level: {})", 
+                    i + 1, tool.getName(), depLevel);
+            }
         }
         
-        StringBuilder results = new StringBuilder();
-        Map<String, String> stepResults = new HashMap<>(); // Para encadeamento
         int step = 1;
         
-        for (Map.Entry<Tool, Map<String, Object>> entry : selections.entrySet()) {
+        // MODIFICADO: Iterar sobre lista ordenada em vez do Map original
+        for (Map.Entry<Tool, Map<String, Object>> entry : orderedEntries) {
             if (step > 3) break; // Limit to 3 tools
             
             Tool tool = entry.getKey();
             Map<String, Object> originalParams = entry.getValue();
             
+            // NOVO LOG: Parâmetros antes da resolução
             if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== STEP {} EXECUTION ===", step);
-                conversationLogger.info("Tool: {}", tool.getName());
-                conversationLogger.info("Original parameters: {}", originalParams);
+                conversationLogger.info("=== STEP {} PARAMETER RESOLUTION ===", step);
+                conversationLogger.info("Original params: {}", originalParams);
             }
             
             // RESOLVER REFERÊNCIAS {{RESULT_N}}
             Map<String, Object> resolvedParams = resolveParameterReferences(originalParams, stepResults);
             
+            // NOVO LOG: Parâmetros após resolução
             if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Parameters after resolution: {}", resolvedParams);
+                conversationLogger.info("Resolved params: {}", resolvedParams);
+                conversationLogger.info("Available step results: {}", stepResults.keySet());
             }
             
             if (observer != null) {
@@ -204,18 +219,19 @@ public class Simple implements Inference {
                 return String.format("Step %d failed: %s", step, result.message);
             }
             
-            // ARMAZENAR RESULTADO PARA PRÓXIMOS STEPS
+            // MODIFICADO: Armazenar result.content em vez de result.message
             stepResults.put("RESULT_" + step, result.content);
             
+            // NOVO LOG: Conteúdo da ferramenta
             if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== STEP {} RESULT ===", step);
+                conversationLogger.info("=== STEP {} EXECUTION RESULT ===", step);
+                conversationLogger.info("Tool: {}", tool.getName());
                 conversationLogger.info("Success: {}", result.success);
                 conversationLogger.info("Message: {}", result.message);
                 String contentPreview = result.content != null && result.content.length() > 200 
-                    ? result.content.substring(0, 200) + "... [truncated, total length: " + result.content.length() + "]"
+                    ? result.content.substring(0, 200) + "..." 
                     : result.content;
                 conversationLogger.info("Content preview: {}", contentPreview);
-                conversationLogger.info("Stored as RESULT_{} for next steps", step);
             }
             
             results.append(String.format("Step %d (%s): %s\n", 
@@ -223,76 +239,76 @@ public class Simple implements Inference {
             step++;
         }
         
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== MULTI-STEP EXECUTION COMPLETE ===");
-            conversationLogger.info("All {} steps executed successfully", step - 1);
-        }
+
         
         return generateConsolidatedResponse(query, results.toString());
     }
     
-    // NOVO MÉTODO
-    private Map<String, Object> resolveParameterReferences(Map<String, Object> params, Map<String, String> stepResults) {
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== PARAMETER RESOLUTION START ===");
-            conversationLogger.info("Available step results: {}", stepResults.keySet());
+    /**
+     * Ordena as ferramentas por nível de dependência baseado nos placeholders {{RESULT_X}}.
+     * Ferramentas sem dependências (nível 0) executam primeiro, seguidas pelas que dependem
+     * de RESULT_1, depois RESULT_2, etc.
+     */
+    private List<Map.Entry<Tool, Map<String, Object>>> orderToolsByDependencies(
+            Map<Tool, Map<String, Object>> selections) {
+        
+        List<Map.Entry<Tool, Map<String, Object>>> orderedTools = new ArrayList<>(selections.entrySet());
+        
+        orderedTools.sort((a, b) -> {
+            int levelA = extractDependencyLevel(a.getValue());
+            int levelB = extractDependencyLevel(b.getValue());
+            return Integer.compare(levelA, levelB);
+        });
+        
+        return orderedTools;
+    }
+    
+    /**
+     * Extrai o nível de dependência analisando placeholders {{RESULT_X}} nos parâmetros.
+     * Retorna o maior número X encontrado, ou 0 se não há dependências.
+     */
+    private int extractDependencyLevel(Map<String, Object> parameters) {
+        int maxLevel = 0;
+        
+        for (Object value : parameters.values()) {
+            if (value instanceof String) {
+                String strValue = (String) value;
+                // Regex para encontrar {{RESULT_X}} onde X é um número
+                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\{\\{RESULT_(\\d+)\\}\\}");
+                java.util.regex.Matcher matcher = pattern.matcher(strValue);
+                
+                while (matcher.find()) {
+                    try {
+                        int level = Integer.parseInt(matcher.group(1));
+                        maxLevel = Math.max(maxLevel, level);
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid numbers
+                    }
+                }
+            }
         }
         
+        return maxLevel;
+    }
+    
+    private Map<String, Object> resolveParameterReferences(Map<String, Object> params, Map<String, String> stepResults) {
         Map<String, Object> resolved = new HashMap<>();
-        boolean hasSubstitutions = false;
         
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             Object value = entry.getValue();
             
             if (value instanceof String) {
                 String strValue = (String) value;
-                String originalValue = strValue;
-                
                 // Resolver referências {{RESULT_N}}
                 for (Map.Entry<String, String> resultEntry : stepResults.entrySet()) {
                     String placeholder = "{{" + resultEntry.getKey() + "}}";
                     if (strValue.contains(placeholder)) {
-                        hasSubstitutions = true;
-                        String replacementPreview = resultEntry.getValue() != null && resultEntry.getValue().length() > 100
-                            ? resultEntry.getValue().substring(0, 100) + "... [truncated]"
-                            : resultEntry.getValue();
-                        
-                        if (conversationLogger.isInfoEnabled()) {
-                            conversationLogger.info("=== PLACEHOLDER SUBSTITUTION ===");
-                            conversationLogger.info("Parameter: {}", entry.getKey());
-                            conversationLogger.info("Placeholder found: {}", placeholder);
-                            conversationLogger.info("Replacement preview: {}", replacementPreview);
-                        }
-                        
                         strValue = strValue.replace(placeholder, resultEntry.getValue());
                     }
                 }
-                
-                if (hasSubstitutions && conversationLogger.isInfoEnabled()) {
-                    conversationLogger.info("Parameter '{}' transformed from '{}' to resolved value", 
-                        entry.getKey(), originalValue);
-                }
-                
                 resolved.put(entry.getKey(), strValue);
             } else {
                 resolved.put(entry.getKey(), value);
-            }
-        }
-        
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== PARAMETER RESOLUTION COMPLETE ===");
-            conversationLogger.info("Substitutions made: {}", hasSubstitutions);
-            
-            // Validar se ainda há placeholders não resolvidos
-            for (Map.Entry<String, Object> entry : resolved.entrySet()) {
-                if (entry.getValue() instanceof String) {
-                    String strValue = (String) entry.getValue();
-                    if (strValue.contains("{{RESULT_")) {
-                        conversationLogger.warn("=== UNRESOLVED PLACEHOLDER WARNING ===");
-                        conversationLogger.warn("Parameter '{}' still contains unresolved placeholders: {}", 
-                            entry.getKey(), strValue);
-                    }
-                }
             }
         }
         
