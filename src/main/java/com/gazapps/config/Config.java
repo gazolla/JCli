@@ -34,11 +34,11 @@ public class Config {
 	}
 	
 	/**
-	 * Cria estrutura completa de configuração necessária para o JCli Chat.
+	 * Creates complete configuration structure required for JCli Chat.
 	 */
 	public void createConfigStructure() {
 		try {
-			// Criar diretórios base
+			// Create base directories
 			Files.createDirectories(Paths.get("config"));
 			Files.createDirectories(Paths.get("config/mcp"));
 			Files.createDirectories(Paths.get("log"));
@@ -46,10 +46,10 @@ public class Config {
 			Files.createDirectories(Paths.get("log/inference"));
 			Files.createDirectories(Paths.get("documents"));
 			
-			// Criar application.properties se não existir
+			// Create application.properties if it doesn't exist
 			createConfigFileIfNeeded();
 			
-			// Criar .mcp.json básico se não existir
+			// Create basic .mcp.json if it doesn't exist
 			createMcpConfigIfNeeded();
 			
 			logger.info("✅ Config structure created successfully");
@@ -97,19 +97,19 @@ public class Config {
 				app.name=JCLI
 				app.version=0.0.1
 
-				# Configuraca£o da aplicacao MCP
+				# MCP Application Configuration
 				llm.provider=groq
 				mcp.auto.discovery=true
 				mcp.refresh.interval=30000
 				mcp.connection.timeout=30000
 				mcp.call.timeout=60000
 
-				# Configuraca£o de regras
+				# Rules Configuration
 				mcp.rules.enabled=true
 				mcp.rules.path=config/rules
 				mcp.rules.auto.reload=false
 
-				# Configuracao de logging
+				# Logging Configuration
 				logging.level.com.gazapps.mcp=DEBUG
 				logging.level.root=INFO
 				log.recreate=true
@@ -121,7 +121,7 @@ public class Config {
 	}
 	
 	/**
-	 * Cria arquivo .mcp.json básico se não existir.
+	 * Creates basic .mcp.json file if it doesn't exist.
 	 */
 	private void createMcpConfigIfNeeded() throws IOException {
 		Path mcpConfigPath = Paths.get("config/mcp/.mcp.json");
@@ -133,7 +133,7 @@ public class Config {
 					    "time" : {
 					      "args" : [ ],
 					      "domain" : "time",
-					      "description" : "Servidor para ferramentas de tempo e fuso horário",
+					      "description" : "Server for time and timezone tools",
 					      "env" : {
 					        "REQUIRES_UVX" : "true"
 					      },
@@ -144,7 +144,7 @@ public class Config {
 					    "weather-nws" : {
 					      "args" : [ ],
 					      "domain" : "weather",
-					      "description" : "Previsões meteorológicas via NWS",
+					      "description" : "Weather forecasts via NWS",
 					      "env" : {
 					        "REQUIRES_ONLINE" : "true",
 					        "REQUIRES_NODEJS" : "true"
@@ -156,7 +156,7 @@ public class Config {
 					    "filesystem" : {
 					      "args" : [ ],
 					      "domain" : "filesystem",
-					      "description" : "Sistema de arquivos - Documents",
+					      "description" : "File system - Documents",
 					      "env" : {
 					        "REQUIRES_NODEJS" : "true"
 					      },
@@ -195,7 +195,7 @@ public class Config {
 			Files.createDirectories(Paths.get("log/llm"));
 			Files.createDirectories(Paths.get("log/inference"));
 		} catch (IOException e) {
-			logger.error("❌ Erro ao recriar diretórios de log: {}", e.getMessage());
+			logger.error("❌ Error recreating log directories: {}", e.getMessage());
 		}
 
 		loggerContext.reset();
@@ -207,12 +207,12 @@ public class Config {
 		if (configUrl != null) {
 			try {
 				configurator.doConfigure(configUrl);
-				logger.info("✅ Configuração do Logback recarregada com sucesso!");
+				logger.info("✅ Logback configuration reloaded successfully!");
 			} catch (JoranException e) {
-				logger.error("❌ Erro ao recarregar a configuração do Logback: {}", e.getMessage());
+				logger.error("❌ Error reloading Logback configuration: {}", e.getMessage());
 			}
 		} else {
-			logger.error("❌ Arquivo 'logback.xml' não encontrado no classpath.");
+			logger.error("❌ 'logback.xml' file not found in classpath.");
 		}
 
 	}
@@ -229,19 +229,18 @@ public class Config {
 					deleteDirectory(file);
 				} else {
 					if (file.delete()) {
-						logger.info("✅ Arquivo deletado com sucesso: {}", file.getAbsolutePath());
+						logger.info("✅ File deleted successfully: {}", file.getAbsolutePath());
 					} else {
-						logger.error("❌ Falha ao deletar arquivo: {}", file.getAbsolutePath());
+						logger.error("❌ Failed to delete file: {}", file.getAbsolutePath());
 					}
 				}
 			}
 		}
 
-		// AQUI ESTÁ A CHAVE: APAGA O DIRETÓRIO APÓS ELE ESTAR VAZIO
 		if (dir.delete()) {
-			logger.info("✅ Diretório deletado com sucesso: {}", dir.getAbsolutePath());
+			logger.info("✅ Directory deleted successfully: {}", dir.getAbsolutePath());
 		} else {
-			logger.error("❌ Falha ao deletar diretório: {}", dir.getAbsolutePath());
+			logger.error("❌ Failed to delete directory: {}", dir.getAbsolutePath());
 		}
 	}
 }

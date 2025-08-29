@@ -5,9 +5,6 @@ import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.mcp.MCPManager;
 
-/**
- * Gerencia comandos do sistema de chat.
- */
 public class CommandHandler {
     
     private final ChatProcessor chatProcessor;
@@ -68,13 +65,11 @@ public class CommandHandler {
             };
             
             if (newLlm != null) {
-                // Tentar fazer a troca
                 boolean success = chatProcessor.changeLlm(newLlm);
                 
                 if (success) {
                     System.out.printf("✅ Successfully switched to %s%n", provider);
                     
-                    // Mostrar informações do novo LLM
                     System.out.printf("   Provider: %s%n", newLlm.getProviderName());
                     if (newLlm.getCapabilities() != null) {
                         System.out.printf("   Capabilities: %s%n", newLlm.getCapabilities());
@@ -124,7 +119,7 @@ public class CommandHandler {
 	        %n""",
 	        servers.size(),
 	        domains.size(), 
-	        chatProcessor.getCurrentLlm().getProviderName(),  // ATUALIZADO
+	        chatProcessor.getCurrentLlm().getProviderName(),  
 	        chatProcessor.getCurrentStrategy().name().toLowerCase(),
 	        chatProcessor.isDebugMode() ? "ON" : "OFF",
 	        mcpManager.isHealthy() ? "✅ Healthy" : "❌ Issues"

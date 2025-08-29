@@ -1,23 +1,19 @@
 package com.gazapps.llm;
 
 
-/**
- * Exceção base para todos os erros relacionados a LLMs.
- * Padroniza o tratamento de erros independentemente do provedor.
- */
 public class LlmException extends RuntimeException {
     
     private final LlmProvider provider;
     private final ErrorType errorType;
     
     public enum ErrorType {
-        COMMUNICATION("Erro de comunicação com o LLM"),
-        RATE_LIMIT("Limite de taxa atingido"),
-        TIMEOUT("Timeout na requisição"),
-        INVALID_REQUEST("Requisição inválida"),
-        TOOL_ERROR("Erro na execução de ferramenta"),
-        AUTHENTICATION("Erro de autenticação"),
-        UNKNOWN("Erro desconhecido");
+        COMMUNICATION("Communication error with LLM"),
+        RATE_LIMIT("Rate limit reached"),
+        TIMEOUT("Request timeout"),
+        INVALID_REQUEST("Invalid request"),
+        TOOL_ERROR("Tool execution error"),
+        AUTHENTICATION("Authentication error"),
+        UNKNOWN("Unknown error");
         
         private final String description;
         

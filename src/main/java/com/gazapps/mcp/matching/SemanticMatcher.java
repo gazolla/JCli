@@ -294,6 +294,10 @@ public class SemanticMatcher {
 				estão presentes na query, use seu conhecimento para encontrar as informações ausentes. 
 				Se um parâmetro depende do resultado de outra ferramenta, use o placeholder.
 				
+				IMPORTANTE: 
+				- Use sempre o mínimo de ferramentas necessárias.
+				- Evite ferramentas redundantes
+				
 				""");
 		prompt.append("Query: \"").append(query).append("\"\n\n");
 

@@ -5,11 +5,6 @@ import com.gazapps.llm.providers.Gemini;
 import com.gazapps.llm.providers.Groq;
 import com.gazapps.llm.providers.OpenAI;
 
-
-/**
- * Builder refatorado para trabalhar apenas com a interface Llm.
- * Remove conhecimento de implementações específicas além do necessário para instanciação.
- */
 public class LlmBuilder {
     
     private LlmProvider provider;
@@ -63,85 +58,72 @@ public class LlmBuilder {
                 return createOpenAI(apiKey);
             default:
                 throw new LlmException(provider, LlmException.ErrorType.INVALID_REQUEST, 
-                                     "Provider não reconhecido: " + provider.toString());
+                                     "Provider not recognized: " + provider.toString());
         }
     }
     
     private void validateConfiguration() {
         if (provider == null) {
             throw new LlmException(null, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Provider é obrigatório");
+                                 "Provider is required");
         }
         
         if (timeout <= 0 || timeout > 300) {
             throw new LlmException(provider, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Timeout deve estar entre 1 e 300 segundos");
+                                 "Timeout must be between 1 and 300 seconds");
         }
         
         if (apiKey == null || apiKey.trim().isEmpty()) {
             throw new LlmException(provider, LlmException.ErrorType.AUTHENTICATION, 
-                                 "API Key é obrigatória para " + provider);
+                                 "API Key is required for " + provider);
         }
     }
     
-    /**
-     * Factory method para criar Gemini com validação de parâmetros.
-     */
-    public static Llm createGemini(String apiKey) {
+     public static Llm createGemini(String apiKey) {
         try {
             validateApiKey(apiKey, LlmProvider.GEMINI);
             return new Gemini();
         } catch (Exception e) {
             throw new LlmException(null, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Falha ao criar instância Gemini: " + e.getMessage(), e);
+                                 "Failed to create Gemini instance: " + e.getMessage(), e);
         }
     }
     
-    /**
-     * Factory method para criar Groq com validação de parâmetros.
-     */
     public static Llm createGroq(String apiKey) {
         try {
             validateApiKey(apiKey, LlmProvider.GROQ);
             return new Groq();
         } catch (Exception e) {
             throw new LlmException(null, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Falha ao criar instância Groq: " + e.getMessage(), e);
+                                 "Failed to create Groq instance: " + e.getMessage(), e);
         }
     }
     
-    /**
-     * Factory method para criar Claude com validação de parâmetros.
-     */
     public static Llm createClaude(String apiKey) {
         try {
             validateApiKey(apiKey, LlmProvider.CLAUDE);
             return new Claude();
         } catch (Exception e) {
             throw new LlmException(null, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Falha ao criar instância Claude: " + e.getMessage(), e);
+                                 "Failed to create Claude instance: " + e.getMessage(), e);
         }
     }
     
-    /**
-     * Factory method para criar OpenAI com validação de parâmetros.
-     */
     public static Llm createOpenAI(String apiKey) {
         try {
             validateApiKey(apiKey, LlmProvider.OPENAI);
             return new OpenAI();
         } catch (Exception e) {
             throw new LlmException(null, LlmException.ErrorType.INVALID_REQUEST, 
-                                 "Falha ao criar instância OpenAI: " + e.getMessage(), e);
+                                 "Failed to create OpenAI instance: " + e.getMessage(), e);
         }
     }
     
     private static void validateApiKey(String apiKey, LlmProvider provider) {
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            // Tentar obter da configuração ou ambiente
             String key = getApiKeyFromEnvironment(getEnvironmentKeyName(provider));
             if (key == null || key.trim().isEmpty()) {
-                throw new IllegalArgumentException("API Key é obrigatória para " + provider.name());
+                throw new IllegalArgumentException("API Key is required for " + provider.name());
             }
         }
     }
@@ -156,7 +138,6 @@ public class LlmBuilder {
         }
     }
     
-    // Métodos de conveniência que retornam a interface Llm
     
     public static Llm gemini(String apiKey) {
         String key = (apiKey != null && !apiKey.trim().isEmpty()) ? 
@@ -182,17 +163,12 @@ public class LlmBuilder {
         return createOpenAI(key);
     }
     
-    /**
-     * Obtém API key de propriedades do sistema primeiro, depois variáveis de ambiente.
-     */
     private static String getApiKeyFromEnvironment(String envVarName) {
-        // Verificar propriedades do sistema primeiro (carregadas do .env pelo EnvironmentSetup)
         String key = System.getProperty(envVarName);
         if (key != null && !key.trim().isEmpty()) {
             return key;
         }
         
-        // Verificar variáveis de ambiente
         key = System.getenv(envVarName);
         if (key != null && !key.trim().isEmpty()) {
             return key;

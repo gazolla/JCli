@@ -158,6 +158,11 @@ public class Simple implements Inference {
     private String executeMultiStep(String query, Map<Tool, Map<String, Object>> selections) {
         logger.debug("Executing multi-step with {} tools", selections.size());
         
+        if (conversationLogger.isInfoEnabled()) {
+            conversationLogger.info("=== MULTI-STEP EXECUTION START ===");
+            conversationLogger.info("Total steps planned: {}", selections.size());
+        }
+        
         StringBuilder results = new StringBuilder();
         Map<String, String> stepResults = new HashMap<>(); // Para encadeamento
         int step = 1;
@@ -168,8 +173,18 @@ public class Simple implements Inference {
             Tool tool = entry.getKey();
             Map<String, Object> originalParams = entry.getValue();
             
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("=== STEP {} EXECUTION ===", step);
+                conversationLogger.info("Tool: {}", tool.getName());
+                conversationLogger.info("Original parameters: {}", originalParams);
+            }
+            
             // RESOLVER REFERÊNCIAS {{RESULT_N}}
             Map<String, Object> resolvedParams = resolveParameterReferences(originalParams, stepResults);
+            
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("Parameters after resolution: {}", resolvedParams);
+            }
             
             if (observer != null) {
                 observer.onToolSelection(tool.getName(), resolvedParams);
@@ -178,19 +193,39 @@ public class Simple implements Inference {
             MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, resolvedParams);
             
             if (observer != null) {
-                observer.onToolExecution(tool.getName(), result.success ? result.message : result.message);
+                observer.onToolExecution(tool.getName(), result.message);
             }
             
             if (!result.success) {
+                if (conversationLogger.isErrorEnabled()) {
+                    conversationLogger.error("=== STEP {} FAILED ===", step);
+                    conversationLogger.error("Error: {}", result.message);
+                }
                 return String.format("Step %d failed: %s", step, result.message);
             }
             
             // ARMAZENAR RESULTADO PARA PRÓXIMOS STEPS
-            stepResults.put("RESULT_" + step, result.message);
+            stepResults.put("RESULT_" + step, result.content);
+            
+            if (conversationLogger.isInfoEnabled()) {
+                conversationLogger.info("=== STEP {} RESULT ===", step);
+                conversationLogger.info("Success: {}", result.success);
+                conversationLogger.info("Message: {}", result.message);
+                String contentPreview = result.content != null && result.content.length() > 200 
+                    ? result.content.substring(0, 200) + "... [truncated, total length: " + result.content.length() + "]"
+                    : result.content;
+                conversationLogger.info("Content preview: {}", contentPreview);
+                conversationLogger.info("Stored as RESULT_{} for next steps", step);
+            }
             
             results.append(String.format("Step %d (%s): %s\n", 
                          step, tool.getName(), result.message));
             step++;
+        }
+        
+        if (conversationLogger.isInfoEnabled()) {
+            conversationLogger.info("=== MULTI-STEP EXECUTION COMPLETE ===");
+            conversationLogger.info("All {} steps executed successfully", step - 1);
         }
         
         return generateConsolidatedResponse(query, results.toString());
@@ -198,23 +233,66 @@ public class Simple implements Inference {
     
     // NOVO MÉTODO
     private Map<String, Object> resolveParameterReferences(Map<String, Object> params, Map<String, String> stepResults) {
+        if (conversationLogger.isInfoEnabled()) {
+            conversationLogger.info("=== PARAMETER RESOLUTION START ===");
+            conversationLogger.info("Available step results: {}", stepResults.keySet());
+        }
+        
         Map<String, Object> resolved = new HashMap<>();
+        boolean hasSubstitutions = false;
         
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             Object value = entry.getValue();
             
             if (value instanceof String) {
                 String strValue = (String) value;
+                String originalValue = strValue;
+                
                 // Resolver referências {{RESULT_N}}
                 for (Map.Entry<String, String> resultEntry : stepResults.entrySet()) {
                     String placeholder = "{{" + resultEntry.getKey() + "}}";
                     if (strValue.contains(placeholder)) {
+                        hasSubstitutions = true;
+                        String replacementPreview = resultEntry.getValue() != null && resultEntry.getValue().length() > 100
+                            ? resultEntry.getValue().substring(0, 100) + "... [truncated]"
+                            : resultEntry.getValue();
+                        
+                        if (conversationLogger.isInfoEnabled()) {
+                            conversationLogger.info("=== PLACEHOLDER SUBSTITUTION ===");
+                            conversationLogger.info("Parameter: {}", entry.getKey());
+                            conversationLogger.info("Placeholder found: {}", placeholder);
+                            conversationLogger.info("Replacement preview: {}", replacementPreview);
+                        }
+                        
                         strValue = strValue.replace(placeholder, resultEntry.getValue());
                     }
                 }
+                
+                if (hasSubstitutions && conversationLogger.isInfoEnabled()) {
+                    conversationLogger.info("Parameter '{}' transformed from '{}' to resolved value", 
+                        entry.getKey(), originalValue);
+                }
+                
                 resolved.put(entry.getKey(), strValue);
             } else {
                 resolved.put(entry.getKey(), value);
+            }
+        }
+        
+        if (conversationLogger.isInfoEnabled()) {
+            conversationLogger.info("=== PARAMETER RESOLUTION COMPLETE ===");
+            conversationLogger.info("Substitutions made: {}", hasSubstitutions);
+            
+            // Validar se ainda há placeholders não resolvidos
+            for (Map.Entry<String, Object> entry : resolved.entrySet()) {
+                if (entry.getValue() instanceof String) {
+                    String strValue = (String) entry.getValue();
+                    if (strValue.contains("{{RESULT_")) {
+                        conversationLogger.warn("=== UNRESOLVED PLACEHOLDER WARNING ===");
+                        conversationLogger.warn("Parameter '{}' still contains unresolved placeholders: {}", 
+                            entry.getKey(), strValue);
+                    }
+                }
             }
         }
         
@@ -227,7 +305,7 @@ public class Simple implements Inference {
             "Original query: %s\n" +
             "Tool used: %s\n" +
             "Result: %s\n\n" +
-            "Provide a natural, helpful response incorporating the tool result.",
+            "Provide a natural, always in the same languege of the orinal query, helpful response incorporating the tool result.",
             query, tool.getName(), toolResult
         );
         
@@ -241,7 +319,7 @@ public class Simple implements Inference {
             "Consolidate these multi-step results into a final response:\n\n" +
             "Original query: %s\n" +
             "Execution results:\n%s\n\n" +
-            "Provide a consolidated, helpful summary.",
+            "Provide a consolidated, helpful summary always in the same languege of the orinal query.",
             query, results
         );
         

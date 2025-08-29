@@ -3,10 +3,6 @@ package com.gazapps.mcp.domain;
 import java.time.Instant;
 import java.util.*;
 
-/**
- * Entidade que representa um servidor MCP com todas as informações de estado,
- * conexão e ferramentas disponíveis.
- */
 public class Server {
     
     private final String id;
@@ -41,12 +37,9 @@ public class Server {
         this.tools = new HashMap<>();
         this.lastHeartbeat = null;
         this.metrics = new HashMap<>();
-        this.domain = null; // Será setado pela configuração
+        this.domain = null; 
     }
     
-    /**
-     * Builder para criar instâncias Server de forma fluida.
-     */
     public static Builder builder() {
         return new Builder();
     }
@@ -178,7 +171,6 @@ public class Server {
         if (!connected) return false;
         if (lastHeartbeat == null) return false;
         
-        // Considera saudável se último heartbeat foi há menos de 60 segundos
         return Instant.now().minusSeconds(60).isBefore(lastHeartbeat);
     }
     

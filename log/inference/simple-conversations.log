@@ -1,24 +1,11 @@
-2025-08-28 22:31:07.903 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE START ===
-2025-08-28 22:31:07.904 [main] INFO  c.g.i.simple.Simple.conversations - Query: ola
-2025-08-28 22:31:08.959 [main] INFO  c.g.i.simple.Simple.conversations - Multi-step analysis: false
-2025-08-28 22:31:09.594 [main] INFO  c.g.i.simple.Simple.conversations - Found 0 tool(s) for execution
-2025-08-28 22:31:10.109 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE END ===
-2025-08-28 22:31:10.109 [main] INFO  c.g.i.simple.Simple.conversations - Final result: Olá! Hello! It seems like you've said hello in Portuguese. How can I assist you today?
-2025-08-28 22:31:10.111 [main] INFO  c.g.i.simple.Simple.conversations - ==============================
-2025-08-28 22:31:39.782 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE START ===
-2025-08-28 22:31:39.782 [main] INFO  c.g.i.simple.Simple.conversations - Query: ola
-2025-08-28 22:31:40.521 [main] INFO  c.g.i.simple.Simple.conversations - Multi-step analysis: false
-2025-08-28 22:31:41.415 [main] INFO  c.g.i.simple.Simple.conversations - Found 0 tool(s) for execution
-2025-08-28 22:31:42.940 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE END ===
-2025-08-28 22:31:42.940 [main] INFO  c.g.i.simple.Simple.conversations - Final result: "Ola" is a greeting in Spanish, similar to "hello" or "hi" in English.
+2025-08-29 12:22:11.672 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE START ===
+2025-08-29 12:22:11.673 [main] INFO  c.g.i.simple.Simple.conversations - Query: verifique o clima em miami,FL e salve as informações no arquivo miami.txt em documents.
+2025-08-29 12:22:13.651 [main] INFO  c.g.i.simple.Simple.conversations - Multi-step analysis: true
+2025-08-29 12:22:16.627 [main] INFO  c.g.i.simple.Simple.conversations - Found 3 tool(s) for execution
+2025-08-29 12:22:16.627 [main] INFO  c.g.i.simple.Simple.conversations -   - Tool: get-forecast with params: {latitude=25.76168, longitude=-80.19179}
+2025-08-29 12:22:16.628 [main] INFO  c.g.i.simple.Simple.conversations -   - Tool: write_file with params: {path=documents/miami.txt, content={{RESULT_1}}}
+2025-08-29 12:22:16.628 [main] INFO  c.g.i.simple.Simple.conversations -   - Tool: list_allowed_directories with params: {}
+2025-08-29 12:22:18.365 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE END ===
+2025-08-29 12:22:18.365 [main] INFO  c.g.i.simple.Simple.conversations - Final result: O clima em Miami, FL foi verificado e as informações foram salvas com sucesso no arquivo miami.txt na pasta Documents.
 
-2025-08-28 22:31:42.941 [main] INFO  c.g.i.simple.Simple.conversations - ==============================
-2025-08-28 22:46:31.489 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE START ===
-2025-08-28 22:46:31.490 [main] INFO  c.g.i.simple.Simple.conversations - Query: Que horas são em los angeles,ca?
-2025-08-28 22:46:32.852 [main] INFO  c.g.i.simple.Simple.conversations - Multi-step analysis: false
-2025-08-28 22:46:36.102 [main] INFO  c.g.i.simple.Simple.conversations - Found 1 tool(s) for execution
-2025-08-28 22:46:36.102 [main] INFO  c.g.i.simple.Simple.conversations -   - Tool: get_current_time with params: {timezone=America/Los_Angeles}
-2025-08-28 22:46:36.843 [main] INFO  c.g.i.simple.Simple.conversations - === SIMPLE INFERENCE END ===
-2025-08-28 22:46:36.843 [main] INFO  c.g.i.simple.Simple.conversations - Final result: Agora são 18:46 em Los Angeles, Califórnia.
-
-2025-08-28 22:46:36.843 [main] INFO  c.g.i.simple.Simple.conversations - ==============================
+2025-08-29 12:22:18.365 [main] INFO  c.g.i.simple.Simple.conversations - ==============================

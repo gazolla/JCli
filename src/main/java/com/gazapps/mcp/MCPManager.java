@@ -23,11 +23,6 @@ import com.gazapps.mcp.domain.Tool;
 import com.gazapps.mcp.rules.RuleEngine;
 
 
-/**
- * Facade principal do sistema MCP que encapsula toda a complexidade de interação
- * com servidores MCP, coordenando operações entre componentes internos de matching,
- * execução e gerenciamento de domínios.
- */
 public class MCPManager implements AutoCloseable {
     
  	private static final Logger logger = LoggerFactory.getLogger(MCPManager.class);
@@ -73,10 +68,7 @@ public class MCPManager implements AutoCloseable {
     }
     
     private Optional<Map<Tool, Map<String, Object>>> findSingleStepTools(String query, MatchingOptions options) {
-        // Cache key para evitar recálculos
         String cacheKey = query + "|" + options.hashCode();
-        
-        // Verificar cache primeiro
         Map<Tool, Map<String, Object>> cached = toolSelectionCache.get(cacheKey);
         if (cached != null) {
             logger.debug("Cache hit para findSingleStepTools: {}", query);
@@ -98,8 +90,6 @@ public class MCPManager implements AutoCloseable {
         }
 
         Map<Tool, Map<String, Object>> matches = toolMatcher.findRelevantToolsWithParams(query, llm, domainTools, options);
-        
-        // Armazenar no cache
         toolSelectionCache.put(cacheKey, matches);
         
         logger.debug("Encontradas {} ferramentas single-step para query: '{}'", matches.size(), query);
@@ -113,7 +103,6 @@ public class MCPManager implements AutoCloseable {
     private Optional<Map<Tool, Map<String, Object>>> findMultiStepTools(String query, MatchingOptions options) {
         Map<String, Double> domainScores = domainRegistry.calculateDomainMatches(query, llm, true); // isMultiStep = true
         
-        // Verificar threshold
         double maxScore = domainScores.values().stream()
             .mapToDouble(Double::doubleValue)
             .max()
@@ -127,7 +116,6 @@ public class MCPManager implements AutoCloseable {
         
         List<Tool> relevantTools = new ArrayList<>();
         
-        // Coletar ferramentas de TODOS os domínios relevantes
         for (Map.Entry<String, Double> entry : domainScores.entrySet()) {
             if (entry.getValue() > 0.6) {
                 relevantTools.addAll(getToolsByDomain(entry.getKey()));
@@ -161,9 +149,6 @@ public class MCPManager implements AutoCloseable {
         return response.isSuccess() && response.getContent().toLowerCase().contains("true");
     }
     
-    /**
-     * Busca ferramentas relevantes para uma query com opções específicas de matching.
-     */
     public List<Tool> findTools(String query, MatchingOptions options) {
         Objects.requireNonNull(query, "Query cannot be null");
         Objects.requireNonNull(options, "Matching options cannot be null");
@@ -194,9 +179,6 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Executa uma ferramenta pelo nome com argumentos.
-     */
     public MCPService.ToolExecutionResult executeTool(String toolName, Map<String, Object> args) {
         Objects.requireNonNull(toolName, "Tool name cannot be null");
         
@@ -205,7 +187,6 @@ public class MCPManager implements AutoCloseable {
         }
         
         try {
-            // Encontrar a ferramenta em todos os servidores
             Tool tool = findToolByName(toolName);
             if (tool == null) {
                 return MCPService.ToolExecutionResult.error("Ferramenta não encontrada: " + toolName);
@@ -219,10 +200,7 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Executa uma ferramenta específica com argumentos.
-     */
-    public MCPService.ToolExecutionResult executeTool(Tool tool, Map<String, Object> args) {
+   public MCPService.ToolExecutionResult executeTool(Tool tool, Map<String, Object> args) {
         Objects.requireNonNull(tool, "Tool cannot be null");
         
         if (args == null) {
@@ -240,32 +218,22 @@ public class MCPManager implements AutoCloseable {
     
     
     
-    /**
-     * Retorna conjunto de todos os domínios disponíveis.
-     */
     public Set<String> getAvailableDomains() {
         if (domainRegistry != null) {
             return domainRegistry.getAllDomainNames();
         }
-        
-        // Fallback para implementação antiga
         Set<String> domains = new HashSet<>();
         
-        // Coletar domínios das ferramentas
         List<Tool> allTools = mcpService.getAllAvailableTools();
         for (Tool tool : allTools) {
             domains.add(tool.getDomain());
         }
         
-        // Adicionar domínios da configuração
         domains.addAll(config.loadDomains().keySet());
         
         return domains;
     }
     
-    /**
-     * Retorna ferramentas de um domínio específico.
-     */
     public List<Tool> getToolsByDomain(String domain) {
         List<Tool> allTools = mcpService.getAllAvailableTools();
         
@@ -283,10 +251,7 @@ public class MCPManager implements AutoCloseable {
         return domainTools;
     }
     
-    /**
-     * Adiciona um novo servidor dinamicamente.
-     */
-    public boolean addServer(MCPConfig.ServerConfig config) {
+     public boolean addServer(MCPConfig.ServerConfig config) {
         Objects.requireNonNull(config, "Server config cannot be null");
         
         try {
@@ -303,10 +268,7 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Remove um servidor.
-     */
-    public boolean removeServer(String serverId) {
+     public boolean removeServer(String serverId) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         
         try {
@@ -321,17 +283,10 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Retorna lista de servidores conectados.
-     */
     public List<Server> getConnectedServers() {
         return new ArrayList<>(mcpService.getConnectedServers().values());
     }
     
-    /**
-     * Avalia se uma observação contém dados úteis para responder à query original.
-     * Usa análise semântica via LLM para determinar utilidade.
-     */
     public boolean isObservationUseful(String observation, String originalQuery) {
         Objects.requireNonNull(observation, "Observation cannot be null");
         Objects.requireNonNull(originalQuery, "Original query cannot be null");
@@ -339,11 +294,7 @@ public class MCPManager implements AutoCloseable {
         if (observation.trim().isEmpty()) {
             return false;
         }
-        
-        // Cache key para evitar reavaliações
-        String cacheKey = observation.hashCode() + "|" + originalQuery.hashCode();
-        
-        // Verificar cache primeiro
+         String cacheKey = observation.hashCode() + "|" + originalQuery.hashCode();
         Boolean cached = observationUtilityCache.get(cacheKey);
         if (cached != null) {
             logger.debug("Cache hit para isObservationUseful");
@@ -351,10 +302,7 @@ public class MCPManager implements AutoCloseable {
         }
         
         try {
-            // Usar o ToolMatcher para análise semântica
             boolean result = toolMatcher.evaluateObservationUtility(observation, originalQuery, llm);
-            
-            // Armazenar no cache
             observationUtilityCache.put(cacheKey, result);
             
             return result;
@@ -364,9 +312,6 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Verifica se o sistema está saudável.
-     */
     public boolean isHealthy() {
         try {
             Map<String, Server> connectedServers = mcpService.getConnectedServers();
@@ -374,7 +319,6 @@ public class MCPManager implements AutoCloseable {
                 return false;
             }
             
-            // Verificar se pelo menos um servidor está saudável
             for (Server server : connectedServers.values()) {
                 if (server.isHealthy()) {
                     return true;
@@ -389,35 +333,21 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Atualiza domínios descobrindo automaticamente novos domínios.
-     */
     public void refreshDomains() {
         if (domainRegistry != null && llm != null) {
             try {
-                // Obter todas as ferramentas disponíveis
                 List<Tool> allTools = mcpService.getAllAvailableTools();
-                
-                // Agrupar ferramentas por servidor para descoberta de domínios
                 Map<String, List<Tool>> toolsByServer = new HashMap<>();
                 for (Tool tool : allTools) {
                     toolsByServer.computeIfAbsent(tool.getServerId(), k -> new ArrayList<>()).add(tool);
                 }
-                
-                // Auto-descobrir domínios para ferramentas que não estão em domínios conhecidos
-                for (Map.Entry<String, List<Tool>> entry : toolsByServer.entrySet()) {
+                 for (Map.Entry<String, List<Tool>> entry : toolsByServer.entrySet()) {
                     List<Tool> serverTools = entry.getValue();
                     String discoveredDomain = domainRegistry.autoDiscoverDomain(serverTools, llm);
                     
                     if (discoveredDomain != null) {
                         logger.info("Domínio '{}' descoberto para servidor '{}'", discoveredDomain, entry.getKey());
                         
-                        // Atualizar ferramentas com o domínio descoberto
-                       // for (Tool tool : serverTools) {
-                        //    if (tool.getDomain() == null || tool.getDomain().isEmpty()) {
-                        //        domainRegistry.addToolToDomain(discoveredDomain, tool);
-                         //   }
-                      // }
                     }
                 }
                 
@@ -426,30 +356,22 @@ public class MCPManager implements AutoCloseable {
                 logger.error("Erro durante refresh de domínios", e);
             }
         }
-        
-        // Atualizar conexões dos servidores
         mcpService.refreshServerConnections();
     }
     
-    /**
-     * Fecha o sistema e limpa recursos.
-     */
-    @Override
+     @Override
     public void close() {
         logger.info("Fechando MCPManager...");
         
         try {
-            // Parar scheduler
-            scheduler.shutdown();
+             scheduler.shutdown();
             if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
                 scheduler.shutdownNow();
             }
             
-            // Fechar serviços
             mcpService.close();
             
-            // Salvar configuração
-            config.saveConfiguration();
+             config.saveConfiguration();
             
             initialized = false;
             logger.info("MCPManager fechado com sucesso");
@@ -459,15 +381,10 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Acesso ao serviço MCP interno (para testes).
-     * @return MCPService instance
-     */
     public MCPService getMcpService() {
         return mcpService;
     }
     
-    // Métodos privados auxiliares
     
     private String findBestDomain(String query) {
         if (domainRegistry != null) {
@@ -477,7 +394,7 @@ public class MCPManager implements AutoCloseable {
                 .map(Map.Entry::getKey)
                 .orElse(null);
         }
-        return null; // Sem filtering se não há domainRegistry
+        return null; 
     }
     
     private DomainSelectionResult findBestDomainWithScore(String query) {
@@ -496,7 +413,6 @@ public class MCPManager implements AutoCloseable {
     
     private void initialize() {
         try {
-            // Validar configuração
             config.validateConfiguration();
             
             // Agendar refresh periódico
@@ -529,26 +445,17 @@ public class MCPManager implements AutoCloseable {
         return null;
     }
     
-    /**
-     * Recarrega as regras do sistema.
-     */
     public void reloadRules() {
         if (ruleEngine != null) {
             ruleEngine.reload();
         }
     }
     
-    /**
-     * Verifica se o sistema de regras está habilitado.
-     */
     public boolean isRulesEnabled() {
         return ruleEngine != null && ruleEngine.isEnabled();
     }
     
-    /**
-     * Opções para configurar o comportamento de matching.
-     */
-    public static class MatchingOptions {
+     public static class MatchingOptions {
         public final boolean useSemanticMatching;
         public final double confidenceThreshold;
         public final int maxResults;
@@ -610,10 +517,7 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Classe auxiliar para encapsular resultado da seleção de domínio.
-     */
-    private static class DomainSelectionResult {
+     private static class DomainSelectionResult {
         public final String domainName;
         public final double maxScore;
         
@@ -623,9 +527,6 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Exceção específica para erros do MCPManager.
-     */
     public static class MCPManagerException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 

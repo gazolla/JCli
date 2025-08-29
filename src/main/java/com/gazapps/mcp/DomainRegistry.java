@@ -16,10 +16,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Gerencia dinamicamente domínios de ferramentas MCP.
- * Responsável por descoberta automática, matching semântico e persistência de configurações.
- */
 public class DomainRegistry {
     
     private static final Logger logger = LoggerFactory.getLogger(DomainRegistry.class);
@@ -30,26 +26,22 @@ public class DomainRegistry {
     private String configPath;
     
     public DomainRegistry(Llm llm) {
-        this.llm = llm; // Permitir null para testes
+        this.llm = llm; 
     }
     
     public DomainRegistry(Llm llm, String configPath) {
-        this.llm = llm; // Permitir null, mas validar antes de usar
+        this.llm = llm; 
         this.configPath = configPath;
         if (configPath != null) {
             loadFromConfig(configPath);
         }
     }
     
-    /**
-     * Carrega definições de domínio de um arquivo JSON.
-     */
-    public void loadFromConfig(String configPath) {
+     public void loadFromConfig(String configPath) {
         this.configPath = configPath;
         File configFile = new File(configPath);
         
         if (!configFile.exists()) {
-            // Criar configuração padrão se arquivo não existir
             createDefaultDomains();
             saveToConfig(configPath);
             return;
@@ -65,17 +57,17 @@ public class DomainRegistry {
                     DomainDefinition domain = DomainDefinition.fromConfigMap(entry.getValue());
                     domains.put(entry.getKey(), domain);
                 } catch (Exception e) {
-                    System.err.println("Erro ao carregar domínio " + entry.getKey() + ": " + e.getMessage());
+                    System.err.println("Error loading domain " + entry.getKey() + ": " + e.getMessage());
                 }
             }
             
         } catch (IOException e) {
-            throw new DomainRegistryException("Erro ao carregar configuração de domínios: " + e.getMessage(), e);
+            throw new DomainRegistryException("Error loading domain configuration: " + e.getMessage(), e);
         }
     }
     
     /**
-     * Salva configurações atuais para arquivo JSON.
+     * Saves current configuration to JSON file.
      */
     public void saveToConfig(String configPath) {
         this.configPath = configPath;
@@ -87,39 +79,39 @@ public class DomainRegistry {
             }
             
             File configFile = new File(configPath);
-            configFile.getParentFile().mkdirs(); // Criar diretórios se necessário
+            configFile.getParentFile().mkdirs(); // Create directories if needed
             
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(configFile, configData);
             
         } catch (IOException e) {
-            throw new DomainRegistryException("Erro ao salvar configuração de domínios: " + e.getMessage(), e);
+            throw new DomainRegistryException("Error saving domain configuration: " + e.getMessage(), e);
         }
     }
     
     /**
-     * Obtém definição de um domínio específico.
+     * Gets definition of a specific domain.
      */
     public DomainDefinition getDomain(String domainName) {
         return domains.get(domainName);
     }
     
     /**
-     * Obtém todos os nomes de domínios registrados.
+     * Gets all registered domain names.
      */
     public Set<String> getAllDomainNames() {
         return Set.copyOf(domains.keySet());
     }
     
     /**
-     * Obtém todas as definições de domínio.
+     * Gets all domain definitions.
      */
     public List<DomainDefinition> getAllDomains() {
         return List.copyOf(domains.values());
     }
     
     /**
-     * Descobre automaticamente o domínio mais apropriado para uma lista de ferramentas.
-     * Usa LLM para análise semântica quando necessário.
+     * Automatically discovers the most appropriate domain for a list of tools.
+     * Uses LLM for semantic analysis when necessary.
      */
     public String autoDiscoverDomain(List<Tool> tools, Llm llmInstance) {
         if (tools == null || tools.isEmpty()) {
@@ -128,12 +120,12 @@ public class DomainRegistry {
         
         Llm activeLlm = llmInstance != null ? llmInstance : this.llm;
         
-        // Criar novo domínio usando LLM
+        // Create new domain using LLM
         return createNewDomainFromTools(tools, activeLlm);
     }
     
     /**
-     * Cria um novo domínio baseado na análise de ferramentas.
+     * Creates a new domain based on tool analysis.
      */
     public void createDomain(String name, DomainDefinition definition) {
         Objects.requireNonNull(name, "Domain name cannot be null");
@@ -141,14 +133,14 @@ public class DomainRegistry {
         
         domains.put(name, definition);
         
-        // Auto-save se tiver path configurado
+        // Auto-save if path is configured
         if (configPath != null) {
             saveToConfig(configPath);
         }
     }
     
     /**
-     * Atualiza definição de domínio existente.
+     * Updates existing domain definition.
      */
     public void updateDomain(String name, DomainDefinition definition) {
         Objects.requireNonNull(name, "Domain name cannot be null");
@@ -166,7 +158,7 @@ public class DomainRegistry {
     }
     
     /**
-     * Remove um domínio do registro.
+     * Removes a domain from the registry.
      */
     public boolean removeDomain(String name) {
         boolean removed = domains.remove(name) != null;
@@ -179,7 +171,7 @@ public class DomainRegistry {
     }
     
     /**
-     * Encontra domínios que fazem match com a query usando LLM.
+     * Finds domains that match the query using LLM.
      */
     public List<String> findMatchingDomains(String query, Llm llmInstance) {
         if (query == null || query.trim().isEmpty()) {
@@ -191,7 +183,7 @@ public class DomainRegistry {
         Map<String, Double> matches = calculateDomainMatches(query, activeLlm);
         
         return matches.entrySet().stream()
-                .filter(entry -> entry.getValue() > 0.3) // Threshold mínimo
+                .filter(entry -> entry.getValue() > 0.3) // Minimum threshold
                 .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
@@ -199,7 +191,7 @@ public class DomainRegistry {
     
     
     /**
-     * Adiciona um padrão a um domínio específico.
+     * Adds a pattern to a specific domain.
      */
     public void addPatternToDomain(String domainName, String pattern) {
         DomainDefinition domain = domains.get(domainName);
@@ -215,8 +207,8 @@ public class DomainRegistry {
     }
     
     /**
-     * Calcula scores de match para todos os domínios em relação a uma query.
-     * Utiliza matching unificado com LLM para melhor performance.
+     * Calculates match scores for all domains in relation to a query.
+     * Uses unified matching with LLM for better performance.
      */
     public Map<String, Double> calculateDomainMatches(String query, Llm llmInstance) {
         return calculateDomainMatches(query, llmInstance, false);
@@ -246,18 +238,18 @@ public class DomainRegistry {
             }
             
         } catch (Exception e) {
-            logger.error("Erro no domain filtering unificado", e);
+            logger.error("Error in unified domain filtering", e);
         }
         
-        // Fallback para pattern matching se LLM falhar
+        // Fallback to pattern matching if LLM fails
         return fallbackPatternMatching(query);
     }
     
     private String createUnifiedDomainPrompt(String query) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Analise a query e determine os scores de relevância:\n\n");
+        prompt.append("Analyze the query and determine relevance scores:\n\n");
         prompt.append("Query: \"").append(query).append("\"\n\n");
-        prompt.append("Domínios:\n");
+        prompt.append("Domains:\n");
         
         int index = 1;
         for (DomainDefinition domain : domains.values()) {
@@ -268,8 +260,8 @@ public class DomainRegistry {
                   .append("\n");
         }
         
-        prompt.append("NÃO EXPLIQUE NADA\n");
-        prompt.append("Responda em JSON com scores 0.0-1.0:\n");
+        prompt.append("DO NOT EXPLAIN ANYTHING\n");
+        prompt.append("Answer in JSON with scores 0.0-1.0:\n");
         prompt.append("{");
         
         boolean first = true;
@@ -286,9 +278,9 @@ public class DomainRegistry {
     
     private String createMultiDomainPrompt(String query) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Analise a query MULTI-STEP e determine os scores de relevância para TODOS os domínios necessários:\n\n");
+        prompt.append("Analyze the MULTI-STEP query and determine relevance scores for ALL necessary domains:\n\n");
         prompt.append("Query: \"").append(query).append("\"\n\n");
-        prompt.append("Domínios:\n");
+        prompt.append("Domains:\n");
         
         int index = 1;
         for (DomainDefinition domain : domains.values()) {
@@ -299,9 +291,9 @@ public class DomainRegistry {
                   .append("\n");
         }
         
-        prompt.append("IMPORTANTE: Query requer múltiplas operações, identifique TODOS os domínios relevantes.\n");
-        prompt.append("NÃO EXPLIQUE NADA\n");
-        prompt.append("Responda em JSON com scores 0.0-1.0:\n");
+        prompt.append("IMPORTANT: Query requires multiple operations, identify ALL relevant domains.\n");
+        prompt.append("DO NOT EXPLAIN ANYTHING\n");
+        prompt.append("Answer in JSON with scores 0.0-1.0:\n");
         prompt.append("{");
         
         boolean first = true;
@@ -316,7 +308,7 @@ public class DomainRegistry {
         return prompt.toString();
     }
     
-    // Métodos privados auxiliares
+    // Private helper methods
     
     private Map<String, Double> parseUnifiedDomainScores(String llmResponse) {
         Map<String, Double> scores = new HashMap<>();
@@ -337,7 +329,7 @@ public class DomainRegistry {
             }
             
         } catch (Exception e) {
-            logger.error("Erro ao fazer parse dos scores de domínio", e);
+            logger.error("Error parsing domain scores", e);
         }
         
         return scores;
@@ -357,40 +349,38 @@ public class DomainRegistry {
     }
     
     private void createDefaultDomains() {
-        // Domínio filesystem
+        // Filesystem domain
         DomainDefinition filesystem = DomainDefinition.builder()
                 .name("filesystem")
-                .description("Operações com sistema de arquivos")
-                .addPattern("arquivo")
+                .description("File system operations")
                 .addPattern("file")
-                .addPattern("diretório")
-                .addPattern("pasta")
+                .addPattern("directory")
+                .addPattern("folder")
                 .addSemanticKeyword("read")
                 .addSemanticKeyword("write")
                 .addSemanticKeyword("create")
                 .build();
         
-        // Domínio time
+        // Time domain
         DomainDefinition time = DomainDefinition.builder()
                 .name("time")
-                .description("Informações de tempo, data e fuso horário")
+                .description("Time, date and timezone information")
                 .addPattern("time")
-                .addPattern("tempo")
-                .addPattern("data")
-                .addPattern("hora")
+                .addPattern("date")
+                .addPattern("hour")
                 .addSemanticKeyword("timezone")
                 .addSemanticKeyword("calendar")
                 .build();
         
-        // Domínio weather
+        // Weather domain
         DomainDefinition weather = DomainDefinition.builder()
                 .name("weather")
-                .description("Informações meteorológicas e previsões do tempo")
+                .description("Weather information and forecasts")
                 .addPattern("weather")
-                .addPattern("clima")
-                .addPattern("previsão")
-                .addPattern("temperatura")
-                .addSemanticKeyword("meteorologia")
+                .addPattern("climate")
+                .addPattern("forecast")
+                .addPattern("temperature")
+                .addSemanticKeyword("meteorology")
                 .addSemanticKeyword("forecast")
                 .build();
         
@@ -412,25 +402,25 @@ public class DomainRegistry {
             }
             
         } catch (Exception e) {
-            System.err.println("Erro na auto-descoberta de domínio: " + e.getMessage());
+            System.err.println("Error in domain auto-discovery: " + e.getMessage());
         }
         
-        // Fallback: criar domínio baseado no primeiro tool
+        // Fallback: create domain based on first tool
         return createFallbackDomain(tools);
     }
     
     private String createDomainDiscoveryPrompt(List<Tool> tools) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Analise as seguintes ferramentas e sugira um nome de domínio apropriado:\n\n");
+        prompt.append("Analyze the following tools and suggest an appropriate domain name:\n\n");
         
         for (Tool tool : tools) {
             prompt.append("- ").append(tool.getName()).append(": ").append(tool.getDescription()).append("\n");
         }
         
-        prompt.append("\nDomínios existentes para evitar duplicação: ");
+        prompt.append("\nExisting domains to avoid duplication: ");
         prompt.append(String.join(", ", domains.keySet()));
         
-        prompt.append("\n\nResponda apenas com o nome do domínio (uma palavra, minúscula, sem espaços).");
+        prompt.append("\n\nAnswer only with the domain name (one word, lowercase, no spaces).");
         
         return prompt.toString();
     }
@@ -438,7 +428,7 @@ public class DomainRegistry {
     private String processDomainCreationResponse(String llmResponse, List<Tool> tools) {
         if (llmResponse == null) return null;
         
-        // Extrair primeira palavra válida da resposta
+        // Extract first valid word from response
         String domainName = llmResponse.trim().toLowerCase().split("\\s+")[0];
         domainName = domainName.replaceAll("[^a-z0-9_]", "");
         
@@ -455,7 +445,7 @@ public class DomainRegistry {
         Tool firstTool = tools.get(0);
         String domainName = firstTool.getName().split("_")[0];
         
-        // Garantir que o nome é único
+        // Ensure the name is unique
         String originalName = domainName;
         int counter = 1;
         while (domains.containsKey(domainName)) {
@@ -464,13 +454,13 @@ public class DomainRegistry {
         
         DomainDefinition.Builder builder = DomainDefinition.builder()
                 .name(domainName)
-                .description("Domínio auto-criado baseado em " + firstTool.getName());
+                .description("Auto-created domain based on " + firstTool.getName());
         
         return domainName;
     }
     
     /**
-     * Exception específica para operações do DomainRegistry.
+     * Specific exception for DomainRegistry operations.
      */
     public static class DomainRegistryException extends RuntimeException {
         public DomainRegistryException(String message) {

@@ -6,11 +6,6 @@ import java.util.Objects;
 
 import com.gazapps.llm.tool.ToolCall;
 
-/**
- * Resposta padronizada de um LLM que encapsula tanto conteúdo textual
- * quanto possíveis chamadas de ferramentas executadas.
- * Esta classe é imutável para garantir thread-safety.
- */
 public final class LlmResponse {
     
     private final String content;
@@ -28,10 +23,7 @@ public final class LlmResponse {
         this.originalException = originalException;
     }
     
-    /**
-     * Cria uma resposta de sucesso apenas com conteúdo textual.
-     */
-    public static LlmResponse success(String content) {
+     public static LlmResponse success(String content) {
         return new LlmResponse(
             Objects.requireNonNull(content, "Content cannot be null"), 
             true, 
@@ -41,9 +33,6 @@ public final class LlmResponse {
         );
     }
     
-    /**
-     * Cria uma resposta de sucesso com conteúdo e chamadas de ferramentas.
-     */
     public static LlmResponse withTools(String content, List<ToolCall> toolCalls) {
         return new LlmResponse(
             content, 
@@ -54,10 +43,7 @@ public final class LlmResponse {
         );
     }
     
-    /**
-     * Cria uma resposta de erro com mensagem.
-     */
-    public static LlmResponse error(String errorMessage) {
+     public static LlmResponse error(String errorMessage) {
         return new LlmResponse(
             null, 
             false, 
@@ -67,9 +53,6 @@ public final class LlmResponse {
         );
     }
     
-    /**
-     * Cria uma resposta de erro com mensagem e exceção original.
-     */
     public static LlmResponse error(String errorMessage, Exception originalException) {
         return new LlmResponse(
             null, 
@@ -80,44 +63,26 @@ public final class LlmResponse {
         );
     }
     
-    /**
-     * Retorna o conteúdo textual da resposta.
-     */
     public String getContent() {
         return content;
     }
     
-    /**
-     * Indica se a operação foi bem-sucedida.
-     */
     public boolean isSuccess() {
         return success;
     }
     
-    /**
-     * Retorna a lista de chamadas de ferramentas (imutável).
-     */
     public List<ToolCall> getToolCalls() {
         return toolCalls;
     }
     
-    /**
-     * Retorna true se existem chamadas de ferramentas na resposta.
-     */
     public boolean hasToolCalls() {
         return !toolCalls.isEmpty();
     }
     
-    /**
-     * Retorna a mensagem de erro se houver.
-     */
     public String getErrorMessage() {
         return errorMessage;
     }
     
-    /**
-     * Retorna a exceção original se houver.
-     */
     public Exception getOriginalException() {
         return originalException;
     }

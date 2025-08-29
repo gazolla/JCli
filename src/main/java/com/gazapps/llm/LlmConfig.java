@@ -15,10 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.gazapps.mcp.MCPConfig;
 
-/**
- * Manages configuration for all LLM providers.
- * Loads settings from a properties file and provides them to the application.
- */
 public class LlmConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(MCPConfig.class);

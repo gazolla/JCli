@@ -56,7 +56,6 @@ public class Claude implements Llm {
         this.timeout = Integer.parseInt(claudeConfig.get("timeout"));
         this.debug = Boolean.parseBoolean(claudeConfig.get("debug"));
         
-        // Definir capacidades do Claude
         this.capabilities = LlmCapabilities.builder()
             .functionCalling(true)
             .systemMessages(true)

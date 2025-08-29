@@ -4,11 +4,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * Documenta as capacidades específicas de cada provedor LLM.
- * Permite que as inferências adaptem seu comportamento baseado
- * nas capacidades disponíveis.
- */
 public final class LlmCapabilities {
     
     private final boolean supportsFunctionCalling;
@@ -26,9 +21,6 @@ public final class LlmCapabilities {
         this.supportedFormats = supportedFormats != null ? Set.copyOf(supportedFormats) : Collections.emptySet();
     }
     
-    /**
-     * Builder para criar LlmCapabilities de forma fluida.
-     */
     public static Builder builder() {
         return new Builder();
     }
