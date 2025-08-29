@@ -15,7 +15,6 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\O
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\chat\CommandHandler.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\SemanticMatcher.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolDefinition.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppWeather.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmProvider.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Groq.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\ToolMatcher.java
@@ -23,7 +22,6 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolCa
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\DomainRegistry.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmConfig.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPConfig.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppTime.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\react\ReAct.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmResponse.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\InferenceObserver.java
@@ -33,10 +31,8 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPManager.
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmException.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPService.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Claude.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppFile.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ParameterExtractor.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Tool.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\ServerRules.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\AppMultiToolWeatherFile.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmBuilder.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\InferenceStrategy.java

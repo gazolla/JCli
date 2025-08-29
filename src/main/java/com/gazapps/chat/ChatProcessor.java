@@ -13,20 +13,20 @@ import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.MCPManager;
 
-/**
- * Processador principal de chat que implementa observer pattern.
- */
+
 public class ChatProcessor implements InferenceObserver {
     
     private static final Logger logger = LoggerFactory.getLogger(ChatProcessor.class);
     
-    private final MCPManager mcpManager;
-    private final Llm llm;
+    private  MCPManager mcpManager;
+    private  Llm llm;
     private final CommandHandler commandHandler;
     private final ChatFormatter formatter;
     
     private InferenceStrategy currentStrategy = InferenceStrategy.SIMPLE;
     private boolean debugMode = false;
+    private long queryStartTime = 0;
+    private final String RESPONSE_ICON = "⏱️";
     
     public ChatProcessor(MCPManager mcpManager, Llm llm) {
         this.mcpManager = mcpManager;
@@ -42,7 +42,8 @@ public class ChatProcessor implements InferenceObserver {
     }
     
     public void processQuery(String query, InferenceStrategy strategy) {
-        try {
+    	queryStartTime = System.currentTimeMillis();
+    	try {
             Map<String, Object> options = Map.of(
                 "observer", this, 
                 "debug", debugMode,
@@ -63,9 +64,7 @@ public class ChatProcessor implements InferenceObserver {
     
     @Override
     public void onInferenceStart(String query, String strategyName) {
-       if (debugMode) {
             formatter.showInferenceStart(strategyName);
-        }
     }
     
     @Override
@@ -107,9 +106,28 @@ public class ChatProcessor implements InferenceObserver {
     @Override
     public void onInferenceComplete(String finalResponse) {
         if (finalResponse != null && !finalResponse.trim().isEmpty()) {
-            formatter.showFinalResponse(finalResponse);
+        	long duration = System.currentTimeMillis() - queryStartTime;
+        	showFinalResponse(finalResponse, duration);
         } 
-    }    
+    }   
+    
+    public void showFinalResponse(String response) {
+        System.out.printf("%n%s %s%n%n", RESPONSE_ICON, response);
+    }
+    
+    public void showFinalResponse(String response, long durationMillis) {
+        String timing = formatTiming(durationMillis);
+        System.out.printf("%n%s %s %s%n%n", RESPONSE_ICON, response, timing);
+    }
+
+    private String formatTiming(long millis) {
+        if (millis < 1000) {
+            return String.format("(⏱️ %d ms)", millis);
+        } else {
+            return String.format("(⏱️ %.1f secs)", millis / 1000.0);
+        }
+    }
+    
     @Override
     public void onError(String error, Exception exception) {
         logger.error("Inference error: {}", error, exception);
@@ -126,6 +144,44 @@ public class ChatProcessor implements InferenceObserver {
     
     public void setCurrentStrategy(InferenceStrategy strategy) {
         this.currentStrategy = strategy;
+    }
+    
+    public boolean changeLlm(Llm newLlm) {
+        if (newLlm == null) {
+            logger.warn("Attempted to change to null LLM");
+            return false;
+        }
+
+        MCPManager oldMcpManager = this.mcpManager;
+        Llm oldLlm = this.llm;
+        
+        try {
+            logger.info("Changing LLM from {} to {}", oldLlm.getProviderName(), newLlm.getProviderName());
+            
+            MCPManager newMcpManager = new MCPManager("./config", newLlm);
+            if (!newMcpManager.isHealthy()) {
+                logger.warn("New MCPManager is not healthy, rolling back");
+                newMcpManager.close();
+                return false;
+            }
+            this.llm = newLlm;
+            this.mcpManager = newMcpManager;
+            oldMcpManager.close();
+            
+            logger.info("Successfully changed LLM to {}", newLlm.getProviderName());
+            return true;
+            
+        } catch (Exception e) {
+            logger.error("Failed to change LLM", e);
+            this.llm = oldLlm;
+            this.mcpManager = oldMcpManager;
+            
+            return false;
+        }
+    }
+    
+    public Llm getCurrentLlm() {
+        return llm;
     }
     
     public InferenceStrategy getCurrentStrategy() {

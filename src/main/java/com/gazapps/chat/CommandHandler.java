@@ -1,8 +1,8 @@
 package com.gazapps.chat;
 
-import java.util.Map;
-
 import com.gazapps.inference.InferenceStrategy;
+import com.gazapps.llm.Llm;
+import com.gazapps.llm.LlmBuilder;
 import com.gazapps.mcp.MCPManager;
 
 /**
@@ -29,6 +29,7 @@ public class CommandHandler {
             case "tools" -> showTools();
             case "servers" -> showServers();
             case "strategy" -> changeStrategy(args);
+            case "llm" -> changeLlm(args);
             case "debug" -> toggleDebug();
             case "clear" -> clearScreen();
             case "quit", "exit" -> System.exit(0);
@@ -36,7 +37,61 @@ public class CommandHandler {
         }
     }
     
-    private void showHelp() {
+    private void changeLlm(String providerName) {
+        if (providerName.trim().isEmpty()) {
+            System.out.println("❌ LLM provider name required. Available: openai, claude, gemini, groq");
+            System.out.printf("   Current provider: %s%n", chatProcessor.getCurrentLlm().getProviderName());
+            return;
+        }
+        
+        String provider = providerName.toLowerCase().trim();
+        String currentProvider = chatProcessor.getCurrentLlm().getProviderName().toString().toLowerCase();
+        
+        if (currentProvider.equals(provider)) {
+            System.out.printf("✅ Already using %s%n", provider);
+            return;
+        }
+        
+        try {
+            System.out.printf("🔄 Switching from %s to %s...%n", currentProvider, provider);
+            
+            Llm newLlm = switch (provider) {
+                case "openai" -> LlmBuilder.openai(null);
+                case "claude" -> LlmBuilder.claude(null);
+                case "gemini" -> LlmBuilder.gemini(null);
+                case "groq" -> LlmBuilder.groq(null);
+                default -> {
+                    System.out.printf("❌ Unknown LLM provider: %s%n", provider);
+                    System.out.println("   Available providers: openai, claude, gemini, groq");
+                    yield null;
+                }
+            };
+            
+            if (newLlm != null) {
+                // Tentar fazer a troca
+                boolean success = chatProcessor.changeLlm(newLlm);
+                
+                if (success) {
+                    System.out.printf("✅ Successfully switched to %s%n", provider);
+                    
+                    // Mostrar informações do novo LLM
+                    System.out.printf("   Provider: %s%n", newLlm.getProviderName());
+                    if (newLlm.getCapabilities() != null) {
+                        System.out.printf("   Capabilities: %s%n", newLlm.getCapabilities());
+                    }
+                } else {
+                    System.out.println("❌ Failed to switch LLM provider");
+                    System.out.printf("   Staying with %s%n", currentProvider);
+                }
+            }
+            
+        } catch (Exception e) {
+            System.out.printf("❌ Error switching LLM: %s%n", e.getMessage());
+            System.out.printf("   Staying with %s%n", currentProvider);
+        }
+    }
+
+	private void showHelp() {
         System.out.println("""
             🔧 JCli Commands:
             
@@ -45,6 +100,7 @@ public class CommandHandler {
             /tools                   - List MCP tools
             /servers                 - List MCP servers
             /strategy <name>         - Change inference (simple|react|reflection)
+            /llm <provider>          - Change LLM provider (openai|claude|gemini|groq)
             /debug                   - Toggle debug mode
             /clear                   - Clear screen
             /quit                    - Exit
@@ -53,24 +109,28 @@ public class CommandHandler {
             """);
     }
     
-    private void showStatus() {
-        var servers = mcpManager.getConnectedServers();
-        var domains = mcpManager.getAvailableDomains();
-        
-        System.out.printf("""
-            📊 System Status:
-            🖥️ Servers: %d connected
-            🛠️ Tools: Available across %d domains
-            🤖 LLM: %s
-            ⚡ Health: %s
-            %n""",
-            servers.size(),
-            domains.size(), 
-            mcpManager.getLlm().getProviderName(),
-            mcpManager.isHealthy() ? "✅ Healthy" : "❌ Issues"
-        );
-    }
-    
+	private void showStatus() {
+	    var servers = mcpManager.getConnectedServers();
+	    var domains = mcpManager.getAvailableDomains();
+	    
+	    System.out.printf("""
+	        📊 System Status:
+	        🖥️ Servers: %d connected
+	        🛠️ Tools: Available across %d domains
+	        🤖 LLM: %s
+	        🧠 Strategy: %s
+	        🔧 Debug: %s
+	        ⚡ Health: %s
+	        %n""",
+	        servers.size(),
+	        domains.size(), 
+	        chatProcessor.getCurrentLlm().getProviderName(),  // ATUALIZADO
+	        chatProcessor.getCurrentStrategy().name().toLowerCase(),
+	        chatProcessor.isDebugMode() ? "ON" : "OFF",
+	        mcpManager.isHealthy() ? "✅ Healthy" : "❌ Issues"
+	    );
+	}
+	
     private void showTools() {
         var domains = mcpManager.getAvailableDomains();
         
@@ -120,10 +180,12 @@ public class CommandHandler {
     }
     
     private void toggleDebug() {
+        boolean oldState = chatProcessor.isDebugMode();
         boolean newState = chatProcessor.toggleDebug();
-        System.out.printf("🔧 Debug mode: %s%n", newState ? "ON" : "OFF");
-    }
-    
+        System.out.printf("🔧 Debug mode: %s → %s%n", 
+            oldState ? "ON" : "OFF", 
+            newState ? "ON" : "OFF");
+    }    
     private void clearScreen() {
         System.out.print("\\033[2J\\033[H");
         System.out.flush();

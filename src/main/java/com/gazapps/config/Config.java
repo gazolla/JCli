@@ -128,41 +128,44 @@ public class Config {
 		
 		if (!Files.exists(mcpConfigPath)) {
 			String mcpConfig = """
-				{
-				  "mcpServers": {
-				    "weather-nws": {
-				      "description": "Weather forecasts via NWS",
-				      "command": "npx",
-				      "args": ["@h1deya/mcp-server-weather"],
-				      "priority": 1,
-				      "enabled": true,
-				      "env": {
-				        "REQUIRES_NODEJS": "true",
-				        "REQUIRES_ONLINE": "true"
-				      }
-				    },
-				    "filesystem": {
-				      "description": "File system operations",
-				      "command": "npx",
-				      "args": ["@modelcontextprotocol/server-filesystem", "documents"],
-				      "priority": 2,
-				      "enabled": true,
-				      "env": {
-				        "REQUIRES_NODEJS": "true"
-				      }
-				    },
-				    "time": {
-				      "description": "Time and timezone operations",
-				      "command": "uvx",
-				      "args": ["mcp-server-time"],
-				      "priority": 3,
-				      "enabled": true,
-				      "env": {
-				        "REQUIRES_PYTHON": "true"
-				      }
-				    }
-				  }
-				}
+					{
+					  "mcpServers" : {
+					    "time" : {
+					      "args" : [ ],
+					      "domain" : "time",
+					      "description" : "Servidor para ferramentas de tempo e fuso horário",
+					      "env" : {
+					        "REQUIRES_UVX" : "true"
+					      },
+					      "priority" : 1,
+					      "command" : "uvx mcp-server-time",
+					      "enabled" : true
+					    },
+					    "weather-nws" : {
+					      "args" : [ ],
+					      "domain" : "weather",
+					      "description" : "Previsões meteorológicas via NWS",
+					      "env" : {
+					        "REQUIRES_ONLINE" : "true",
+					        "REQUIRES_NODEJS" : "true"
+					      },
+					      "priority" : 1,
+					      "command" : "npx @h1deya/mcp-server-weather",
+					      "enabled" : true
+					    },
+					    "filesystem" : {
+					      "args" : [ ],
+					      "domain" : "filesystem",
+					      "description" : "Sistema de arquivos - Documents",
+					      "env" : {
+					        "REQUIRES_NODEJS" : "true"
+					      },
+					      "priority" : 3,
+					      "command" : "npx -y @modelcontextprotocol/server-filesystem ./documents",
+					      "enabled" : true
+					    }
+					  }
+					}
 				""";
 			
 			try (FileWriter writer = new FileWriter(mcpConfigPath.toFile())) {

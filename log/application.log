@@ -1,110 +1,92 @@
-2025-08-28 17:55:42.572 [main] INFO  com.gazapps.config.Config - ✅ Configuração do Logback recarregada com sucesso!
-2025-08-28 17:55:42.573 [main] INFO  com.gazapps.config.Config - 📋 Logging configured via logback.xml - JavaCLI/log structure
-2025-08-28 17:55:42.575 [main] INFO  com.gazapps.config.Config - ✅ Config structure created successfully
-2025-08-28 17:55:42.720 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-2025-08-28 17:55:42.721 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-2025-08-28 17:55:42.745 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-2025-08-28 17:55:42.746 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-2025-08-28 17:55:42.748 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-2025-08-28 17:55:43.050 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-2025-08-28 17:55:43.054 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-2025-08-28 17:55:43.055 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-2025-08-28 17:55:45.036 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
-2025-08-28 17:55:45.077 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
-2025-08-28 17:55:45.114 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-2025-08-28 17:55:45.114 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-2025-08-28 17:55:45.411 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-2025-08-28 17:55:45.411 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-2025-08-28 17:55:45.411 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-2025-08-28 17:55:46.967 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
-2025-08-28 17:55:46.967 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
-2025-08-28 17:55:46.976 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
-2025-08-28 17:55:46.992 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-2025-08-28 17:55:46.992 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-2025-08-28 17:55:47.070 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-2025-08-28 17:55:47.070 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-2025-08-28 17:55:47.070 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-2025-08-28 17:55:47.725 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
-2025-08-28 17:55:47.732 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-2025-08-28 17:55:47.732 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-2025-08-28 17:55:47.732 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-2025-08-28 17:55:47.741 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-2025-08-28 17:55:47.741 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-2025-08-28 17:55:47.741 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-2025-08-28 17:55:47.744 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-2025-08-28 17:56:41.138 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GEMINI - logs em JavaCLI/log/inference/simple-conversations.log
-2025-08-28 17:56:41.138 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Que dia é hoje em brasilia?
-2025-08-28 17:56:43.003 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query MULTI-STEP e determine os scores de relevância para TODOS os domínios necessários:
+2025-08-28 22:29:47.377 [main] INFO  com.gazapps.config.Config - ✅ Configuração do Logback recarregada com sucesso!
+2025-08-28 22:29:47.377 [main] INFO  com.gazapps.config.Config - 📋 Logging configured via logback.xml - JavaCLI/log structure
+2025-08-28 22:29:47.379 [main] INFO  com.gazapps.config.Config - ✅ Config structure created successfully
+2025-08-28 22:29:47.531 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+2025-08-28 22:29:47.532 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+2025-08-28 22:29:47.555 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+2025-08-28 22:29:47.557 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+2025-08-28 22:29:47.558 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+2025-08-28 22:29:47.834 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+2025-08-28 22:29:47.835 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+2025-08-28 22:29:47.836 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+2025-08-28 22:29:51.147 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
+2025-08-28 22:29:51.192 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
+2025-08-28 22:29:51.228 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+2025-08-28 22:29:51.228 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:29:51.509 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+2025-08-28 22:29:51.509 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+2025-08-28 22:29:51.509 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+2025-08-28 22:29:53.195 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
+2025-08-28 22:29:53.195 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
+2025-08-28 22:29:53.205 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
+2025-08-28 22:29:53.215 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+2025-08-28 22:29:53.215 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+2025-08-28 22:29:53.295 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+2025-08-28 22:29:53.295 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+2025-08-28 22:29:53.295 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+2025-08-28 22:29:54.330 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
+2025-08-28 22:29:54.337 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+2025-08-28 22:29:54.337 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:29:54.338 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+2025-08-28 22:29:54.345 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+2025-08-28 22:29:54.345 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+2025-08-28 22:29:54.345 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+2025-08-28 22:29:54.348 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+2025-08-28 22:30:08.317 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Gemini initialized with capabilities: LlmCapabilities{functionCalling=true, systemMessages=true, streaming=false, maxTokens=50000, formats=[text, json]}
+2025-08-28 22:30:08.317 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using baseUrl: https://api.groq.com/openai/v1/chat/completions
+2025-08-28 22:30:08.317 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using model: llama-3.3-70b-versatile
+2025-08-28 22:30:08.317 [main] INFO  com.gazapps.chat.ChatProcessor - Changing LLM from GEMINI to GROQ
+2025-08-28 22:30:08.319 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+2025-08-28 22:30:08.319 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+2025-08-28 22:30:08.320 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+2025-08-28 22:30:08.321 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+2025-08-28 22:30:08.321 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+2025-08-28 22:30:08.638 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+2025-08-28 22:30:08.638 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+2025-08-28 22:30:08.638 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+2025-08-28 22:30:10.433 [pool-18-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
+2025-08-28 22:30:10.442 [pool-16-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
+2025-08-28 22:30:10.448 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+2025-08-28 22:30:10.449 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:30:10.723 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+2025-08-28 22:30:10.724 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+2025-08-28 22:30:10.724 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+2025-08-28 22:30:11.989 [pool-21-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
+2025-08-28 22:30:11.990 [pool-21-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
+2025-08-28 22:30:11.998 [pool-19-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
+2025-08-28 22:30:12.006 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+2025-08-28 22:30:12.006 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+2025-08-28 22:30:12.082 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+2025-08-28 22:30:12.082 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+2025-08-28 22:30:12.082 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+2025-08-28 22:30:12.710 [pool-22-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
+2025-08-28 22:30:12.716 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+2025-08-28 22:30:12.716 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:30:12.716 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+2025-08-28 22:30:12.718 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+2025-08-28 22:30:12.718 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+2025-08-28 22:30:12.718 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+2025-08-28 22:30:12.719 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+2025-08-28 22:30:12.719 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+2025-08-28 22:30:12.719 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+2025-08-28 22:30:12.723 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+2025-08-28 22:30:12.723 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+2025-08-28 22:30:12.723 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+2025-08-28 22:30:12.723 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
+2025-08-28 22:30:12.727 [main] INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+2025-08-28 22:30:12.728 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+2025-08-28 22:30:12.728 [main] INFO  com.gazapps.chat.ChatProcessor - Successfully changed LLM to GROQ
+2025-08-28 22:30:12.832 [parallel-3] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:30:12.843 [ForkJoinPool.commonPool-worker-1] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:30:12.843 [ForkJoinPool.commonPool-worker-1] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:31:07.903 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs em JavaCLI/log/inference/simple-conversations.log
+2025-08-28 22:31:07.903 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: ola
+2025-08-28 22:31:08.947 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-08-28 22:31:08.947 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-4603b831-5ba2-42da-bf1f-fab3b54f5880","object":"chat.completion","created":1756431069,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"false"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269261441,"prompt_tokens":253,"prompt_time":0.027828034,"completion_tokens":2,"completion_time":0.007543762,"total_tokens":255,"total_time":0.035371796},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k3sq6bk6eb7tpas72ptpnywt"},"service_tier":"on_demand"}
 
-Query: "Que dia é hoje em brasilia?"
+2025-08-28 22:31:08.960 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
 
-Domínios:
-1. weather - Informações meteorológicas e previsões do tempo
-2. time - Date, time, timezone operations
-3. filesystem - filesystem Operations
-IMPORTANTE: Query requer múltiplas operações, identifique TODOS os domínios relevantes.
-NÃO EXPLIQUE NADA
-Responda em JSON com scores 0.0-1.0:
-{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
-2025-08-28 17:56:44.637 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
-{"weather": 0.0, "time": 1.0, "filesystem": 0.0}
-```
-2025-08-28 17:56:44.641 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que dia é hoje em brasilia?': {time=1.0}
-2025-08-28 17:56:46.188 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas multi-step para query: 'Que dia é hoje em brasilia?'
-2025-08-28 17:56:46.190 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: get_current_time with parameters: {timezone=America/Sao_Paulo}
-2025-08-28 17:56:47.768 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
-2025-08-28 17:59:29.522 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
-2025-08-28 17:59:29.522 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
-2025-08-28 17:59:29.525 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
-2025-08-28 17:59:29.525 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
-2025-08-28 17:59:29.526 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
-2025-08-28 17:59:29.526 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
-2025-08-28 17:59:29.534 [main] INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
-2025-08-28 17:59:29.534 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
-2025-08-28 17:59:29.534 [main] INFO  com.gazapps.JCliApp - JCliApp closed successfully
-2025-08-28 17:59:29.645 [parallel-5] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
-2025-08-28 17:59:29.645 [parallel-6] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
-2025-08-28 17:59:29.646 [parallel-4] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
-2025-08-28 17:59:32.221 [main] INFO  com.gazapps.config.Config - 📋 Application properties loaded: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\config\application.properties
-2025-08-28 17:59:32.776 [main] INFO  com.gazapps.config.Config - ✅ Configuração do Logback recarregada com sucesso!
-2025-08-28 17:59:32.776 [main] INFO  com.gazapps.config.Config - 📋 Logging configured via logback.xml - JavaCLI/log structure
-2025-08-28 17:59:32.777 [main] INFO  com.gazapps.config.Config - ✅ Config structure created successfully
-2025-08-28 17:59:32.924 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-2025-08-28 17:59:32.925 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-2025-08-28 17:59:32.952 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-2025-08-28 17:59:32.953 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-2025-08-28 17:59:32.955 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-2025-08-28 17:59:33.035 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-2025-08-28 17:59:33.035 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-2025-08-28 17:59:33.035 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-2025-08-28 17:59:33.909 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
-2025-08-28 17:59:33.946 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-2025-08-28 17:59:33.947 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-2025-08-28 17:59:34.245 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-2025-08-28 17:59:34.245 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-2025-08-28 17:59:34.245 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-2025-08-28 17:59:35.926 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
-2025-08-28 17:59:35.926 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
-2025-08-28 17:59:35.936 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
-2025-08-28 17:59:35.951 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-2025-08-28 17:59:35.951 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-2025-08-28 17:59:36.228 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-2025-08-28 17:59:36.228 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-2025-08-28 17:59:36.228 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-2025-08-28 17:59:39.614 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
-2025-08-28 17:59:39.623 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
-2025-08-28 17:59:39.629 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-2025-08-28 17:59:39.630 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-2025-08-28 17:59:39.630 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-2025-08-28 17:59:39.639 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-2025-08-28 17:59:39.639 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-2025-08-28 17:59:39.639 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-2025-08-28 17:59:39.643 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-2025-08-28 17:59:59.525 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GEMINI - logs em JavaCLI/log/inference/simple-conversations.log
-2025-08-28 17:59:59.525 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Me fale sobre os telescopios espaciais? Quais são eles?
-2025-08-28 18:00:01.249 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
-
-Query: "Me fale sobre os telescopios espaciais? Quais são eles?"
+Query: "ola"
 
 Domínios:
 1. weather - Informações meteorológicas e previsões do tempo
@@ -113,57 +95,105 @@ Domínios:
 NÃO EXPLIQUE NADA
 Responda em JSON com scores 0.0-1.0:
 {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
-2025-08-28 18:00:02.069 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
+2025-08-28 22:31:09.585 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-08-28 22:31:09.585 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-deef4d08-fe73-41a4-8058-ef599fcae172","object":"chat.completion","created":1756431069,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"weather\": 0.0, \"time\": 0.0, \"filesystem\": 0.0}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269252939,"prompt_tokens":138,"prompt_time":0.017827246,"completion_tokens":25,"completion_time":0.13985739,"total_tokens":163,"total_time":0.157684636},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k3sq6c4veb5arw9158gjsg3d"},"service_tier":"on_demand"}
+
+2025-08-28 22:31:09.586 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+2025-08-28 22:31:09.592 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'ola': {}
+2025-08-28 22:31:09.593 [main] INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
+2025-08-28 22:31:09.594 [main] DEBUG com.gazapps.inference.simple.Simple - Generating direct LLM response
+2025-08-28 22:31:10.105 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-08-28 22:31:10.105 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-f5454d93-a755-4d7b-91bc-a81dc553d1f2","object":"chat.completion","created":1756431070,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"Olá! Hello! It seems like you've said hello in Portuguese. How can I assist you today?"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.267259434,"prompt_tokens":44,"prompt_time":0.011444074,"completion_tokens":23,"completion_time":0.106993448,"total_tokens":67,"total_time":0.118437522},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k3sq6cpdeb8arjn9rey9w62h"},"service_tier":"on_demand"}
+
+2025-08-28 22:31:10.111 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-08-28 22:31:25.975 [main] INFO  com.gazapps.chat.ChatProcessor - Changing LLM from GROQ to GEMINI
+2025-08-28 22:31:25.977 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+2025-08-28 22:31:25.978 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+2025-08-28 22:31:25.980 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+2025-08-28 22:31:25.981 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+2025-08-28 22:31:25.981 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+2025-08-28 22:31:26.262 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+2025-08-28 22:31:26.262 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+2025-08-28 22:31:26.262 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+2025-08-28 22:31:27.723 [pool-28-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
+2025-08-28 22:31:27.731 [pool-26-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
+2025-08-28 22:31:27.737 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+2025-08-28 22:31:27.737 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:31:28.006 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+2025-08-28 22:31:28.006 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+2025-08-28 22:31:28.006 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+2025-08-28 22:31:29.451 [pool-31-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
+2025-08-28 22:31:29.451 [pool-31-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
+2025-08-28 22:31:29.462 [pool-29-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
+2025-08-28 22:31:29.472 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+2025-08-28 22:31:29.472 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+2025-08-28 22:31:29.563 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+2025-08-28 22:31:29.563 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+2025-08-28 22:31:29.564 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+2025-08-28 22:31:30.269 [pool-32-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
+2025-08-28 22:31:30.274 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+2025-08-28 22:31:30.274 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+2025-08-28 22:31:30.274 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+2025-08-28 22:31:30.276 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+2025-08-28 22:31:30.276 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+2025-08-28 22:31:30.276 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+2025-08-28 22:31:30.277 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
+2025-08-28 22:31:30.279 [main] INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+2025-08-28 22:31:30.279 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+2025-08-28 22:31:30.279 [main] INFO  com.gazapps.chat.ChatProcessor - Successfully changed LLM to GEMINI
+2025-08-28 22:31:30.380 [ForkJoinPool.commonPool-worker-2] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:31:30.381 [ForkJoinPool.commonPool-worker-4] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:31:30.381 [ForkJoinPool.commonPool-worker-3] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+2025-08-28 22:31:39.781 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GEMINI - logs em JavaCLI/log/inference/simple-conversations.log
+2025-08-28 22:31:39.781 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: ola
+2025-08-28 22:31:40.521 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
+
+Query: "ola"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+2025-08-28 22:31:41.413 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
 {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
 ```
-2025-08-28 18:00:02.072 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Me fale sobre os telescopios espaciais? Quais são eles?': {}
-2025-08-28 18:00:02.074 [main] INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
-2025-08-28 18:00:02.074 [main] DEBUG com.gazapps.inference.simple.Simple - Generating direct LLM response
-2025-08-28 18:00:10.256 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
-2025-08-28 18:07:08.833 [main] INFO  com.gazapps.config.Config - 📋 Application properties loaded: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\config\application.properties
-2025-08-28 18:07:09.408 [main] INFO  com.gazapps.config.Config - ✅ Configuração do Logback recarregada com sucesso!
-2025-08-28 18:07:09.409 [main] INFO  com.gazapps.config.Config - 📋 Logging configured via logback.xml - JavaCLI/log structure
-2025-08-28 18:07:09.410 [main] INFO  com.gazapps.config.Config - ✅ Config structure created successfully
-2025-08-28 18:07:09.575 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-2025-08-28 18:07:09.576 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-2025-08-28 18:07:09.602 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-2025-08-28 18:07:09.603 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-2025-08-28 18:07:09.606 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-2025-08-28 18:07:09.912 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-2025-08-28 18:07:09.912 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-2025-08-28 18:07:09.913 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-2025-08-28 18:07:13.120 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
-2025-08-28 18:07:13.163 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
-2025-08-28 18:07:13.202 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-2025-08-28 18:07:13.202 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-2025-08-28 18:07:13.502 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-2025-08-28 18:07:13.502 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-2025-08-28 18:07:13.503 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-2025-08-28 18:07:15.845 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
-2025-08-28 18:07:15.846 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
-2025-08-28 18:07:15.857 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
-2025-08-28 18:07:15.868 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-2025-08-28 18:07:15.868 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-2025-08-28 18:07:15.950 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-2025-08-28 18:07:15.950 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-2025-08-28 18:07:15.951 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-2025-08-28 18:07:17.036 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
-2025-08-28 18:07:17.042 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-2025-08-28 18:07:17.043 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-2025-08-28 18:07:17.043 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-2025-08-28 18:07:17.051 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-2025-08-28 18:07:17.052 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-2025-08-28 18:07:17.052 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-2025-08-28 18:07:17.055 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-2025-08-28 18:09:25.743 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
-2025-08-28 18:09:25.744 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
-2025-08-28 18:09:25.751 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
-2025-08-28 18:09:25.752 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
-2025-08-28 18:09:25.752 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
-2025-08-28 18:09:25.752 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
-2025-08-28 18:09:25.758 [main] INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
-2025-08-28 18:09:25.758 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
-2025-08-28 18:09:25.759 [main] INFO  com.gazapps.JCliApp - JCliApp closed successfully
-2025-08-28 18:09:25.863 [parallel-2] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
-2025-08-28 18:09:25.863 [parallel-4] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
-2025-08-28 18:09:25.863 [parallel-3] WARN  i.m.c.transport.StdioClientTransport - Process terminated with code 1
+
+2025-08-28 22:31:41.414 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'ola': {}
+2025-08-28 22:31:41.415 [main] INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
+2025-08-28 22:31:41.415 [main] DEBUG com.gazapps.inference.simple.Simple - Generating direct LLM response
+2025-08-28 22:31:42.941 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-08-28 22:46:31.489 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GEMINI - logs em JavaCLI/log/inference/simple-conversations.log
+2025-08-28 22:46:31.489 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Que horas são em los angeles,ca?
+2025-08-28 22:46:32.853 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
+
+Query: "Que horas são em los angeles,ca?"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+2025-08-28 22:46:34.457 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
+{"weather": 0.3, "time": 0.9, "filesystem": 0.0}
+```
+2025-08-28 22:46:34.459 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que horas são em los angeles,ca?': {weather=0.3, time=0.9}
+2025-08-28 22:46:36.096 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Que horas são em los angeles,ca?'
+2025-08-28 22:46:36.102 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: get_current_time with parameters: {timezone=America/Los_Angeles}
+2025-08-28 22:46:36.843 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-08-28 23:08:52.620 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+2025-08-28 23:08:52.620 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+2025-08-28 23:08:52.620 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
+2025-08-28 23:08:52.622 [main] INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+2025-08-28 23:08:52.623 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+2025-08-28 23:08:52.623 [main] INFO  com.gazapps.JCliApp - JCliApp closed successfully

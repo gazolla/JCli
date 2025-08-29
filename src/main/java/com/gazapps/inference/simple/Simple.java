@@ -45,6 +45,10 @@ public class Simple implements Inference {
         
         try {
 
+        	if (observer != null) {
+                observer.onInferenceStart(query, getStrategyName().name());
+            }
+        	
             Optional<Map<Tool, Map<String, Object>>> optionalSelections;
             
             boolean isMultiStep = isMultiStep(query, llm);
@@ -137,7 +141,7 @@ public class Simple implements Inference {
             MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, parameters);
             
             if (observer != null) {
-                observer.onToolExecution(tool.getName(), result.success ? result.content : result.message);
+                observer.onToolExecution(tool.getName(), result.message);
             }
             
             if (!result.success) {

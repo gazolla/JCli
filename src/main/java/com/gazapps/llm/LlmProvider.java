@@ -1,7 +1,5 @@
 package com.gazapps.llm;
- /**
-     * Enum para identificar provedores LLM.
-     */
+
     public enum LlmProvider {
         GEMINI,
         GROQ,

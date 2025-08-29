@@ -1,81 +1,64 @@
-17:55:42.720 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-17:55:42.721 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-17:55:42.745 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-17:55:42.746 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-17:55:42.748 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-17:55:43.050 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-17:55:43.054 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-17:55:43.055 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-17:55:45.114 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-17:55:45.114 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-17:55:45.411 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-17:55:45.411 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-17:55:45.411 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-17:55:46.992 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-17:55:46.992 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-17:55:47.070 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-17:55:47.070 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-17:55:47.070 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-17:55:47.732 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-17:55:47.732 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-17:55:47.732 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-17:55:47.741 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-17:55:47.741 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-17:55:47.741 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-17:55:47.744 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-17:56:43.003 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query MULTI-STEP e determine os scores de relevância para TODOS os domínios necessários:
+22:29:47.531 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+22:29:47.532 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+22:29:47.555 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+22:29:47.557 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+22:29:47.558 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+22:29:47.834 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+22:29:47.835 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+22:29:47.836 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+22:29:51.228 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+22:29:51.228 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+22:29:51.509 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+22:29:51.509 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+22:29:51.509 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+22:29:53.215 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+22:29:53.215 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+22:29:53.295 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+22:29:53.295 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+22:29:53.295 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+22:29:54.337 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+22:29:54.337 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+22:29:54.338 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+22:29:54.345 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+22:29:54.345 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+22:29:54.345 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+22:29:54.348 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+22:30:08.319 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+22:30:08.319 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+22:30:08.320 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+22:30:08.321 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+22:30:08.321 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+22:30:08.638 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+22:30:08.638 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+22:30:08.638 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+22:30:10.448 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+22:30:10.449 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+22:30:10.723 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+22:30:10.724 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+22:30:10.724 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+22:30:12.006 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+22:30:12.006 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+22:30:12.082 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+22:30:12.082 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+22:30:12.082 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+22:30:12.716 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+22:30:12.716 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+22:30:12.716 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+22:30:12.718 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+22:30:12.718 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+22:30:12.718 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+22:30:12.719 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+22:30:12.719 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+22:30:12.719 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+22:30:12.723 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+22:30:12.723 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+22:30:12.723 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+22:30:12.723 INFO  com.gazapps.mcp.MCPService - MCPService fechado
+22:30:12.727 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+22:30:12.728 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+22:31:08.960 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
 
-Query: "Que dia é hoje em brasilia?"
-
-Domínios:
-1. weather - Informações meteorológicas e previsões do tempo
-2. time - Date, time, timezone operations
-3. filesystem - filesystem Operations
-IMPORTANTE: Query requer múltiplas operações, identifique TODOS os domínios relevantes.
-NÃO EXPLIQUE NADA
-Responda em JSON com scores 0.0-1.0:
-{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
-17:56:44.637 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
-{"weather": 0.0, "time": 1.0, "filesystem": 0.0}
-```
-17:56:44.641 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que dia é hoje em brasilia?': {time=1.0}
-17:56:46.188 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas multi-step para query: 'Que dia é hoje em brasilia?'
-17:59:29.522 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
-17:59:29.522 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
-17:59:29.525 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
-17:59:29.525 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
-17:59:29.526 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
-17:59:29.526 INFO  com.gazapps.mcp.MCPService - MCPService fechado
-17:59:29.534 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
-17:59:29.534 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
-17:59:32.924 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-17:59:32.925 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-17:59:32.952 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-17:59:32.953 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-17:59:32.955 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-17:59:33.035 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-17:59:33.035 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-17:59:33.035 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-17:59:33.946 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-17:59:33.947 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-17:59:34.245 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-17:59:34.245 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-17:59:34.245 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-17:59:35.951 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-17:59:35.951 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-17:59:36.228 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-17:59:36.228 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-17:59:36.228 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-17:59:39.629 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-17:59:39.630 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-17:59:39.630 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-17:59:39.639 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-17:59:39.639 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-17:59:39.639 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-17:59:39.643 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-18:00:01.249 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
-
-Query: "Me fale sobre os telescopios espaciais? Quais são eles?"
+Query: "ola"
 
 Domínios:
 1. weather - Informações meteorológicas e previsões do tempo
@@ -84,41 +67,77 @@ Domínios:
 NÃO EXPLIQUE NADA
 Responda em JSON com scores 0.0-1.0:
 {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
-18:00:02.069 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
+22:31:09.586 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+22:31:09.592 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'ola': {}
+22:31:09.593 INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
+22:31:25.977 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+22:31:25.978 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+22:31:25.980 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
+22:31:25.981 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
+22:31:25.981 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
+22:31:26.262 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+22:31:26.262 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+22:31:26.262 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+22:31:27.737 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+22:31:27.737 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+22:31:28.006 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+22:31:28.006 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+22:31:28.006 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+22:31:29.472 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+22:31:29.472 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+22:31:29.563 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+22:31:29.563 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+22:31:29.564 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+22:31:30.274 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+22:31:30.274 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+22:31:30.274 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+22:31:30.276 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+22:31:30.276 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+22:31:30.276 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+22:31:30.277 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+22:31:30.277 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+22:31:30.277 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+22:31:30.277 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+22:31:30.277 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+22:31:30.277 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+22:31:30.277 INFO  com.gazapps.mcp.MCPService - MCPService fechado
+22:31:30.279 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+22:31:30.279 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+22:31:40.521 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
+
+Query: "ola"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+22:31:41.413 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
 {"weather": 0.0, "time": 0.0, "filesystem": 0.0}
 ```
-18:00:02.072 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Me fale sobre os telescopios espaciais? Quais são eles?': {}
-18:00:02.074 INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
-18:07:09.575 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-18:07:09.576 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-18:07:09.602 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 servidores da configuração
-18:07:09.603 INFO  com.gazapps.mcp.MCPConfig - Carregados 3 domínios da configuração
-18:07:09.606 INFO  com.gazapps.mcp.MCPService - Inicializando 3 servidores MCP...
-18:07:09.912 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-18:07:09.912 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-18:07:09.913 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-18:07:13.202 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-18:07:13.202 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-18:07:13.502 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-18:07:13.502 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-18:07:13.503 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-18:07:15.868 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-18:07:15.868 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-18:07:15.950 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-18:07:15.950 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-18:07:15.951 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-18:07:17.042 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-18:07:17.043 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-18:07:17.043 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 3/3 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-18:07:17.051 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-18:07:17.052 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-18:07:17.052 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-18:07:17.055 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-18:09:25.743 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
-18:09:25.744 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
-18:09:25.751 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
-18:09:25.752 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
-18:09:25.752 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
-18:09:25.752 INFO  com.gazapps.mcp.MCPService - MCPService fechado
-18:09:25.758 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
-18:09:25.758 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
+
+22:31:41.414 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'ola': {}
+22:31:41.415 INFO  com.gazapps.mcp.MCPManager - Domain threshold not met - max score 0.0 < threshold 0.3
+22:46:32.853 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analise a query e determine os scores de relevância:
+
+Query: "Que horas são em los angeles,ca?"
+
+Domínios:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. filesystem - filesystem Operations
+NÃO EXPLIQUE NADA
+Responda em JSON com scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "filesystem": 0.0}
+22:46:34.457 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: ```json
+{"weather": 0.3, "time": 0.9, "filesystem": 0.0}
+```
+22:46:34.459 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que horas são em los angeles,ca?': {weather=0.3, time=0.9}
+22:46:36.096 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Que horas são em los angeles,ca?'
+23:08:52.620 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+23:08:52.620 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+23:08:52.620 INFO  com.gazapps.mcp.MCPService - MCPService fechado
+23:08:52.622 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+23:08:52.623 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso
