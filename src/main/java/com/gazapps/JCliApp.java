@@ -9,8 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.gazapps.chat.ChatProcessor;
 import com.gazapps.config.Config;
+import com.gazapps.config.EnvironmentSetup;
+import com.gazapps.exceptions.ConfigurationException;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
+import com.gazapps.llm.LlmProvider;
 import com.gazapps.mcp.MCPManager;
 import com.github.lalyos.jfiglet.FigletFont;
 
@@ -33,13 +36,33 @@ public class JCliApp implements AutoCloseable {
     
     public JCliApp() throws Exception {
     	starting();
+    	
+    	// Verificação inicial - antes de qualquer inicialização
+    	if (!EnvironmentSetup.ensureConfigurationReady()) {
+    		throw new ConfigurationException("Cannot start without proper configuration");
+    	}
+    	
         this.config = new Config();
-        this.llm = LlmBuilder.gemini(null);
+        
+        // LLM dinâmico baseado na configuração
+        LlmProvider preferredProvider = config.getPreferredProvider();
+        this.llm = createLlmInstance(preferredProvider);
+        
         this.mcpManager = new MCPManager("./config", llm);
         this.chatProcessor = new ChatProcessor(mcpManager, llm);
         this.scanner = new Scanner(System.in);
         
         showWelcome();
+    }
+    
+    private Llm createLlmInstance(LlmProvider provider) {
+        System.out.printf("🤖 Using preferred provider: %s%n", provider.name());
+        return switch (provider) {
+            case GEMINI -> LlmBuilder.gemini(null);
+            case GROQ -> LlmBuilder.groq(null);
+            case CLAUDE -> LlmBuilder.claude(null);
+            case OPENAI -> LlmBuilder.openai(null);
+        };
     }
     
     public static void main(String[] args) throws Exception {
@@ -119,6 +142,7 @@ public class JCliApp implements AutoCloseable {
             mcpManager.close();
         }
         
+        EnvironmentSetup.cleanup();
         logger.info("JCliApp closed successfully");
     }
 }

@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import com.gazapps.llm.LlmProvider;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
 
@@ -26,6 +29,7 @@ public class Config {
 
 	public Config() {
 		loadApplicationProperties();
+		loadLlmProperties(); // NOVO - carregar llm.properties
 		if ("true".equals(properties.getProperty("log.recreate", "false"))) {
 			deleteAllLogFiles();
 		}
@@ -74,6 +78,22 @@ public class Config {
 			}
 		} catch (IOException e) {
 			logger.error("Error loading configuration: {}", e.getMessage());
+		}
+	}
+	
+	private void loadLlmProperties() {
+		String llmConfigFile = "config/llm.properties";
+		try {
+			if (Files.exists(Paths.get(llmConfigFile))) {
+				try (InputStream input = new FileInputStream(llmConfigFile)) {
+					properties.load(input);
+					logger.info("📋 LLM properties loaded: {}", new File(llmConfigFile).getAbsolutePath());
+				}
+			} else {
+				logger.info("LLM properties file not found, using defaults");
+			}
+		} catch (IOException e) {
+			logger.error("Error loading LLM configuration: {}", e.getMessage());
 		}
 	}
 
@@ -215,6 +235,80 @@ public class Config {
 			logger.error("❌ 'logback.xml' file not found in classpath.");
 		}
 
+	}
+
+	public LlmProvider getPreferredProvider() {
+		// Primeiro, tentar o provider configurado no properties
+		String providerName = properties.getProperty("llm.provider", "gemini");
+		try {
+			LlmProvider configuredProvider = LlmProvider.fromString(providerName);
+			if (isProviderConfigured(configuredProvider)) {
+				return configuredProvider;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid provider in config: {}", providerName);
+		}
+		
+		// Se o provider do properties não está configurado, usar o primeiro disponível
+		List<LlmProvider> configured = getConfiguredProviders();
+		if (!configured.isEmpty()) {
+			LlmProvider firstAvailable = configured.get(0);
+			logger.info("Using first available provider: {} (preferred {} not configured)", 
+					   firstAvailable, providerName);
+			return firstAvailable;
+		}
+		
+		// Fallback para GEMINI se nada estiver configurado (não deveria acontecer)
+		logger.warn("No providers configured, defaulting to GEMINI");
+		return LlmProvider.GEMINI;
+	}
+	
+	public List<LlmProvider> getConfiguredProviders() {
+		List<LlmProvider> configured = new ArrayList<>();
+		for (LlmProvider provider : LlmProvider.values()) {
+			if (isProviderConfigured(provider)) {
+				configured.add(provider);
+			}
+		}
+		return configured;
+	}
+	
+	public boolean isProviderConfigured(LlmProvider provider) {
+		String envKey = getEnvironmentKeyName(provider);
+		String value = getApiKeyFromEnvironment(envKey);
+		return value != null && !value.trim().isEmpty() && !value.startsWith("your_");
+	}
+	
+	private String getEnvironmentKeyName(LlmProvider provider) {
+		return switch (provider) {
+			case GEMINI -> "GEMINI_API_KEY";
+			case GROQ -> "GROQ_API_KEY";
+			case CLAUDE -> "ANTHROPIC_API_KEY";
+			case OPENAI -> "OPENAI_API_KEY";
+		};
+	}
+	
+	private String getApiKeyFromEnvironment(String envKey) {
+		// 1. System property
+		String value = System.getProperty(envKey);
+		if (value != null && !value.trim().isEmpty()) {
+			return value;
+		}
+		
+		// 2. Environment variable  
+		value = System.getenv(envKey);
+		if (value != null && !value.trim().isEmpty()) {
+			return value;
+		}
+		
+		// 3. Properties file (groq.api.key, etc)
+		String propKey = envKey.toLowerCase().replace("_", ".");
+		value = properties.getProperty(propKey);
+		if (value != null && !value.trim().isEmpty()) {
+			return value;
+		}
+		
+		return null;
 	}
 
 	private void deleteDirectory(File dir) {

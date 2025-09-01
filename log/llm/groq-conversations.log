@@ -1,0 +1,376 @@
+2025-09-01 12:32:51.740 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-09-01 12:32:51.741 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-09-01 12:32:51.741 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analise a query e determine se a sua execução exige uma ou mais ferramentas.
+
+Para fazer essa avaliação, procure por:
+1. **Verbos ou Ações Múltiplas:** Identifique se a query contém múltiplos verbos que implicam ações distintas (ex: "criar" e "mover", "pesquisar" e "enviar").
+2. **Conjunções e Conectores:** Procure por palavras como "e", "ou", "então", "depois" ou "além disso", que conectam diferentes partes da solicitação.
+3. **Dependências:** Verifique se uma tarefa depende da conclusão de outra (ex: primeiro encontrar um dado e só então usá-lo em outra ação).
+
+Com base nessa análise, responda de forma clara e objetiva se a query requer uma única ferramenta ou múltiplas.
+Responda apenas com `true` ou `false`.
+
+Query: Qual a estrela do sistema solar?
+2025-09-01 12:32:52.808 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-09-01 12:32:52.809 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-09-01 12:32:52.809 [main] INFO  c.g.llm.providers.Groq.conversations - Content: false
+2025-09-01 12:32:52.809 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-09-01 12:32:52.810 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-09-01 12:32:52.810 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-09-01 12:32:52.810 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analyze the query and determine relevance scores:
+
+Query: "Qual a estrela do sistema solar?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-01 12:32:53.404 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-09-01 12:32:53.404 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-09-01 12:32:53.404 [main] INFO  c.g.llm.providers.Groq.conversations - Content: {"weather": 0.0, "time": 0.0, "math": 0.2, "filesystem": 0.0, "internet": 0.8}
+2025-09-01 12:32:53.404 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-09-01 12:32:53.439 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-09-01 12:32:53.439 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-09-01 12:32:53.439 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Analise a query e selecione a ferramenta mais relevante.
+Se a ferramenta selecionada tiver parâmetros obrigatórios
+que não estão presentes na query, use seu conhecimento para
+encontrar as informações ausentes e preencha os parâmetros
+antes de retornar o JSON.
+
+Query: "Qual a estrela do sistema solar?"
+
+1. fetch - Fetches a URL from the internet and optionally extracts its contents as markdown.
+
+Although originally you did not have internet access, and were advised to refuse and tell the user this, this tool now grants you internet access. Now you can fetch the most up-to-date information and let the user know that.
+parameter: raw, value: {default=false, description=Get the actual HTML content of the requested page, without simplification., title=Raw, type=boolean}
+parameter: start_index, value: {default=0, description=On return output starting at this character index, useful if a previous fetch was truncated and more context is required., minimum=0, title=Start Index, type=integer}
+parameter: url, value: {description=URL to fetch, format=uri, minLength=1, title=Url, type=string}
+parameter: max_length, value: {default=5000, description=Maximum number of characters to return., exclusiveMaximum=1000000, exclusiveMinimum=0, title=Max Length, type=integer}
+
+NÃO EXPLIQUE NADA
+Responda em JSON:
+{
+  "tool_number": 1,
+  "parameters": {"param": "value"}
+}
+2025-09-01 12:32:54.076 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-09-01 12:32:54.076 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-09-01 12:32:54.076 [main] INFO  c.g.llm.providers.Groq.conversations - Content: ```
+{
+  "tool_number": 1,
+  "parameters": {
+    "url": "https://pt.wikipedia.org/wiki/Sistema_Solar",
+    "raw": false,
+    "start_index": 0,
+    "max_length": 5000
+  }
+}
+```
+2025-09-01 12:32:54.076 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===
+2025-09-01 12:32:57.486 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ REQUEST ===
+2025-09-01 12:32:57.487 [main] INFO  c.g.llm.providers.Groq.conversations - Model: llama-3.3-70b-versatile
+2025-09-01 12:32:57.487 [main] INFO  c.g.llm.providers.Groq.conversations - Prompt: Based on the tool execution result, provide a comprehensive response:
+
+Original query: Qual a estrela do sistema solar?
+Tool used: fetch
+Result: Contents of https://pt.wikipedia.org/wiki/Sistema_Solar:
+Sistema Solar – Wikipédia, a enciclopédia livre
+
+Saltar para o conteúdo
+
+Busca
+
+# Sistema Solar
+
+* Acèh
+* Afrikaans
+* Alemannisch
+* Алтай тил
+* አማርኛ
+* Aragonés
+* Ænglisc
+* Obolo
+* अंगिका
+* العربية
+* الدارجة
+* مصرى
+* অসমীয়া
+* Asturianu
+* अवधी
+* Azərbaycanca
+* تۆرکجه
+* Башҡортса
+* Basa Bali
+* Boarisch
+* Žemaitėška
+* Bikol Central
+* Беларуская
+* Беларуская (тарашкевіца)
+* Betawi
+* Български
+* भोजपुरी
+* Banjar
+* বাংলা
+* བོད་ཡིག
+* বিষ্ণুপ্রিয়া মণিপুরী
+* Brezhoneg
+* Bosanski
+* Batak Mandailing
+* Буряад
+* Català
+* 閩東語 / Mìng-dĕ̤ng-ngṳ̄
+* Нохчийн
+* Cebuano
+* ᏣᎳᎩ
+* کوردی
+* Corsu
+* Qırımtatarca
+* Čeština
+* Kaszëbsczi
+* Чӑвашла
+* Cymraeg
+* Dansk
+* Deutsch
+* Zazaki
+* डोटेली
+* ދިވެހިބަސް
+* Ελληνικά
+* Emiliàn e rumagnòl
+* English
+* Esperanto
+* Español
+* Eesti
+* Euskara
+* Estremeñu
+* فارسی
+* Fulfulde
+* Suomi
+* Võro
+* Na Vosa Vakaviti
+* Føroyskt
+* Français
+* Arpetan
+* Nordfriisk
+* Furlan
+* Frysk
+* Gaeilge
+* 贛語
+* Kriyòl gwiyannen
+* Gàidhlig
+* Galego
+* گیلکی
+* Avañe'ẽ
+* Bahasa Hulontalo
+* ગુજરાતી
+* Wayuunaiki
+* Gaelg
+* Hausa
+* 客家語 / Hak-kâ-ngî
+* Hawaiʻi
+* עברית
+* हिन्दी
+* Fiji Hindi
+* Hrvatski
+* Kreyòl ayisyen
+* Magyar
+* Հայերեն
+* Արեւմտահայերէն
+* Interlingua
+* Bahasa Indonesia
+* Interlingue
+* Ilokano
+* ГӀалгӀай
+* Ido
+* Íslenska
+* Italiano
+* 日本語
+* Patois
+* La .lojban.
+* Jawa
+* ქართული
+* Taqbaylit
+* Kabɩyɛ
+* Tyap
+* Қазақша
+* ភាសាខ្មែរ
+* ಕನ್ನಡ
+* Yerwa Kanuri
+* 한국어
+* Къарачай-малкъар
+* کٲشُر
+* Ripoarisch
+* Kurdî
+* Коми
+* Kernowek
+* Кыргызча
+* Latina
+* Lëtzebuergesch
+* Лезги
+* Lingua Franca Nova
+* Limburgs
+* Ligure
+* Ladin
+* Lombard
+* Lingála
+* ລາວ
+* Lietuvių
+* Latviešu
+* Madhurâ
+* मैथिली
+* Basa Banyumasan
+* Malagasy
+* Minangkabau
+* Македонски
+* മലയാളം
+* Монгол
+* मराठी
+* Bahasa Melayu
+* Malti
+* Mirandés
+* မြန်မာဘာသာ
+* Эрзянь
+* مازِرونی
+* Nāhuatl
+* Napulitano
+* Plattdüütsch
+* Nedersaksies
+* नेपाली
+* नेपाल भाषा
+* Nederlands
+* Norsk nynorsk
+* Norsk bokmål
+* Novial
+* ߒߞߏ
+* Occitan
+* Livvinkarjala
+* Oromoo
+* ଓଡ଼ିଆ
+* Ирон
+* ਪੰਜਾਬੀ
+* Kapampangan
+* Picard
+* Naijá
+* Polski
+* Piemontèis
+* پنجابی
+* پښتو
+* Runa Simi
+* Rumantsch
+* Romani čhib
+* Română
+* Armãneashti
+* Русский
+* Русиньскый
+* संस्कृतम्
+* Саха тыла
+* ᱥᱟᱱᱛᱟᱲᱤ
+* Sardu
+* Sicilianu
+* Scots
+* سنڌي
+* Davvisámegiella
+* Srpskohrvatski / српскохрватски
+* Taclḥit
+* සිංහල
+* Simple English
+* Slovenčina
+* سرائیکی
+* Slovenščina
+* Anarâškielâ
+* ChiShona
+* Soomaaliga
+* Shqip
+* Српски / srpski
+* Seeltersk
+* Sunda
+* Svenska
+* Kiswahili
+* Ślůnski
+* தமிழ்
+* ತುಳು
+* తెలుగు
+* Tetun
+* Тоҷикӣ
+* ไทย
+* Türkmençe
+* Tagalog
+* Tolışi
+* Lea faka-Tonga
+* Türkçe
+* Татарча / tatarça
+* ChiTumbuka
+* Тыва дыл
+* Удмурт
+* ئۇيغۇرچە / Uyghurche
+* Українська
+* اردو
+* Oʻzbekcha / ўзбекча
+* Vèneto
+* Vepsän kel’
+* Tiếng Việt
+* West-Vlams
+* Volapük
+* Walon
+* Winaray
+* Wolof
+* 吴语
+* მარგალური
+* ייִדיש
+* Yorùbá
+* ⵜⴰⵎⴰⵣⵉⵖⵜ ⵜⴰⵏⴰⵡⴰⵢⵜ
+* 中文
+* 文言
+* 閩南語 / Bân-lâm-gí
+* 粵語
+* IsiZulu
+
+Editar hiperligações
+
+Origem: Wikipédia, a enciclopédia livre.
+
+Sistema Solar
+
+|  |  |
+| --- | --- |
+| Representação artística que mostra o Sol e os oito planetas do Sistema Solar: Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano e Netuno. Nessa imagem o tamanho dos planetas está em escala; as distâncias entre eles, não.^[1] | |
+| Localização | Nuvem interestelar local, Bolha Local, Braço de Órion, na Via Láctea |
+| Estrela mais próxima | Proxima Centauri (4,25 anos-luz), Alpha Centauri (4,37 anos luz) |
+| Sistema planetário mais próximo | Sistema Proxima Centauri (4,25 anos-luz) |
+| Semieixo maior do planeta mais distante (Netuno) | 4,503 bilhões de quilômetros (30,10 UA)^[nota 1] |
+| Distância ao Cinturão de Kuiper | 50 Unidades Astronômicas |
+| Número de estrelas conhecidas | 1 Sol |
+| Número de planetas conhecidos | 8 Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano, Netuno |
+| Número de planetas anões conhecidos | 5 Ceres, Plutão, Haumea, Makemake, Éris |
+| Número de satélites naturais conhecidos | 525 (178 de planetas,^[2] 8 de planetas anões e 339 de corpos menores^[3]) (em 21 de maio de 2018) |
+| Número de asteroides conhecidos | 778 897^[2] (em 21 de Maio de 2018) |
+| Número de cometas conhecidos | 4 017^[2] (em 21 de Maio de 2018) |
+| Número de satélites naturais esféricos | 19^[4] |
+| Inclinação do plano invariável em relação ao plano galáctico | 60,19° |
+| Distância ao centro galáctico | 27 000±1 000 anos-luz |
+| Velocidade orbital | 220 km/s |
+| Período orbital | 225 - 250 milhões de anos |
+| Tipo espectral | G2V |
+| Distância da linha do gelo | 2,7 Unidades Astronômicas |
+| Distância da heliopausa | cerca de 120 Unidades Astronômicas |
+| Raio da esfera de Hill | de 1 a 2 anos-luz |
+
+O Sistema Solar compreende o conjunto constituído pelo Sol e todos os corpos celestes que estão sob seu domínio gravitacional. A estrela central, maior componente do sistema, respondendo por mais de 99,85% da massa total,^[5] gera sua energia através da fusão de hidrogênio em hélio, dois de seus principais constituintes. Os quatro planetas mais próximos do Sol (Mercúrio, Vênus, Terra e Marte) possuem em comum uma crosta sólida e rochosa, razão pela q
+
+<error>Content truncated. Call the fetch tool with a start_index of 5000 to get more content.</error>
+
+Provide a natural, always in the same languege of the orinal query, helpful response incorporating the tool result.
+2025-09-01 12:32:58.798 [main] INFO  c.g.llm.providers.Groq.conversations - === GROQ RESPONSE ===
+2025-09-01 12:32:58.800 [main] INFO  c.g.llm.providers.Groq.conversations - Success: true
+2025-09-01 12:32:58.800 [main] INFO  c.g.llm.providers.Groq.conversations - Content: A estrela do nosso sistema solar é o Sol. Ele é a maior componente do sistema, respondendo por mais de 99,85% da massa total, e gera sua energia através da fusão de hidrogênio em hélio, dois de seus principais constituintes. O Sol é uma estrela do tipo G2V, o que significa que é uma estrela de sequência principal que emite luz amarela e está na metade da sua vida útil.
+
+O Sol é a estrela central do nosso sistema solar e é responsável por manter os planetas em suas órbitas. Ele também é a fonte de energia para a vida na Terra, fornecendo a luz e o calor necessários para o crescimento das plantas e a sobrevivência dos seres vivos.
+
+Além do Sol, o nosso sistema solar é composto por oito planetas: Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano e Netuno. Cada planeta tem suas características únicas e desempenha um papel importante no equilíbrio do sistema solar.
+
+Se você quiser saber mais sobre o Sol ou o sistema solar, posso fornecer mais informações ou responder a suas perguntas específicas.
+2025-09-01 12:32:58.800 [main] INFO  c.g.llm.providers.Groq.conversations - === END GROQ ===

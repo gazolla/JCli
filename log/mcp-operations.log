@@ -1,0 +1,54 @@
+12:31:30.768 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+12:31:30.769 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+12:31:30.794 INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
+12:31:30.803 INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
+12:31:30.804 INFO  com.gazapps.mcp.MCPService - Inicializando 6 servidores MCP...
+12:31:31.494 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx calculator-mcp-server': disponível
+12:31:31.494 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
+12:31:31.495 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
+12:31:46.717 WARN  com.gazapps.mcp.MCPService - ❌ Falha ao conectar servidor 'calculator': java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 15000ms in 'source(MonoDeferContextual)' (and no fallback has been configured) - continuando sem este servidor
+12:31:47.286 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-rss': disponível
+12:31:47.286 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
+12:31:47.286 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
+12:32:02.295 WARN  com.gazapps.mcp.MCPService - ❌ Falha ao conectar servidor 'rss-feeds': java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 15000ms in 'source(MonoDeferContextual)' (and no fallback has been configured) - continuando sem este servidor
+12:32:03.004 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
+12:32:03.004 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+12:32:03.004 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+12:32:05.216 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+12:32:05.216 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+12:32:06.001 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-fetch': disponível
+12:32:06.002 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
+12:32:06.002 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
+12:32:16.974 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
+12:32:16.974 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
+12:32:17.376 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
+12:32:17.376 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+12:32:17.376 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+12:32:19.632 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+12:32:19.632 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+12:32:19.965 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
+12:32:19.965 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+12:32:19.965 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+12:32:22.149 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+12:32:22.149 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+12:32:22.149 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 4/6 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+12:32:22.187 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+12:32:22.213 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+12:32:22.214 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+12:32:22.218 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+12:32:52.810 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Qual a estrela do sistema solar?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+12:32:53.404 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "math": 0.2, "filesystem": 0.0, "internet": 0.8}
+12:32:53.423 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Qual a estrela do sistema solar?': {math=0.2, internet=0.8}
+12:32:54.080 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Qual a estrela do sistema solar?'

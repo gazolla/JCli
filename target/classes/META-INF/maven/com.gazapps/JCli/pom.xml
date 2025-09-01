@@ -97,7 +97,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.gazapps.App</mainClass>
+                            <mainClass>com.gazapps.JCliApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
