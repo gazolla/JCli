@@ -1,20 +1,26 @@
 package com.gazapps.mcp;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.domain.DomainDefinition;
 import com.gazapps.mcp.domain.Tool;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DomainRegistry {
     
@@ -23,13 +29,13 @@ public class DomainRegistry {
     private final Map<String, DomainDefinition> domains = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Llm llm;
-    private String configPath;
+    private Path configPath;
     
     public DomainRegistry(Llm llm) {
         this.llm = llm; 
     }
     
-    public DomainRegistry(Llm llm, String configPath) {
+    public DomainRegistry(Llm llm, Path configPath) {
         this.llm = llm; 
         this.configPath = configPath;
         if (configPath != null) {
@@ -37,9 +43,9 @@ public class DomainRegistry {
         }
     }
     
-     public void loadFromConfig(String configPath) {
+     public void loadFromConfig(Path configPath) {
         this.configPath = configPath;
-        File configFile = new File(configPath);
+        File configFile = configPath.toFile();
         
         if (!configFile.exists()) {
             createDefaultDomains();
@@ -69,7 +75,7 @@ public class DomainRegistry {
     /**
      * Saves current configuration to JSON file.
      */
-    public void saveToConfig(String configPath) {
+    public void saveToConfig(Path configPath) {
         this.configPath = configPath;
         
         try {
@@ -78,7 +84,7 @@ public class DomainRegistry {
                 configData.put(entry.getKey(), entry.getValue().toConfigMap());
             }
             
-            File configFile = new File(configPath);
+            File configFile = configPath.toFile();
             configFile.getParentFile().mkdirs(); // Create directories if needed
             
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(configFile, configData);

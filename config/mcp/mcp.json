@@ -16,8 +16,8 @@
       "domain" : "internet",
       "description" : "Busca web oficial sem browser",
       "env" : {
-        "REQUIRES_PYTHON" : "true",
-        "REQUIRES_ONLINE" : "true"
+        "REQUIRES_ONLINE" : "true",
+        "REQUIRES_PYTHON" : "true"
       },
       "priority" : 2,
       "command" : "uvx mcp-server-fetch",
@@ -62,8 +62,8 @@
       "domain" : "internet",
       "description" : "Feeds RSS básicos",
       "env" : {
-        "REQUIRES_PYTHON" : "true",
-        "REQUIRES_ONLINE" : "true"
+        "REQUIRES_ONLINE" : "true",
+        "REQUIRES_PYTHON" : "true"
       },
       "priority" : 1,
       "command" : "uvx mcp-server-rss",

@@ -50,8 +50,8 @@ public class Claude implements Llm {
         
         Map<String, String> claudeConfig = config.getClaudeConfig();
         
-        this.baseUrl = claudeConfig.get("baseUrl");
-        this.apiKey = claudeConfig.get("apiKey");
+        this.baseUrl = claudeConfig.get("base.url");
+        this.apiKey = claudeConfig.get("api.key");
         this.model = claudeConfig.get("model");
         this.timeout = Integer.parseInt(claudeConfig.get("timeout"));
         this.debug = Boolean.parseBoolean(claudeConfig.get("debug"));

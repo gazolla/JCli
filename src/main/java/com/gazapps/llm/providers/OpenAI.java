@@ -49,8 +49,8 @@ public class OpenAI implements Llm {
         
         Map<String, String> openaiConfig = config.getOpenAiConfig();
         
-        this.baseUrl = openaiConfig.get("baseUrl");
-        this.apiKey = openaiConfig.get("apiKey");
+        this.baseUrl = openaiConfig.get("base.url");
+        this.apiKey = openaiConfig.get("api.key");
         this.model = openaiConfig.get("model");
         this.timeout = Integer.parseInt(openaiConfig.get("timeout"));
         this.debug = Boolean.parseBoolean(openaiConfig.get("debug"));

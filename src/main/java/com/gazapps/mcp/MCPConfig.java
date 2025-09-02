@@ -22,7 +22,7 @@ public class MCPConfig {
     private static final Logger logger = LoggerFactory.getLogger(MCPConfig.class);
     
     private final ObjectMapper objectMapper;
-    private final String configDirectory;
+    private final File configDirectory;
     private final Map<String, ServerConfig> servers;
     private final Map<String, DomainDefinition> domains;
     
@@ -36,7 +36,8 @@ public class MCPConfig {
     private String rulesPath = "config/rules";
     private boolean rulesAutoReload = false;
     
-    public MCPConfig(String configDirectory) {
+    
+    public MCPConfig(File configDirectory) {
         this.configDirectory = Objects.requireNonNull(configDirectory, "Config directory cannot be null");
         this.objectMapper = new ObjectMapper();
         this.servers = new ConcurrentHashMap<>();
@@ -171,7 +172,7 @@ public class MCPConfig {
     
     private void ensureConfigDirectory() {
         try {
-            Path configPath = Paths.get(configDirectory);
+            Path configPath = configDirectory.toPath();
             Files.createDirectories(configPath);
             
             Path mcpPath = configPath.resolve("mcp");
@@ -280,7 +281,7 @@ public class MCPConfig {
     }
     
     private void loadApplicationProperties() {
-        Path propsFile = Paths.get(configDirectory, "application.properties");
+        Path propsFile = configDirectory.toPath().resolve("application.properties");
         
         if (!Files.exists(propsFile)) {
             logger.info("Arquivo application.properties não encontrado, usando configurações padrão");
@@ -309,7 +310,7 @@ public class MCPConfig {
     }
     
     private void loadServersFromFile() {
-        Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
+    	 Path serversFile = configDirectory.toPath().resolve("mcp").resolve("mcp.json");
         
         if (!Files.exists(serversFile)) {
             logger.info("Arquivo de configuração de servidores não encontrado, criando configuração padrão");
@@ -347,7 +348,7 @@ public class MCPConfig {
     }
     
     private void loadDomainsFromFile() {
-        Path domainsFile = Paths.get(configDirectory, "mcp", "domains.json");
+        Path domainsFile = configDirectory.toPath().resolve("mcp").resolve("domains.json");
         
         if (!Files.exists(domainsFile)) {
             logger.info("Arquivo de configuração de domínios não encontrado");
@@ -383,6 +384,7 @@ public class MCPConfig {
         // Weather NWS
         Map<String, Object> weatherConfig = new HashMap<>();
         weatherConfig.put("description", "Previsões meteorológicas via NWS");
+        weatherConfig.put("domain", "weather");
         weatherConfig.put("command", "npx @h1deya/mcp-server-weather");
         weatherConfig.put("priority", 1);
         weatherConfig.put("enabled", true);
@@ -393,6 +395,7 @@ public class MCPConfig {
         // Filesystem
         Map<String, Object> filesystemConfig = new HashMap<>();
         filesystemConfig.put("description", "Sistema de arquivos - Documents");
+        filesystemConfig.put("domain", "filesystem");
         filesystemConfig.put("command", "npx -y @modelcontextprotocol/server-filesystem ./documents");
         filesystemConfig.put("priority", 3);
         filesystemConfig.put("enabled", true);
@@ -403,6 +406,7 @@ public class MCPConfig {
         // Time
         Map<String, Object> timeConfig = new HashMap<>();
         timeConfig.put("description", "Servidor para ferramentas de tempo e fuso horário");
+        timeConfig.put("domain", "time");
         timeConfig.put("command", "uvx mcp-server-time");
         timeConfig.put("priority", 1);
         timeConfig.put("enabled", true);
@@ -414,7 +418,7 @@ public class MCPConfig {
         
         // Salvar arquivo
         try {
-            Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
+            Path serversFile =  configDirectory.toPath().resolve("mcp").resolve("mcp.json");
             String jsonContent = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootConfig);
             Files.writeString(serversFile, jsonContent);
             
@@ -428,7 +432,7 @@ public class MCPConfig {
     
     private void loadDefaultDomains() {
         if (domains.isEmpty()) {
-            // Domínios básicos
+            // Weather domain
             domains.put("weather", DomainDefinition.builder()
                 .name("weather")
                 .description("Informações meteorológicas e previsões do tempo")
@@ -440,18 +444,7 @@ public class MCPConfig {
                 .addSemanticKeyword("forecast")
                 .build());
             
-            domains.put("filesystem", DomainDefinition.builder()
-                .name("filesystem")
-                .description("Operações com sistema de arquivos")
-                .addPattern("arquivo")
-                .addPattern("file")
-                .addPattern("diretório")
-                .addPattern("pasta")
-                .addSemanticKeyword("read")
-                .addSemanticKeyword("write")
-                .addSemanticKeyword("create")
-                .build());
-            
+            // Time domain
             domains.put("time", DomainDefinition.builder()
                 .name("time")
                 .description("Informações de tempo, data e fuso horário")
@@ -463,7 +456,7 @@ public class MCPConfig {
                 .addSemanticKeyword("calendar")
                 .build());
             
-            // NOVOS DOMÍNIOS ADICIONADOS
+            // Math domain
             domains.put("math", DomainDefinition.builder()
                 .name("math")
                 .description("Operações matemáticas e cálculos")
@@ -481,10 +474,22 @@ public class MCPConfig {
                 .addPattern("sqr")
                 .addPattern("sqrt")
                 .addPattern("potência")
+                .addPattern("exponencial")
+                .addPattern("log")
+                .addPattern("sin")
+                .addPattern("cos")
+                .addPattern("tan")
                 .addPattern("calculate")
                 .addPattern("compute")
                 .addPattern("equation")
                 .addPattern("formula")
+                .addPattern("add")
+                .addPattern("subtract")
+                .addPattern("multiply")
+                .addPattern("divide")
+                .addPattern("square")
+                .addPattern("root")
+                .addPattern("power")
                 .addPattern("math")
                 .addSemanticKeyword("calculate")
                 .addSemanticKeyword("compute")
@@ -494,6 +499,36 @@ public class MCPConfig {
                 .addSemanticKeyword("formula")
                 .build());
             
+            // Filesystem domain
+            domains.put("filesystem", DomainDefinition.builder()
+                .name("filesystem")
+                .description("filesystem Operations")
+                .addPattern("arquivo")
+                .addPattern("file")
+                .addPattern("diretório")
+                .addPattern("pasta")
+                .addPattern("edit")
+                .addPattern("list")
+                .addPattern("directory")
+                .addPattern("write")
+                .addPattern("move")
+                .addPattern("create")
+                .addPattern("tree")
+                .addPattern("read")
+                .addPattern("multiple")
+                .addPattern("files")
+                .addPattern("search")
+                .addPattern("allowed")
+                .addPattern("directories")
+                .addPattern("sizes")
+                .addPattern("get")
+                .addPattern("info")
+                .addSemanticKeyword("read")
+                .addSemanticKeyword("write")
+                .addSemanticKeyword("create")
+                .build());
+            
+            // Internet domain
             domains.put("internet", DomainDefinition.builder()
                 .name("internet")
                 .description("Operações de busca web e feeds RSS")
@@ -521,6 +556,9 @@ public class MCPConfig {
                 .addPattern("headlines")
                 .addPattern("articles")
                 .addPattern("newspaper")
+                .addPattern("blog")
+                .addPattern("página")
+                .addPattern("pagina")
                 .addSemanticKeyword("web")
                 .addSemanticKeyword("fetch")
                 .addSemanticKeyword("download")
@@ -547,7 +585,7 @@ public class MCPConfig {
         
         rootConfig.put("mcpServers", serversConfig);
         
-        Path serversFile = Paths.get(configDirectory, "mcp", "mcp.json");
+        Path serversFile = configDirectory.toPath().resolve("mcp").resolve("mcp.json");
         String jsonContent = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootConfig);
         Files.writeString(serversFile, jsonContent);
     }
@@ -561,7 +599,7 @@ public class MCPConfig {
             domainsConfig.put(domainName, domain.toConfigMap());
         }
         
-        Path domainsFile = Paths.get(configDirectory, "mcp", "domains.json");
+        Path domainsFile = configDirectory.toPath().resolve("mcp").resolve("domains.json");
         String jsonContent = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(domainsConfig);
         Files.writeString(domainsFile, jsonContent);
     }

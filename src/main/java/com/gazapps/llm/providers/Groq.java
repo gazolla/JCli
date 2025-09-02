@@ -53,13 +53,20 @@ public class Groq implements Llm {
 	public Groq() {
 
 		this.apiKey = System.getenv("GROQ_API_KEY");
+		System.out.println("[DEBUG] GROQ_API_KEY from env: " + (this.apiKey != null ? "[SET]" : "[NULL]"));
+		
 		LlmConfig config = new LlmConfig();
 		Map<String, String> groqConfig = config.getGroqConfig();
-		this.apiKey = this.apiKey == null ? groqConfig.get("api.Key") : this.apiKey;
+		System.out.println("[DEBUG] groqConfig loaded: " + groqConfig);
+		
+		this.apiKey = this.apiKey == null ? groqConfig.get("api.key") : this.apiKey;
 		this.baseUrl = groqConfig.get("base.url");
 		this.model = groqConfig.get("model");
 		this.timeout = Integer.parseInt(groqConfig.get("timeout"));
 		this.debug = Boolean.parseBoolean(groqConfig.get("debug"));
+		
+		System.out.println("[DEBUG] Final values - apiKey: " + (this.apiKey != null ? "[SET]" : "[NULL]") + 
+						   ", baseUrl: " + this.baseUrl + ", model: " + this.model);
 
 		this.capabilities = LlmCapabilities.builder().functionCalling(true).systemMessages(true).streaming(false)
 				.maxTokens(50000).supportedFormats(java.util.Set.of("text", "json")).build();

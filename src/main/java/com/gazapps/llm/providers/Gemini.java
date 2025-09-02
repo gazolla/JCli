@@ -57,7 +57,7 @@ public class Gemini implements Llm {
 		this.apiKey = System.getenv("GEMINI_API_KEY");
 		LlmConfig config = new LlmConfig();
 		Map<String, String> geminiConfig = config.getGeminiConfig();
-		this.apiKey = this.apiKey == null ? geminiConfig.get("api.Key") : this.apiKey;
+		this.apiKey = this.apiKey == null ? geminiConfig.get("api.key") : this.apiKey;
 		this.baseUrl = geminiConfig.get("base.url");
 		this.model = geminiConfig.get("model");
 		this.timeout = Integer.parseInt(geminiConfig.getOrDefault("timeout", "60"));

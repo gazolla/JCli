@@ -94,51 +94,42 @@ public class MCPService {
     
     /**
      * Verifica se um comando está disponível no sistema.
-     * USA A MESMA ABORDAGEM DO JavaCLI que funcionava.
      */
     private boolean isCommandAvailable(MCPConfig.ServerConfig serverConfig) {
         String command = serverConfig.command;
+        String mainCommand = getMainCommand(command);
+        
+        System.out.println("[DEBUG] Verificando disponibilidade do comando: " + mainCommand);
+        logger.debug("Verificação do comando '{}': verificando", mainCommand);
         
         try {
-            // Tentar executar o comando com --version ou --help para verificar se existe
             ProcessBuilder pb = new ProcessBuilder();
             
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                // No Windows, usar cmd.exe /c igual na conexão real
-                String[] parts = command.split("\\s+", 2);
-                String mainCmd = parts[0];
-                
-                if ("npx".equals(mainCmd)) {
-                    pb.command("cmd.exe", "/c", "npx", "--version");
-                } else if ("uvx".equals(mainCmd)) {
-                    pb.command("cmd.exe", "/c", "uvx", "--version");
-                } else {
-                    pb.command("cmd.exe", "/c", mainCmd, "--version");
-                }
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                pb.command("cmd.exe", "/c", "where", mainCommand);
             } else {
-                String[] parts = command.split("\\s+");
-                pb.command(parts[0], "--version");
+                pb.command("which", mainCommand);
             }
             
-            pb.redirectErrorStream(true);
             Process process = pb.start();
+            boolean finished = process.waitFor(3, java.util.concurrent.TimeUnit.SECONDS);
             
-            // Timeout curto para verificação
-            boolean finished = process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
             if (!finished) {
                 process.destroyForcibly();
-                logger.debug("Comando '{}' não respondeu em tempo hábil", command);
-                return true; // Assumir que existe e tentar conectar
+                System.out.println("[DEBUG] Comando " + mainCommand + ": TIMEOUT");
+                logger.debug("Verificação do comando '{}': timeout", mainCommand);
+                return false;
             }
             
             boolean available = process.exitValue() == 0;
-            logger.debug("Verificação do comando '{}': {}", command, available ? "disponível" : "não encontrado");
-            
+            System.out.println("[DEBUG] Comando " + mainCommand + ": " + (available ? "DISPONÍVEL" : "INDISPONÍVEL"));
+            logger.debug("Verificação do comando '{}': {}", mainCommand, available ? "disponível" : "indisponível");
             return available;
             
         } catch (Exception e) {
-            logger.debug("Erro ao verificar comando '{}': {} - assumindo disponível", command, e.getMessage());
-            return true; // Em caso de erro, tentar conectar mesmo assim
+            System.out.println("[DEBUG] Erro ao verificar comando " + mainCommand + ": " + e.getMessage());
+            logger.warn("Erro ao verificar comando '{}': {}", mainCommand, e.getMessage());
+            return false;
         }
     }
     
@@ -371,23 +362,37 @@ public class MCPService {
     private void initializeServers() {
         Map<String, MCPConfig.ServerConfig> serverConfigs = config.loadServers();
         
+        System.out.println("[DEBUG] Inicializando " + serverConfigs.size() + " servidores MCP...");
         logger.info("Inicializando {} servidores MCP...", serverConfigs.size());
+        
+        System.out.println("[DEBUG] Servidores configurados:");
+        for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
+            System.out.println("[DEBUG] - " + serverConfig.id + ": " + serverConfig.command + 
+                             " (enabled: " + serverConfig.enabled + ")");
+        }
         
         int successCount = 0;
         for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
             if (serverConfig.enabled) {
+                System.out.println("[DEBUG] Tentando conectar servidor: " + serverConfig.id);
                 if (connectServer(serverConfig)) {
                     successCount++;
+                    System.out.println("[DEBUG] ✅ Servidor " + serverConfig.id + " conectado com sucesso!");
+                } else {
+                    System.out.println("[DEBUG] ❌ Falha ao conectar servidor " + serverConfig.id);
                 }
             } else {
+                System.out.println("[DEBUG] Servidor " + serverConfig.id + " desabilitado na configuração");
                 logger.info("Servidor '{}' desabilitado na configuração", serverConfig.id);
             }
         }
         
+        System.out.println("[DEBUG] Resultado final: " + successCount + "/" + serverConfigs.size() + " servidores conectados");
         logger.info("MCPService inicializado: {}/{} servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log", 
                    successCount, serverConfigs.size());
         
         if (successCount == 0) {
+            System.out.println("[DEBUG] ⚠️  AVISO: Nenhum servidor MCP conectado!");
             logger.warn("⚠️  AVISO: Nenhum servidor MCP conectado!");
             logger.warn("   Isso pode acontecer se:");
             logger.warn("   - Node.js não estiver instalado (para servidores weather/filesystem)");

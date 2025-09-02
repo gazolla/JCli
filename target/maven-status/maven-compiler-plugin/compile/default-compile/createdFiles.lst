@@ -1,5 +1,4 @@
 com\gazapps\inference\InferenceFactory$1.class
-com\gazapps\config\Config$1.class
-com\gazapps\config\EnvironmentSetup$1.class
+com\gazapps\llm\LlmConfig$1.class
 com\gazapps\JCliApp$1.class
 com\gazapps\llm\LlmBuilder$1.class

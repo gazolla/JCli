@@ -1,5 +1,8 @@
 package com.gazapps.mcp;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,14 +50,21 @@ public class MCPManager implements AutoCloseable {
     }
     public Llm getLlm() { return llm; }
     
-    public MCPManager(String configDirectory, Llm llm) {
+    public MCPManager(File configDirectory, Llm llm) {
         this.config = new MCPConfig(configDirectory);
         this.mcpService = new MCPService(config);
         this.ruleEngine = new RuleEngine(config.getRulesPath(), config.isRulesEnabled());
         this.toolMatcher = new ToolMatcher(ruleEngine);
         this.llm = Objects.requireNonNull(llm, "LLM cannot be null");
         
-        String domainConfigPath = configDirectory + "/mcp/domains.json";
+        Path domainConfigPath = configDirectory.toPath().resolve("mcp").resolve("domains.json");
+        System.out.println("[DEBUG] MCPManager - current working directory: " + System.getProperty("user.dir"));
+        System.out.println("[DEBUG] MCPManager - configDirectory: " + configDirectory.getAbsolutePath());
+        System.out.println("[DEBUG] MCPManager - domainConfigPath: " + domainConfigPath.toAbsolutePath());
+        System.out.println("[DEBUG] MCPManager - arquivo existe? " + Files.exists(domainConfigPath));
+        System.out.println("[DEBUG] MCPManager - arquivo é legível? " + Files.isReadable(domainConfigPath));
+
+
         this.domainRegistry = new DomainRegistry(llm, domainConfigPath);
         
         this.scheduler = Executors.newScheduledThreadPool(2);
@@ -222,9 +232,9 @@ public class MCPManager implements AutoCloseable {
     
     
     
-    public Set<String> getAvailableDomains() {
+    public List<String> getAvailableDomains() {
         if (domainRegistry != null) {
-            return domainRegistry.getAllDomainNames();
+            return new ArrayList<>(domainRegistry.getAllDomainNames());
         }
         Set<String> domains = new HashSet<>();
         
@@ -235,7 +245,7 @@ public class MCPManager implements AutoCloseable {
         
         domains.addAll(config.loadDomains().keySet());
         
-        return domains;
+        return new ArrayList<>(domains);
     }
     
     public List<Tool> getToolsByDomain(String domain) {
@@ -287,8 +297,8 @@ public class MCPManager implements AutoCloseable {
         }
     }
     
-    public List<Server> getConnectedServers() {
-        return new ArrayList<>(mcpService.getConnectedServers().values());
+    public Map<String, Server> getConnectedServers() {
+        return mcpService.getConnectedServers();
     }
     
     public boolean isObservationUseful(String observation, String originalQuery) {

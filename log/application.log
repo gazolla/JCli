@@ -1,145 +1,119 @@
-2025-09-01 12:31:30.618 [main] INFO  com.gazapps.config.Config - ✅ Logback configuration reloaded successfully!
-2025-09-01 12:31:30.619 [main] INFO  com.gazapps.config.Config - 📋 Logging configured via logback.xml - JavaCLI/log structure
-2025-09-01 12:31:30.764 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Gemini initialized with capabilities: LlmCapabilities{functionCalling=true, systemMessages=true, streaming=false, maxTokens=50000, formats=[text, json]}
-2025-09-01 12:31:30.765 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using baseUrl: https://api.groq.com/openai/v1/chat/completions
-2025-09-01 12:31:30.765 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using model: llama-3.3-70b-versatile
-2025-09-01 12:31:30.768 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-2025-09-01 12:31:30.769 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-2025-09-01 12:31:30.794 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
-2025-09-01 12:31:30.803 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
-2025-09-01 12:31:30.804 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 6 servidores MCP...
-2025-09-01 12:31:31.494 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx calculator-mcp-server': disponível
-2025-09-01 12:31:31.494 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
-2025-09-01 12:31:31.495 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
-2025-09-01 12:31:33.583 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Downloading cryptography (3.2MiB)
-2025-09-01 12:31:33.984 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:  Downloading cryptography
-2025-09-01 12:31:42.629 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Installed 71 packages in 8.47s
-2025-09-01 12:31:46.717 [main] WARN  com.gazapps.mcp.MCPService - ❌ Falha ao conectar servidor 'calculator': java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 15000ms in 'source(MonoDeferContextual)' (and no fallback has been configured) - continuando sem este servidor
-2025-09-01 12:31:47.286 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-rss': disponível
-2025-09-01 12:31:47.286 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
-2025-09-01 12:31:47.286 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
-2025-09-01 12:31:56.086 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Installed 72 packages in 7.63s
-2025-09-01 12:31:59.422 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:31:59.422 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:31:59.422 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
-2025-09-01 12:31:59.422 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.422 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     Calculator MCP Server                  |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.423 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.0                                 |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.13.1                                 |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/01/25 12:31:59] INFO     Starting MCP server 'Calculator MCP server.py:1494
-2025-09-01 12:31:59.424 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
-2025-09-01 12:32:02.295 [main] WARN  com.gazapps.mcp.MCPService - ❌ Falha ao conectar servidor 'rss-feeds': java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 15000ms in 'source(MonoDeferContextual)' (and no fallback has been configured) - continuando sem este servidor
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.391 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     RSS Feed Server                        |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.0                                 |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.13.1                                 |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:32:02.392 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
-2025-09-01 12:32:02.394 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/01/25 12:32:02] INFO     Starting MCP server 'RSS Feed       server.py:1494
-2025-09-01 12:32:02.394 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
-2025-09-01 12:32:03.004 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-time': disponível
-2025-09-01 12:32:03.004 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-2025-09-01 12:32:03.004 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-2025-09-01 12:32:05.171 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
-2025-09-01 12:32:05.216 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-2025-09-01 12:32:05.216 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-2025-09-01 12:32:06.001 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx mcp-server-fetch': disponível
-2025-09-01 12:32:06.002 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
-2025-09-01 12:32:06.002 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
-2025-09-01 12:32:10.254 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Installed 42 packages in 2.31s
-2025-09-01 12:32:16.963 [pool-15-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-fetch, version=1.13.1] and Instructions null
-2025-09-01 12:32:16.974 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
-2025-09-01 12:32:16.974 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
-2025-09-01 12:32:17.376 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx @h1deya/mcp-server-weather': disponível
-2025-09-01 12:32:17.376 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-2025-09-01 12:32:17.376 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-2025-09-01 12:32:19.609 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
-2025-09-01 12:32:19.624 [pool-18-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
-2025-09-01 12:32:19.632 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-2025-09-01 12:32:19.632 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-2025-09-01 12:32:19.965 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx -y @modelcontextprotocol/server-filesystem ./documents': disponível
-2025-09-01 12:32:19.965 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-2025-09-01 12:32:19.965 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-2025-09-01 12:32:22.120 [pool-23-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
-2025-09-01 12:32:22.121 [pool-23-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
-2025-09-01 12:32:22.135 [pool-21-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
-2025-09-01 12:32:22.149 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-2025-09-01 12:32:22.149 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-2025-09-01 12:32:22.149 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 4/6 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-2025-09-01 12:32:22.187 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-2025-09-01 12:32:22.213 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-2025-09-01 12:32:22.214 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-2025-09-01 12:32:22.218 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
-2025-09-01 12:32:51.738 [main] INFO  com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs em JavaCLI/log/inference/simple-conversations.log
-2025-09-01 12:32:51.739 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Qual a estrela do sistema solar?
-2025-09-01 12:32:52.788 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
-2025-09-01 12:32:52.789 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-1952d952-d228-47db-a6c7-4d0542e24365","object":"chat.completion","created":1756740773,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"false"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.271919774,"prompt_tokens":261,"prompt_time":0.043094954,"completion_tokens":2,"completion_time":0.007725872,"total_tokens":263,"total_time":0.050820826},"usage_breakdown":null,"system_fingerprint":"fp_6507bcfb6f","x_groq":{"id":"req_01k42yhshhe26vs24s6sep1gse"},"service_tier":"on_demand"}
-
-2025-09-01 12:32:52.810 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
-
-Query: "Qual a estrela do sistema solar?"
-
-Domains:
-1. weather - Informações meteorológicas e previsões do tempo
-2. time - Date, time, timezone operations
-3. math - Operações matemáticas e cálculos
-4. filesystem - filesystem Operations
-5. internet - Operações de busca web e feeds RSS
-DO NOT EXPLAIN ANYTHING
-Answer in JSON with scores 0.0-1.0:
-{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
-2025-09-01 12:32:53.402 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
-2025-09-01 12:32:53.403 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-30b61433-ed21-43eb-b499-c253e9e70e97","object":"chat.completion","created":1756740774,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"weather\": 0.0, \"time\": 0.0, \"math\": 0.2, \"filesystem\": 0.0, \"internet\": 0.8}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268892889,"prompt_tokens":180,"prompt_time":0.020853758,"completion_tokens":41,"completion_time":0.064534119,"total_tokens":221,"total_time":0.085387877},"usage_breakdown":null,"system_fingerprint":"fp_6507bcfb6f","x_groq":{"id":"req_01k42yht4xfr8s6x8t85jgtj9w"},"service_tier":"on_demand"}
-
-2025-09-01 12:32:53.404 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "math": 0.2, "filesystem": 0.0, "internet": 0.8}
-2025-09-01 12:32:53.423 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Qual a estrela do sistema solar?': {math=0.2, internet=0.8}
-2025-09-01 12:32:54.074 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
-2025-09-01 12:32:54.075 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-6004d7cf-9714-420d-8e0c-b200929f4b15","object":"chat.completion","created":1756740775,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"```\n{\n  \"tool_number\": 1,\n  \"parameters\": {\n    \"url\": \"https://pt.wikipedia.org/wiki/Sistema_Solar\",\n    \"raw\": false,\n    \"start_index\": 0,\n    \"max_length\": 5000\n  }\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269718448,"prompt_tokens":369,"prompt_time":0.034296288,"completion_tokens":60,"completion_time":0.11821494,"total_tokens":429,"total_time":0.152511228},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k42yhtr2fr8rpfk78eepfbct"},"service_tier":"on_demand"}
-
-2025-09-01 12:32:54.080 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Qual a estrela do sistema solar?'
-2025-09-01 12:32:54.086 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: fetch with parameters: {start_index=0, raw=false, url=https://pt.wikipedia.org/wiki/Sistema_Solar, max_length=5000}
-2025-09-01 12:32:55.932 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Warning: A working NPM installation was not found. The package will use Python-based article extraction.
-2025-09-01 12:32:55.932 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Warning: node executable not found, reverting to pure-Python mode. Install Node.js v10 or newer to use Readability.js.
-2025-09-01 12:32:58.798 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
-2025-09-01 12:32:58.798 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-fd27967c-cac1-4814-805f-e9df9a0a89c7","object":"chat.completion","created":1756740779,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"A estrela do nosso sistema solar é o Sol. Ele é a maior componente do sistema, respondendo por mais de 99,85% da massa total, e gera sua energia através da fusão de hidrogênio em hélio, dois de seus principais constituintes. O Sol é uma estrela do tipo G2V, o que significa que é uma estrela de sequência principal que emite luz amarela e está na metade da sua vida útil.\n\nO Sol é a estrela central do nosso sistema solar e é responsável por manter os planetas em suas órbitas. Ele também é a fonte de energia para a vida na Terra, fornecendo a luz e o calor necessários para o crescimento das plantas e a sobrevivência dos seres vivos.\n\nAlém do Sol, o nosso sistema solar é composto por oito planetas: Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano e Netuno. Cada planeta tem suas características únicas e desempenha um papel importante no equilíbrio do sistema solar.\n\nSe você quiser saber mais sobre o Sol ou o sistema solar, posso fornecer mais informações ou responder a suas perguntas específicas."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270600636,"prompt_tokens":2616,"prompt_time":0.197940816,"completion_tokens":278,"completion_time":0.714366373,"total_tokens":2894,"total_time":0.912307189},"usage_breakdown":null,"system_fingerprint":"fp_6507bcfb6f","x_groq":{"id":"req_01k42yhykjfvxac8ayesss4hsb"},"service_tier":"on_demand"}
-
-2025-09-01 12:32:58.802 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-02 15:52:31.403 [main] INFO  com.gazapps.config.Config - ✅ Logback configuration reloaded successfully!
+2025-09-02 15:52:31.404 [main] INFO  com.gazapps.config.Config - 📋 Configuration initialized with LlmConfig and MCPConfig
+2025-09-02 15:52:31.416 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Gemini initialized with capabilities: LlmCapabilities{functionCalling=true, systemMessages=true, streaming=false, maxTokens=50000, formats=[text, json]}
+2025-09-02 15:52:31.417 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using baseUrl: https://api.groq.com/openai/v1/chat/completions
+2025-09-02 15:52:31.417 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using model: llama-3.3-70b-versatile
+2025-09-02 15:52:31.420 [main] INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+2025-09-02 15:52:31.421 [main] INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+2025-09-02 15:52:31.422 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
+2025-09-02 15:52:31.422 [main] INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
+2025-09-02 15:52:31.424 [main] INFO  com.gazapps.mcp.MCPService - Inicializando 6 servidores MCP...
+2025-09-02 15:52:31.427 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+2025-09-02 15:52:31.534 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+2025-09-02 15:52:31.535 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+2025-09-02 15:52:31.536 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+2025-09-02 15:52:33.759 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
+2025-09-02 15:52:33.800 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
+2025-09-02 15:52:33.842 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+2025-09-02 15:52:33.842 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+2025-09-02 15:52:33.842 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+2025-09-02 15:52:33.946 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+2025-09-02 15:52:33.947 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+2025-09-02 15:52:33.947 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+2025-09-02 15:52:35.776 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
+2025-09-02 15:52:35.776 [pool-11-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
+2025-09-02 15:52:35.787 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
+2025-09-02 15:52:35.797 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+2025-09-02 15:52:35.797 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+2025-09-02 15:52:35.798 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-02 15:52:35.896 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-02 15:52:35.897 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
+2025-09-02 15:52:35.897 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
+2025-09-02 15:52:42.922 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Installed 71 packages in 4.72s
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.780 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     Calculator MCP Server                  |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.0                                 |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.13.1                                 |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:47.781 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:47.782 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/02/25 15:52:47] INFO     Starting MCP server 'Calculator MCP server.py:1494
+2025-09-02 15:52:47.783 [pool-14-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
+2025-09-02 15:52:47.793 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=ResourceCapabilities[subscribe=false, listChanged=false], tools=ToolCapabilities[listChanged=true]], Info: Implementation[name=Calculator MCP Server, version=1.13.1] and Instructions null
+2025-09-02 15:52:47.802 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 5 ferramentas para servidor 'calculator'
+2025-09-02 15:52:47.802 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'calculator' conectado com sucesso! Ferramentas: 5
+2025-09-02 15:52:47.802 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-02 15:52:47.909 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-02 15:52:47.909 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
+2025-09-02 15:52:47.909 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
+2025-09-02 15:52:53.545 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Installed 72 packages in 4.32s
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     RSS Feed Server                        |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.0                                 |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.13.1                                 |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.806 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
+2025-09-02 15:52:58.807 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
+2025-09-02 15:52:58.807 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-02 15:52:58.807 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-02 15:52:58.807 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:58.807 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-02 15:52:58.808 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/02/25 15:52:58] INFO     Starting MCP server 'RSS Feed       server.py:1494
+2025-09-02 15:52:58.808 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
+2025-09-02 15:52:58.818 [pool-15-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=ResourceCapabilities[subscribe=false, listChanged=false], tools=ToolCapabilities[listChanged=true]], Info: Implementation[name=RSS Feed Server, version=1.13.1] and Instructions null
+2025-09-02 15:52:58.821 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 2025-09-02 15:52:58,821 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-09-02 15:52:58.827 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'rss-feeds'
+2025-09-02 15:52:58.827 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'rss-feeds' conectado com sucesso! Ferramentas: 1
+2025-09-02 15:52:58.827 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-02 15:52:58.946 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-02 15:52:58.947 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+2025-09-02 15:52:58.947 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+2025-09-02 15:53:00.593 [pool-18-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.13.1] and Instructions null
+2025-09-02 15:53:00.600 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+2025-09-02 15:53:00.600 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+2025-09-02 15:53:00.600 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-02 15:53:00.732 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-02 15:53:00.732 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
+2025-09-02 15:53:00.732 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
+2025-09-02 15:53:02.527 [pool-21-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-fetch, version=1.13.1] and Instructions null
+2025-09-02 15:53:02.534 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
+2025-09-02 15:53:02.534 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
+2025-09-02 15:53:02.537 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 6/6 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
+2025-09-02 15:53:02.548 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+2025-09-02 15:53:02.548 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+2025-09-02 15:53:02.548 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+2025-09-02 15:53:02.554 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/

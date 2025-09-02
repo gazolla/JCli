@@ -143,20 +143,20 @@ public class CommandHandler {
     }
     
     private void showServers() {
-        var servers = mcpManager.getConnectedServers();
-        
-        System.out.println("🖥️ MCP Servers:");
-        if (servers.isEmpty()) {
-            System.out.println("  No servers connected");
-        } else {
-            servers.forEach(server -> 
-                System.out.printf("  • %s (%s) - %d tools%n", 
-                    server.getId(), 
-                    server.isHealthy() ? "✅" : "❌",
-                    server.getTools().size())
-            );
-        }
-        System.out.println();
+    var servers = mcpManager.getConnectedServers();
+    
+    System.out.println("🖥️ MCP Servers:");
+    if (servers.isEmpty()) {
+    System.out.println("  No servers connected");
+    } else {
+    servers.values().forEach(server ->
+    System.out.printf("  • %s (%s) - %d tools%n",
+    server.getId(),
+    server.isHealthy() ? "✅" : "❌",
+    server.getTools().size())
+    );
+    }
+    System.out.println();
     }
     
     private void changeStrategy(String strategyName) {

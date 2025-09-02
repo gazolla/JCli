@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -12,12 +11,14 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gazapps.llm.LlmConfig;
 import com.gazapps.llm.LlmProvider;
 
 public class EnvironmentSetup {
     
     private static final Logger logger = LoggerFactory.getLogger(EnvironmentSetup.class);
     private static Scanner scanner = new Scanner(System.in);
+    private static LlmConfig llmConfig;
     
     private static final List<ProviderInfo> PROVIDERS = Arrays.asList(
         new ProviderInfo(LlmProvider.GEMINI, "GEMINI_API_KEY", "Google's latest AI model"),
@@ -41,13 +42,16 @@ public class EnvironmentSetup {
     public static boolean ensureConfigurationReady() {
         logger.info("Checking environment configuration...");
         
-        // 1. Create directory structure
+        // 1. Inicializar LlmConfig
+        llmConfig = new LlmConfig();
+        
+        // 2. Create directory structure
         if (!createDirectoryStructure()) {
             return false;
         }
         
-        // 2. Check configured providers
-        List<LlmProvider> configuredProviders = getConfiguredProviders();
+        // 3. ✅ DELEGAR para LlmConfig
+        List<LlmProvider> configuredProviders = llmConfig.getAllConfiguredProviders();
         
         if (configuredProviders.isEmpty()) {
             System.out.println("❌ No API keys configured");
@@ -74,42 +78,14 @@ public class EnvironmentSetup {
         }
     }
     
+    // ✅ DELEGAR para LlmConfig
     public static List<LlmProvider> getConfiguredProviders() {
-        return PROVIDERS.stream()
-            .filter(p -> isProviderConfigured(p.provider))
-            .map(p -> p.provider)
-            .toList();
+        return llmConfig != null ? llmConfig.getAllConfiguredProviders() : List.of();
     }
     
+    // ✅ DELEGAR para LlmConfig
     public static boolean isProviderConfigured(LlmProvider provider) {
-        String envKey = getEnvironmentKeyName(provider);
-        String value = getApiKeyFromEnvironment(envKey);
-        return value != null && !value.trim().isEmpty() && !value.startsWith("your_");
-    }
-    
-    private static String getEnvironmentKeyName(LlmProvider provider) {
-        return switch (provider) {
-            case GEMINI -> "GEMINI_API_KEY";
-            case GROQ -> "GROQ_API_KEY";
-            case CLAUDE -> "ANTHROPIC_API_KEY";
-            case OPENAI -> "OPENAI_API_KEY";
-        };
-    }
-    
-    private static String getApiKeyFromEnvironment(String envKey) {
-        // 1. System property
-        String value = System.getProperty(envKey);
-        if (value != null && !value.trim().isEmpty()) {
-            return value;
-        }
-        
-        // 2. Environment variable
-        value = System.getenv(envKey);
-        if (value != null && !value.trim().isEmpty()) {
-            return value;
-        }
-        
-        return null;
+        return llmConfig != null && llmConfig.isLlmConfigValid(provider);
     }
     
     private static boolean runConfigurationWizard() {
@@ -127,14 +103,19 @@ public class EnvironmentSetup {
             String apiKey = scanner.nextLine().trim();
             
             if (!apiKey.isEmpty() && !apiKey.startsWith("your_")) {
-                // Salvar na sessão atual
-                System.setProperty(providerInfo.envKey, apiKey);
-                
-                // Salvar no arquivo llm.properties
-                saveApiKeyToFile(providerInfo.provider, apiKey);
-                
-                System.out.printf("✅ %s configured!%n%n", providerInfo.provider.name());
-                hasConfigured = true;
+                try {
+                    // ✅ DELEGAR para LlmConfig
+                    llmConfig.saveApiKey(providerInfo.provider, apiKey);
+                    
+                    // Para sessão atual também
+                    System.setProperty(providerInfo.envKey, apiKey);
+                    
+                    System.out.printf("✅ %s configured!%n%n", providerInfo.provider.name());
+                    hasConfigured = true;
+                } catch (Exception e) {
+                    logger.error("Error saving API key for {}: {}", providerInfo.provider, e.getMessage());
+                    System.out.printf("❌ Error saving %s configuration%n%n", providerInfo.provider.name());
+                }
             } else {
                 System.out.printf("⏭️ Skipped %s%n%n", providerInfo.provider.name());
             }
@@ -151,42 +132,6 @@ public class EnvironmentSetup {
                 System.out.printf("- %s=your_key%n", p.envKey);
             }
             return false;
-        }
-    }
-    
-    private static void saveApiKeyToFile(LlmProvider provider, String apiKey) {
-        try {
-            Path llmPropertiesPath = Paths.get("config/llm.properties");
-            
-            // Ler arquivo existente se existir
-            List<String> lines = new ArrayList<>();
-            if (Files.exists(llmPropertiesPath)) {
-                lines = Files.readAllLines(llmPropertiesPath);
-            }
-            
-            // Atualizar linha da API key
-            String propKey = getEnvironmentKeyName(provider).toLowerCase().replace("_", ".");
-            String newLine = propKey + "=" + apiKey;
-            
-            boolean updated = false;
-            for (int i = 0; i < lines.size(); i++) {
-                if (lines.get(i).startsWith(propKey + "=")) {
-                    lines.set(i, newLine);
-                    updated = true;
-                    break;
-                }
-            }
-            
-            if (!updated) {
-                lines.add(newLine);
-            }
-            
-            // Salvar arquivo
-            Files.write(llmPropertiesPath, lines);
-            logger.info("API key saved to {}", llmPropertiesPath);
-            
-        } catch (IOException e) {
-            logger.error("Error saving API key to file: {}", e.getMessage());
         }
     }
     

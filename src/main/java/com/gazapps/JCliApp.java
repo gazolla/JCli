@@ -1,5 +1,6 @@
 package com.gazapps;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Set;
@@ -11,6 +12,7 @@ import com.gazapps.chat.ChatProcessor;
 import com.gazapps.config.Config;
 import com.gazapps.config.EnvironmentSetup;
 import com.gazapps.exceptions.ConfigurationException;
+import com.gazapps.jtp.JavaTree;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.llm.LlmProvider;
@@ -33,22 +35,21 @@ public class JCliApp implements AutoCloseable {
     private final ChatProcessor chatProcessor;
     private final Scanner scanner;
     private final Config config;
+    private final File configDir = new File("./config"); 
     
     public JCliApp() throws Exception {
     	starting();
     	
-    	// Verificação inicial - antes de qualquer inicialização
     	if (!EnvironmentSetup.ensureConfigurationReady()) {
     		throw new ConfigurationException("Cannot start without proper configuration");
     	}
     	
         this.config = new Config();
         
-        // LLM dinâmico baseado na configuração
         LlmProvider preferredProvider = config.getPreferredProvider();
         this.llm = createLlmInstance(preferredProvider);
         
-        this.mcpManager = new MCPManager("./config", llm);
+        this.mcpManager = new MCPManager(configDir, llm);
         this.chatProcessor = new ChatProcessor(mcpManager, llm);
         this.scanner = new Scanner(System.in);
         
@@ -72,6 +73,10 @@ public class JCliApp implements AutoCloseable {
     }
     
     public void runChatLoop() {
+
+            var jtp = new JavaTree();
+            jtp.printTree(configDir, "");
+
         System.out.println("""
                 
                 Tips for getting started:
