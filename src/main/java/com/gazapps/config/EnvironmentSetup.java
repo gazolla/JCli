@@ -42,16 +42,12 @@ public class EnvironmentSetup {
     public static boolean ensureConfigurationReady() {
         logger.info("Checking environment configuration...");
         
-        // 1. Inicializar LlmConfig
         llmConfig = new LlmConfig();
-        
-        // 2. Create directory structure
         if (!createDirectoryStructure()) {
             return false;
         }
         
-        // 3. ✅ DELEGAR para LlmConfig
-        List<LlmProvider> configuredProviders = llmConfig.getAllConfiguredProviders();
+         List<LlmProvider> configuredProviders = llmConfig.getAllConfiguredProviders();
         
         if (configuredProviders.isEmpty()) {
             System.out.println("❌ No API keys configured");
@@ -78,12 +74,10 @@ public class EnvironmentSetup {
         }
     }
     
-    // ✅ DELEGAR para LlmConfig
     public static List<LlmProvider> getConfiguredProviders() {
         return llmConfig != null ? llmConfig.getAllConfiguredProviders() : List.of();
     }
     
-    // ✅ DELEGAR para LlmConfig
     public static boolean isProviderConfigured(LlmProvider provider) {
         return llmConfig != null && llmConfig.isLlmConfigValid(provider);
     }
@@ -104,12 +98,8 @@ public class EnvironmentSetup {
             
             if (!apiKey.isEmpty() && !apiKey.startsWith("your_")) {
                 try {
-                    // ✅ DELEGAR para LlmConfig
                     llmConfig.saveApiKey(providerInfo.provider, apiKey);
-                    
-                    // Para sessão atual também
                     System.setProperty(providerInfo.envKey, apiKey);
-                    
                     System.out.printf("✅ %s configured!%n%n", providerInfo.provider.name());
                     hasConfigured = true;
                 } catch (Exception e) {

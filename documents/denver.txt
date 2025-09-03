@@ -1,0 +1,72 @@
+Forecast for 39.7392, -104.9903:
+
+This Afternoon:
+Temperature: 87°F
+Wind: 7 mph NE
+Mostly Sunny
+---
+Tonight:
+Temperature: 57°F
+Wind: 6 mph S
+Mostly Clear
+---
+Thursday:
+Temperature: 89°F
+Wind: 3 to 7 mph W
+Sunny
+---
+Thursday Night:
+Temperature: 54°F
+Wind: 5 to 10 mph NE
+Slight Chance Showers And Thunderstorms
+---
+Friday:
+Temperature: 74°F
+Wind: 3 to 7 mph ESE
+Partly Sunny then Chance Showers And Thunderstorms
+---
+Friday Night:
+Temperature: 51°F
+Wind: 2 to 7 mph SW
+Partly Cloudy
+---
+Saturday:
+Temperature: 79°F
+Wind: 2 to 7 mph NNE
+Mostly Sunny then Slight Chance Showers And Thunderstorms
+---
+Saturday Night:
+Temperature: 55°F
+Wind: 2 to 7 mph NNE
+Slight Chance Showers And Thunderstorms then Mostly Cloudy
+---
+Sunday:
+Temperature: 81°F
+Wind: 2 to 6 mph ENE
+Partly Sunny then Chance Showers And Thunderstorms
+---
+Sunday Night:
+Temperature: 56°F
+Wind: 6 mph SW
+Slight Chance Showers And Thunderstorms then Mostly Cloudy
+---
+Monday:
+Temperature: 84°F
+Wind: 6 mph NNW
+Mostly Sunny then Slight Chance Showers And Thunderstorms
+---
+Monday Night:
+Temperature: 56°F
+Wind: 6 mph NW
+Partly Cloudy
+---
+Tuesday:
+Temperature: 86°F
+Wind: 3 to 7 mph SSE
+Mostly Sunny then Slight Chance Showers And Thunderstorms
+---
+Tuesday Night:
+Temperature: 56°F
+Wind: 3 to 7 mph S
+Partly Cloudy
+---

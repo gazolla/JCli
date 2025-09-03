@@ -18,6 +18,7 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolDe
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmProvider.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Groq.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\ToolMatcher.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\react\ReActLogger.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolCall.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\DomainRegistry.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmConfig.java
@@ -34,8 +35,10 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPService.
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\config\EnvironmentSetup.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\jtp\JavaTree.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Claude.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\simple\QueryAnalysis.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ParameterExtractor.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Tool.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\ServerRules.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmBuilder.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\simple\SimpleLogger.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\InferenceStrategy.java

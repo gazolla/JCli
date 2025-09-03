@@ -1,46 +1,217 @@
-15:52:31.420 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
-15:52:31.421 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
-15:52:31.422 INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
-15:52:31.422 INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
-15:52:31.424 INFO  com.gazapps.mcp.MCPService - Inicializando 6 servidores MCP...
-15:52:31.427 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
-15:52:31.534 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
-15:52:31.535 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
-15:52:31.536 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
-15:52:33.842 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
-15:52:33.842 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
-15:52:33.842 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
-15:52:33.946 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
-15:52:33.947 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
-15:52:33.947 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
-15:52:35.797 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
-15:52:35.797 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
-15:52:35.798 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
-15:52:35.896 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
-15:52:35.897 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
-15:52:35.897 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
-15:52:47.802 DEBUG com.gazapps.mcp.MCPService - Carregadas 5 ferramentas para servidor 'calculator'
-15:52:47.802 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'calculator' conectado com sucesso! Ferramentas: 5
-15:52:47.802 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
-15:52:47.909 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
-15:52:47.909 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
-15:52:47.909 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
-15:52:58.827 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'rss-feeds'
-15:52:58.827 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'rss-feeds' conectado com sucesso! Ferramentas: 1
-15:52:58.827 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
-15:52:58.946 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
-15:52:58.947 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
-15:52:58.947 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
-15:53:00.600 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
-15:53:00.600 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
-15:53:00.600 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
-15:53:00.732 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
-15:53:00.732 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
-15:53:00.732 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
-15:53:02.534 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
-15:53:02.534 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
-15:53:02.537 INFO  com.gazapps.mcp.MCPService - MCPService inicializado: 6/6 servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log
-15:53:02.548 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
-15:53:02.548 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
-15:53:02.548 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
-15:53:02.554 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+19:44:21.709 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+19:44:21.710 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+19:44:21.711 INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
+19:44:21.711 INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
+19:44:21.714 INFO  com.gazapps.mcp.MCPService - Inicializing 6 servers MCP...
+19:44:21.714 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+19:44:21.818 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+19:44:21.820 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
+19:44:21.822 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
+19:44:31.603 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'rss-feeds'
+19:44:31.603 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'rss-feeds' conectado com sucesso! Ferramentas: 1
+19:44:31.604 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+19:44:31.741 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+19:44:31.741 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+19:44:31.741 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+19:44:32.763 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+19:44:32.763 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+19:44:32.763 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+19:44:32.885 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+19:44:32.885 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
+19:44:32.885 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
+19:44:34.122 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
+19:44:34.122 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
+19:44:34.122 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+19:44:34.251 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+19:44:34.251 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+19:44:34.251 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+19:44:37.958 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+19:44:37.958 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+19:44:37.959 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+19:44:38.052 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+19:44:38.052 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+19:44:38.053 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+19:44:40.143 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+19:44:40.143 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+19:44:40.143 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+19:44:40.237 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+19:44:40.238 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
+19:44:40.238 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
+19:44:48.827 DEBUG com.gazapps.mcp.MCPService - Carregadas 5 ferramentas para servidor 'calculator'
+19:44:48.827 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'calculator' conectado com sucesso! Ferramentas: 5
+19:44:48.827 INFO  com.gazapps.mcp.MCPService - MCPService inicialized: 6/6 servers conected - logs in JavaCLI/log/mcp-operations.log
+19:44:49.097 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+19:44:49.097 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+19:44:49.097 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+19:44:49.102 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+19:46:11.935 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Que horas são em Denver,co?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:46:12.398 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 1.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:46:12.404 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que horas são em Denver,co?': {time=1.0}
+19:46:12.903 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Que horas são em Denver,co?'
+19:46:42.548 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Qual a temperatura em NYC?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:46:43.026 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 1.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:46:43.028 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Qual a temperatura em NYC?': {weather=1.0}
+19:46:43.517 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Qual a temperatura em NYC?'
+19:47:11.080 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Pequisa em whitehouse.gov que me o presidente dos eua em 2025"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:47:11.575 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.2, "math": 0.0, "filesystem": 0.0, "internet": 0.8}
+19:47:11.575 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Pequisa em whitehouse.gov que me o presidente dos eua em 2025': {time=0.2, internet=0.8}
+19:47:12.112 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Pequisa em whitehouse.gov que me o presidente dos eua em 2025'
+19:49:24.276 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "crie o arquivo la.txt e grave o clima de Los Angeles,CA em documents."
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:49:24.784 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.8, "time": 0.0, "math": 0.0, "filesystem": 0.9, "internet": 0.1}
+19:49:24.785 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'crie o arquivo la.txt e grave o clima de Los Angeles,CA em documents.': {weather=0.8, filesystem=0.9, internet=0.1}
+19:49:25.346 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'crie o arquivo la.txt e grave o clima de Los Angeles,CA em documents.'
+19:49:50.687 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "crie o arquivo la.txt e grave o previsão do tempo de Los Angeles,CA em documents."
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:49:51.204 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.8, "time": 0.1, "math": 0.0, "filesystem": 0.9, "internet": 0.2}
+19:49:51.205 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'crie o arquivo la.txt e grave o previsão do tempo de Los Angeles,CA em documents.': {weather=0.8, time=0.1, filesystem=0.9, internet=0.2}
+19:49:51.793 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'crie o arquivo la.txt e grave o previsão do tempo de Los Angeles,CA em documents.'
+19:50:15.632 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "crie o arquivo la.txt e grave a temperatura de Los Angeles,CA em documents."
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:50:16.146 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.8, "time": 0.0, "math": 0.0, "filesystem": 0.9, "internet": 0.2}
+19:50:16.147 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'crie o arquivo la.txt e grave a temperatura de Los Angeles,CA em documents.': {weather=0.8, filesystem=0.9, internet=0.2}
+19:50:16.769 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'crie o arquivo la.txt e grave a temperatura de Los Angeles,CA em documents.'
+19:50:42.439 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Qual a previsão do tempo para Los angeles,ca?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:50:42.916 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 1.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:50:42.917 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Qual a previsão do tempo para Los angeles,ca?': {weather=1.0}
+19:50:43.437 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Qual a previsão do tempo para Los angeles,ca?'
+19:51:03.074 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "liste os arquivos de documents"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:51:03.568 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 1.0, "internet": 0.0}
+19:51:03.568 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'liste os arquivos de documents': {filesystem=1.0}
+19:51:04.137 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'liste os arquivos de documents'
+19:51:35.859 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "crie o arquivo hello.java com um hello world em documents"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:51:36.363 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 1.0, "internet": 0.0}
+19:51:36.363 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'crie o arquivo hello.java com um hello world em documents': {filesystem=1.0}
+19:51:37.022 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'crie o arquivo hello.java com um hello world em documents'
+19:52:57.820 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Quais são as manchete de metropoles.com para 03/set/2025 ?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+19:53:02.560 DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 0.2, "math": 0.0, "filesystem": 0.0, "internet": 0.8}
+19:53:02.561 INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Quais são as manchete de metropoles.com para 03/set/2025 ?': {time=0.2, internet=0.8}
+19:53:03.107 DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Quais são as manchete de metropoles.com para 03/set/2025 ?'
+19:54:15.331 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+19:54:15.332 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+19:54:15.335 INFO  com.gazapps.mcp.MCPService - Servidor 'web-fetch' desconectado
+19:54:15.336 INFO  com.gazapps.mcp.MCPService - Servidor 'calculator' desconectado
+19:54:15.336 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+19:54:15.337 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+19:54:15.337 INFO  com.gazapps.mcp.MCPService - Servidor 'rss-feeds' desconectado
+19:54:15.337 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+19:54:15.337 INFO  com.gazapps.mcp.MCPService - MCPService fechado
+19:54:15.345 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+19:54:15.345 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso

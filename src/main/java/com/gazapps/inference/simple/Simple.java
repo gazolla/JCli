@@ -21,131 +21,103 @@ import com.gazapps.mcp.domain.Tool;
 
 public class Simple implements Inference {
     
-    private static final Logger logger = LoggerFactory.getLogger(Simple.class);
-    private static final Logger conversationLogger = LoggerFactory.getLogger("com.gazapps.inference.simple.Simple.conversations");
-    
     private final MCPManager mcpManager;
     private final Llm llm;
     private InferenceObserver observer;
-
+    private final SimpleLogger logger;
+    
     public Simple(MCPManager mcpManager, Llm llm, Map<String, Object> options) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
         this.llm = Objects.requireNonNull(llm, "Llm is required");
         this.observer = (InferenceObserver) options.get("observer");
+        this.logger = new SimpleLogger();
         
-        logger.info("[SIMPLE] Initialized with LLM: {} - logs em JavaCLI/log/inference/simple-conversations.log", llm.getProviderName());
+        logger.logDebug("[SIMPLE] Initialized with LLM: {} - logs in JavaCLI/log/inference/simple-conversations.log", llm.getProviderName());
     }
 
     @Override
     public String processQuery(String query) {
-        logger.debug("Processing query: {}", query);
-
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== SIMPLE INFERENCE START ===");
-            conversationLogger.info("Query: {}", query);
-        }
+        logger.logDebug("Processing query: {}", query);
+        logger.logInferenceStart(query);
         
         try {
-
-        	if (observer != null) {
+            if (observer != null) {
                 observer.onInferenceStart(query, getStrategyName().name());
             }
-        	
-            Optional<Map<Tool, Map<String, Object>>> optionalSelections;
             
-            boolean isMultiStep = isMultiStep(query, llm);
+            QueryAnalysis analysis = analyzeQuery(query, llm);
+            logger.logQueryAnalysis(analysis);
             
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Multi-step analysis: {}", isMultiStep);
-            }
-            
-            if (isMultiStep) {
-            	optionalSelections = mcpManager.findMultiStepTools(query);
-            } else {
-            	optionalSelections = mcpManager.findSingleStepTools(query);
-            }
-            
-            Map<Tool, Map<String, Object>> selections = optionalSelections.orElse(Map.of());
-            
-            // Notificar observer sobre discovery de ferramentas
-            if (observer != null && !selections.isEmpty()) {
-                var toolNames = selections.keySet().stream()
-                    .map(Tool::getName).toList();
-                observer.onToolDiscovery(toolNames);
-            }
-            
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Found {} tool(s) for execution", selections.size());
-                for (Map.Entry<Tool, Map<String, Object>> entry : selections.entrySet()) {
-                    conversationLogger.info("  - Tool: {} with params: {}", 
-                        entry.getKey().getName(), entry.getValue());
+            return switch (analysis.execution) {
+                case DIRECT_ANSWER -> {
+                    String result = generateDirectResponse(query);
+                    if (observer != null) {
+                        observer.onInferenceComplete(result);
+                    }
+                    logger.logInferenceEnd(result);
+                    yield result;
                 }
-            }
-            
-            String result;
-            if (selections.isEmpty()) {
-                result = generateDirectResponse(query);
-            } else if (selections.size() == 1) {
-                Map.Entry<Tool, Map<String, Object>> selection = selections.entrySet().iterator().next();
-                result = executeSingleTool(query, selection.getKey(), selection.getValue());
-            } else {
-                result = executeMultiStep(query, selections);
-            }
-            
-            if (observer != null) {
-                observer.onInferenceComplete(result);
-            } 
-            
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== SIMPLE INFERENCE END ===");
-                conversationLogger.info("Final result: {}", result);
-                conversationLogger.info("==============================");
-            }
-            
-            return result;
+                case MULTI_TOOL -> executeWithTools(query, mcpManager.findMultiStepTools(query));
+                case SINGLE_TOOL -> executeWithTools(query, mcpManager.findSingleStepTools(query));
+            };
             
         } catch (Exception e) {
-            logger.error("Error processing query", e);
-            
-            // Notificar observer do erro
+            logger.logError(e);
             if (observer != null) {
                 observer.onError("Error processing query", e);
-            }
-            
-            if (conversationLogger.isErrorEnabled()) {
-                conversationLogger.error("=== SIMPLE INFERENCE ERROR ===");
-                conversationLogger.error("Error: {}", e.getMessage());
-                conversationLogger.error("===============================");
             }
             return "Error processing query: " + e.getMessage();
         }
     }
     
-    private String generateDirectResponse(String query) {
-        logger.debug("Generating direct LLM response");
+    private String executeWithTools(String query, Optional<Map<Tool, Map<String, Object>>> optionalSelections) {
+        Map<Tool, Map<String, Object>> selections = optionalSelections.orElse(Map.of());
         
+        if (observer != null && !selections.isEmpty()) {
+            var toolNames = selections.keySet().stream()
+                .map(Tool::getName).toList();
+            observer.onToolDiscovery(toolNames);
+        }
+        
+        logger.logToolSelections(selections);
+        
+        String result;
+        if (selections.isEmpty()) {
+            result = generateDirectResponse(query);
+        } else if (selections.size() == 1) {
+            Map.Entry<Tool, Map<String, Object>> selection = selections.entrySet().iterator().next();
+            result = executeSingleTool(query, selection.getKey(), selection.getValue());
+        } else {
+            result = executeMultiStep(query, selections);
+        }
+        
+        if (observer != null) {
+            observer.onInferenceComplete(result);
+        }
+        
+        logger.logInferenceEnd(result);
+        return result;
+    }
+    
+    private String generateDirectResponse(String query) {
+        logger.logDebug("Generating direct LLM response");
         LlmResponse response = llm.generateResponse(
             "Answer the following question using your knowledge:\n\n" + query
         );
-        
         return response.isSuccess() ? response.getContent() 
                                     : "Failed to generate response: " + response.getErrorMessage();
     }
     
     private String executeSingleTool(String query, Tool tool, Map<String, Object> parameters) {
-        logger.debug("Executing single tool: {} with parameters: {}", tool.getName(), parameters);
-        
+        logger.logDebug("Executing single tool: {} with parameters: {}", tool.getName(), parameters);
         if (observer != null) {
             observer.onToolSelection(tool.getName(), parameters);
         }
-        
         try {
             MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, parameters);
-            
             if (observer != null) {
                 observer.onToolExecution(tool.getName(), result.message);
             }
-            
             if (!result.success) {
                 return "Tool execution failed: " + result.content;
             }
@@ -158,48 +130,27 @@ public class Simple implements Inference {
     }
     
     private String executeMultiStep(String query, Map<Tool, Map<String, Object>> selections) {
-        logger.debug("Executing multi-step with {} tools", selections.size());
+        logger.logDebug("Executing multi-step with {} tools", selections.size());
         
         StringBuilder results = new StringBuilder();
         Map<String, String> stepResults = new HashMap<>();
         
-        // NOVA IMPLEMENTAÇÃO: Ordenar ferramentas por dependências
         List<Map.Entry<Tool, Map<String, Object>>> orderedEntries = orderToolsByDependencies(selections);
         
-        // NOVO LOG: Mostrar ordem de execução planejada
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== TOOL EXECUTION ORDER ===");
-            for (int i = 0; i < orderedEntries.size(); i++) {
-                Tool tool = orderedEntries.get(i).getKey();
-                int depLevel = extractDependencyLevel(orderedEntries.get(i).getValue());
-                conversationLogger.info("Step {}: {} (dependency level: {})", 
-                    i + 1, tool.getName(), depLevel);
-            }
-        }
+        List<Map.Entry<Tool, Integer>> entriesWithLevels = orderedEntries.stream()
+                .map(entry -> Map.entry(entry.getKey(), extractDependencyLevel(entry.getValue())))
+                .toList();
+        logger.logToolExecutionOrder(entriesWithLevels);
         
         int step = 1;
         
-        // MODIFICADO: Iterar sobre lista ordenada em vez do Map original
         for (Map.Entry<Tool, Map<String, Object>> entry : orderedEntries) {
             if (step > 3) break; // Limit to 3 tools
             
             Tool tool = entry.getKey();
             Map<String, Object> originalParams = entry.getValue();
-            
-            // NOVO LOG: Parâmetros antes da resolução
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== STEP {} PARAMETER RESOLUTION ===", step);
-                conversationLogger.info("Original params: {}", originalParams);
-            }
-            
-            // RESOLVER REFERÊNCIAS {{RESULT_N}}
             Map<String, Object> resolvedParams = resolveParameterReferences(originalParams, stepResults);
-            
-            // NOVO LOG: Parâmetros após resolução
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Resolved params: {}", resolvedParams);
-                conversationLogger.info("Available step results: {}", stepResults.keySet());
-            }
+            logger.logStepParameterResolution(step, originalParams, resolvedParams, stepResults);
             
             if (observer != null) {
                 observer.onToolSelection(tool.getName(), resolvedParams);
@@ -212,43 +163,19 @@ public class Simple implements Inference {
             }
             
             if (!result.success) {
-                if (conversationLogger.isErrorEnabled()) {
-                    conversationLogger.error("=== STEP {} FAILED ===", step);
-                    conversationLogger.error("Error: {}", result.message);
-                }
+                logger.logStepFailure(step, result.message);
                 return String.format("Step %d failed: %s", step, result.message);
             }
             
-            // MODIFICADO: Armazenar result.content em vez de result.message
             stepResults.put("RESULT_" + step, result.content);
-            
-            // NOVO LOG: Conteúdo da ferramenta
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== STEP {} EXECUTION RESULT ===", step);
-                conversationLogger.info("Tool: {}", tool.getName());
-                conversationLogger.info("Success: {}", result.success);
-                conversationLogger.info("Message: {}", result.message);
-                String contentPreview = result.content != null && result.content.length() > 200 
-                    ? result.content.substring(0, 200) + "..." 
-                    : result.content;
-                conversationLogger.info("Content preview: {}", contentPreview);
-            }
-            
+            logger.logStepExecutionResult(step, tool, result);
             results.append(String.format("Step %d (%s): %s\n", 
                          step, tool.getName(), result.message));
             step++;
         }
-        
-
-        
         return generateConsolidatedResponse(query, results.toString());
     }
     
-    /**
-     * Ordena as ferramentas por nível de dependência baseado nos placeholders {{RESULT_X}}.
-     * Ferramentas sem dependências (nível 0) executam primeiro, seguidas pelas que dependem
-     * de RESULT_1, depois RESULT_2, etc.
-     */
     private List<Map.Entry<Tool, Map<String, Object>>> orderToolsByDependencies(
             Map<Tool, Map<String, Object>> selections) {
         
@@ -263,17 +190,13 @@ public class Simple implements Inference {
         return orderedTools;
     }
     
-    /**
-     * Extrai o nível de dependência analisando placeholders {{RESULT_X}} nos parâmetros.
-     * Retorna o maior número X encontrado, ou 0 se não há dependências.
-     */
     private int extractDependencyLevel(Map<String, Object> parameters) {
         int maxLevel = 0;
         
         for (Object value : parameters.values()) {
             if (value instanceof String) {
                 String strValue = (String) value;
-                // Regex para encontrar {{RESULT_X}} onde X é um número
+
                 java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\{\\{RESULT_(\\d+)\\}\\}");
                 java.util.regex.Matcher matcher = pattern.matcher(strValue);
                 
@@ -299,7 +222,7 @@ public class Simple implements Inference {
             
             if (value instanceof String) {
                 String strValue = (String) value;
-                // Resolver referências {{RESULT_N}}
+
                 for (Map.Entry<String, String> resultEntry : stepResults.entrySet()) {
                     String placeholder = "{{" + resultEntry.getKey() + "}}";
                     if (strValue.contains(placeholder)) {
@@ -316,14 +239,15 @@ public class Simple implements Inference {
     }
     
     private String generateContextualResponse(String query, Tool tool, String toolResult) {
-        String prompt = String.format(
-            "Based on the tool execution result, provide a comprehensive response:\n\n" +
-            "Original query: %s\n" +
-            "Tool used: %s\n" +
-            "Result: %s\n\n" +
-            "Provide a natural, always in the same languege of the orinal query, helpful response incorporating the tool result.",
-            query, tool.getName(), toolResult
-        );
+        String prompt = """
+                Based on the tool execution result, provide a comprehensive response:
+
+                Original query: %s
+                Tool used: %s
+                Result: %s
+
+                Provide a natural, always in the same language of the original query, helpful response incorporating the tool result.
+                """.formatted(query, tool.getName(), toolResult);
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
@@ -331,36 +255,93 @@ public class Simple implements Inference {
     }
     
     private String generateConsolidatedResponse(String query, String results) {
-        String prompt = String.format(
-            "Consolidate these multi-step results into a final response:\n\n" +
-            "Original query: %s\n" +
-            "Execution results:\n%s\n\n" +
-            "Provide a consolidated, helpful summary always in the same languege of the orinal query.",
-            query, results
-        );
+        String prompt = """
+                Consolidate these multi-step results into a final response:
+
+                Original query: %s
+                Execution results:
+                %s
+
+                Provide a consolidated, helpful summary always in the same language of the original query.
+                """.formatted(query, results);
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
                                     : "Multi-step execution completed:\n" + results;
     }
     
-    public boolean isMultiStep(String query, Llm llm) {
-        if (llm == null) return false;
+    public QueryAnalysis analyzeQuery(String query, Llm llm) {
+        if (llm == null) return new QueryAnalysis(QueryAnalysis.ExecutionType.DIRECT_ANSWER, "No LLM available");
         
-        String prompt = "Analise a query e determine se a sua execução exige uma ou mais ferramentas.\n\n" +
-                "Para fazer essa avaliação, procure por:\n" +
-                "1. **Verbos ou Ações Múltiplas:** Identifique se a query contém múltiplos verbos que implicam ações distintas (ex: \"criar\" e \"mover\", \"pesquisar\" e \"enviar\").\n" +
-                "2. **Conjunções e Conectores:** Procure por palavras como \"e\", \"ou\", \"então\", \"depois\" ou \"além disso\", que conectam diferentes partes da solicitação.\n" +
-                "3. **Dependências:** Verifique se uma tarefa depende da conclusão de outra (ex: primeiro encontrar um dado e só então usá-lo em outra ação).\n\n" +
-                "Com base nessa análise, responda de forma clara e objetiva se a query requer uma única ferramenta ou múltiplas.\n" +
-                "Responda apenas com `true` ou `false`.\n\n" +
-                "Query: " + query;
+        String prompt = """
+                Analyze the query and determine its execution requirements.
+                
+                Perform syntactic and semantic analysis:
+                
+                1. **Knowledge Assessment**: Does this require information beyond your training data cutoff (January 2024) or real-time data?
+                
+                2. **Action Analysis**: Examine the linguistic structure for:
+                   - Multiple verbs indicating distinct sequential actions
+                   - Conjunctions and connectors ("and", "then", "after", "furthermore") that link separate operations
+                   - Dependencies where one task's output becomes another's input
+                   
+                3. **Execution Classification**:
+                   - DIRECT_ANSWER: Can be answered using existing knowledge without external tools
+                   - SINGLE_TOOL: Requires one external tool or data source
+                   - MULTI_TOOL: Requires multiple tools with sequential execution or dependencies
+                
+                Respond in JSON format: {"execution": "DIRECT_ANSWER|SINGLE_TOOL|MULTI_TOOL", "reasoning": "brief syntactic/semantic justification"}
+                
+                Query: %s
+                """.formatted(query);
         
         var response = llm.generateResponse(prompt);
         
-        return response.isSuccess() && response.getContent().toLowerCase().contains("true");
+        if (!response.isSuccess()) {
+            return new QueryAnalysis(QueryAnalysis.ExecutionType.SINGLE_TOOL, "LLM analysis failed");
+        }
+        
+        return parseQueryAnalysis(response.getContent());
     }
     
+    private QueryAnalysis parseQueryAnalysis(String jsonResponse) {
+        try {
+            String content = jsonResponse.trim();
+            if (content.startsWith("```json")) {
+                content = content.substring(7);
+            }
+            if (content.endsWith("```")) {
+                content = content.substring(0, content.length() - 3);
+            }
+            content = content.trim();
+            
+            QueryAnalysis.ExecutionType execution;
+            if (content.contains("DIRECT_ANSWER")) {
+                execution = QueryAnalysis.ExecutionType.DIRECT_ANSWER;
+            } else if (content.contains("MULTI_TOOL")) {
+                execution = QueryAnalysis.ExecutionType.MULTI_TOOL;
+            } else {
+                execution = QueryAnalysis.ExecutionType.SINGLE_TOOL;
+            }
+            
+            String reasoning = "Parsed from LLM response";
+            
+            // Extract reasoning if possible
+            int reasoningStart = content.indexOf("\"reasoning\":");
+            if (reasoningStart != -1) {
+                int start = content.indexOf("\"", reasoningStart + 12);
+                int end = content.indexOf("\"", start + 1);
+                if (start != -1 && end != -1) {
+                    reasoning = content.substring(start + 1, end);
+                }
+            }
+            
+            return new QueryAnalysis(execution, reasoning);
+            
+        } catch (Exception e) {
+            return new QueryAnalysis(QueryAnalysis.ExecutionType.SINGLE_TOOL, "JSON parsing failed: " + e.getMessage());
+        }
+    }
 
     @Override
     public String buildSystemPrompt() {
@@ -374,6 +355,6 @@ public class Simple implements Inference {
     
     @Override
     public void close() {
-        logger.debug("[SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/");
+        logger.logDebug("[SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/");
     }
 }

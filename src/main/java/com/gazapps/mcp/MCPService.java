@@ -16,13 +16,6 @@ import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.spec.McpSchema.*;
 
-/**
- * Serviço central para operações MCP que implementa as operações fundamentais
- * do protocolo incluindo conexão com servidores, execução de ferramentas,
- * monitoramento de saúde e gerenciamento de estados de conexão.
- * 
- * VERSÃO RESILIENTE: Continua funcionando mesmo se alguns servidores falharem.
- */
 public class MCPService {
     
     private static final Logger logger = LoggerFactory.getLogger(MCPService.class);
@@ -31,9 +24,8 @@ public class MCPService {
     private final Map<String, McpSyncClient> clients;
     private final MCPConfig config;
     
-    // Configurações de timeout
-    private int requestTimeoutSeconds = 15; // Timeout do JavaCLI que funcionava
-    private int connectionTimeoutSeconds = 15; // Novo timeout separado para inicialização
+    private int requestTimeoutSeconds = 15; 
+    private int connectionTimeoutSeconds = 15; 
     private static final int MAX_RETRY_ATTEMPTS = 2;
     
     public MCPService(MCPConfig config) {
@@ -44,11 +36,7 @@ public class MCPService {
         initializeServers();
     }
     
-    /**
-     * Conecta um servidor usando sua configuração.
-     * RESILIENTE: Não falha se um servidor não conseguir conectar.
-     */
-    public boolean connectServer(MCPConfig.ServerConfig serverConfig) {
+     public boolean connectServer(MCPConfig.ServerConfig serverConfig) {
         Objects.requireNonNull(serverConfig, "Server config cannot be null");
         
         if (!serverConfig.enabled) {
@@ -56,7 +44,6 @@ public class MCPService {
             return false;
         }
         
-        // Verificar se o comando está disponível antes de tentar conectar
         if (!isCommandAvailable(serverConfig)) {
             logger.warn("Comando '{}' não disponível para servidor '{}' - pulando", 
                        getMainCommand(serverConfig.command), serverConfig.id);
@@ -69,13 +56,8 @@ public class MCPService {
             Server server = serverConfig.toServer();
             McpSyncClient client = createMcpClient(serverConfig);
             
-            // Inicializar conexão com timeout reduzido
             client.initialize();
-            
-            // Carregar ferramentas disponíveis
             loadServerTools(server, client);
-            
-            // Registrar servidor e cliente
             servers.put(server.getId(), server);
             clients.put(server.getId(), client);
             
@@ -92,14 +74,10 @@ public class MCPService {
         }
     }
     
-    /**
-     * Verifica se um comando está disponível no sistema.
-     */
-    private boolean isCommandAvailable(MCPConfig.ServerConfig serverConfig) {
+     private boolean isCommandAvailable(MCPConfig.ServerConfig serverConfig) {
         String command = serverConfig.command;
         String mainCommand = getMainCommand(command);
         
-        System.out.println("[DEBUG] Verificando disponibilidade do comando: " + mainCommand);
         logger.debug("Verificação do comando '{}': verificando", mainCommand);
         
         try {
@@ -116,26 +94,20 @@ public class MCPService {
             
             if (!finished) {
                 process.destroyForcibly();
-                System.out.println("[DEBUG] Comando " + mainCommand + ": TIMEOUT");
-                logger.debug("Verificação do comando '{}': timeout", mainCommand);
+                 logger.debug("Verificação do comando '{}': timeout", mainCommand);
                 return false;
             }
             
             boolean available = process.exitValue() == 0;
-            System.out.println("[DEBUG] Comando " + mainCommand + ": " + (available ? "DISPONÍVEL" : "INDISPONÍVEL"));
             logger.debug("Verificação do comando '{}': {}", mainCommand, available ? "disponível" : "indisponível");
             return available;
             
         } catch (Exception e) {
-            System.out.println("[DEBUG] Erro ao verificar comando " + mainCommand + ": " + e.getMessage());
-            logger.warn("Erro ao verificar comando '{}': {}", mainCommand, e.getMessage());
+            logger.error("Erro ao verificar comando '{}': {}", mainCommand, e.getMessage());
             return false;
         }
     }
     
-    /**
-     * Extrai o comando principal de uma linha de comando.
-     */
     private String getMainCommand(String command) {
         if (command == null || command.trim().isEmpty()) {
             return "";
@@ -143,9 +115,6 @@ public class MCPService {
         return command.trim().split("\\s+")[0];
     }
     
-    /**
-     * Desconecta um servidor.
-     */
     public void disconnectServer(String serverId) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         
@@ -191,23 +160,18 @@ public class MCPService {
             return ToolExecutionResult.error("Ferramenta não encontrada: " + toolName + " no servidor " + serverId);
         }
         
-        // Validar argumentos
         if (!tool.validateArgs(args)) {
             List<String> missingParams = tool.getMissingRequiredParams(args);
             return ToolExecutionResult.error("Argumentos inválidos para ferramenta " + toolName + 
                                  ". Parâmetros obrigatórios faltando: " + missingParams);
         }
         
-        // Normalizar argumentos
         Map<String, Object> normalizedArgs = tool.normalizeArgs(args);
         
         return executeToolWithRetry(server, tool, normalizedArgs);
     }
     
-    /**
-     * Retorna todas as ferramentas disponíveis em um servidor.
-     */
-    public List<Tool> getAvailableTools(String serverId) {
+     public List<Tool> getAvailableTools(String serverId) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         
         Server server = servers.get(serverId);
@@ -218,9 +182,6 @@ public class MCPService {
         return server.getTools();
     }
     
-    /**
-     * Retorna todas as ferramentas disponíveis em todos os servidores conectados.
-     */
     public List<Tool> getAllAvailableTools() {
         List<Tool> allTools = new ArrayList<>();
         
@@ -233,25 +194,16 @@ public class MCPService {
         return allTools;
     }
     
-    /**
-     * Verifica se um servidor está conectado.
-     */
-    public boolean isServerConnected(String serverId) {
+   public boolean isServerConnected(String serverId) {
         Server server = servers.get(serverId);
         return server != null && server.isConnected();
     }
     
-    /**
-     * Retorna informações sobre um servidor.
-     */
-    public Server getServerInfo(String serverId) {
+     public Server getServerInfo(String serverId) {
         return servers.get(serverId);
     }
     
-    /**
-     * Retorna mapa com todos os servidores conectados.
-     */
-    public Map<String, Server> getConnectedServers() {
+   public Map<String, Server> getConnectedServers() {
         Map<String, Server> connected = new HashMap<>();
         
         for (Map.Entry<String, Server> entry : servers.entrySet()) {
@@ -263,22 +215,15 @@ public class MCPService {
         return connected;
     }
     
-    /**
-     * Retorna mapa com todos os servidores (conectados e desconectados).
-     */
     public Map<String, Server> getAllServers() {
         return new HashMap<>(servers);
     }
     
-    /**
-     * Valida se uma chamada de ferramenta é válida sem executá-la.
-     */
     public boolean validateToolCall(String toolName, Map<String, Object> args) {
         if (toolName == null || toolName.trim().isEmpty()) {
             return false;
         }
         
-        // Procurar a ferramenta em todos os servidores
         for (Server server : servers.values()) {
             if (server.isConnected() && server.hasTool(toolName)) {
                 Tool tool = server.getTool(toolName);
@@ -289,23 +234,18 @@ public class MCPService {
         return false;
     }
     
-    /**
-     * Atualiza conexões com todos os servidores.
-     */
-    public void refreshServerConnections() {
+     public void refreshServerConnections() {
         logger.info("Atualizando conexões de servidores...");
         
         Map<String, MCPConfig.ServerConfig> serverConfigs = config.loadServers();
         
-        // Conectar novos servidores
         for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
             if (!servers.containsKey(serverConfig.id)) {
                 connectServer(serverConfig);
             }
         }
         
-        // Verificar saúde dos servidores existentes
-        List<String> unhealthyServers = new ArrayList<>();
+         List<String> unhealthyServers = new ArrayList<>();
         for (Map.Entry<String, Server> entry : servers.entrySet()) {
             String serverId = entry.getKey();
             Server server = entry.getValue();
@@ -313,12 +253,10 @@ public class MCPService {
             if (!server.isHealthy()) {
                 unhealthyServers.add(serverId);
             } else {
-                // Atualizar heartbeat
                 server.updateHeartbeat();
             }
         }
         
-        // Tentar reconectar servidores não saudáveis (opcional, pode ser desabilitado)
         int reconnectAttempts = 0;
         for (String serverId : unhealthyServers) {
             if (reconnectAttempts >= 2) { // Limitar tentativas de reconexão
@@ -341,9 +279,6 @@ public class MCPService {
         logger.info("Atualização concluída. Servidores: {}/{} conectados", connectedCount, totalCount);
     }
     
-    /**
-     * Fecha todas as conexões e limpa recursos.
-     */
     public void close() {
         logger.info("Fechando MCPService...");
         
@@ -357,75 +292,60 @@ public class MCPService {
         logger.info("MCPService fechado");
     }
     
-    // Métodos privados auxiliares
-    
-    private void initializeServers() {
+   private void initializeServers() {
         Map<String, MCPConfig.ServerConfig> serverConfigs = config.loadServers();
         
-        System.out.println("[DEBUG] Inicializando " + serverConfigs.size() + " servidores MCP...");
-        logger.info("Inicializando {} servidores MCP...", serverConfigs.size());
-        
-        System.out.println("[DEBUG] Servidores configurados:");
-        for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
-            System.out.println("[DEBUG] - " + serverConfig.id + ": " + serverConfig.command + 
-                             " (enabled: " + serverConfig.enabled + ")");
-        }
-        
+        logger.info("Inicializing {} servers MCP...", serverConfigs.size());
+        System.out.printf("Inicializing %d servers MCP...\n", serverConfigs.size());
+               
+         
         int successCount = 0;
         for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
             if (serverConfig.enabled) {
-                System.out.println("[DEBUG] Tentando conectar servidor: " + serverConfig.id);
                 if (connectServer(serverConfig)) {
                     successCount++;
-                    System.out.println("[DEBUG] ✅ Servidor " + serverConfig.id + " conectado com sucesso!");
-                } else {
+                 } else {
                     System.out.println("[DEBUG] ❌ Falha ao conectar servidor " + serverConfig.id);
                 }
             } else {
-                System.out.println("[DEBUG] Servidor " + serverConfig.id + " desabilitado na configuração");
                 logger.info("Servidor '{}' desabilitado na configuração", serverConfig.id);
             }
         }
-        
-        System.out.println("[DEBUG] Resultado final: " + successCount + "/" + serverConfigs.size() + " servidores conectados");
-        logger.info("MCPService inicializado: {}/{} servidores conectados com sucesso - logs em JavaCLI/log/mcp-operations.log", 
+        logger.info("MCPService inicialized: {}/{} servers conected - logs in JavaCLI/log/mcp-operations.log", 
                    successCount, serverConfigs.size());
         
         if (successCount == 0) {
-            System.out.println("[DEBUG] ⚠️  AVISO: Nenhum servidor MCP conectado!");
-            logger.warn("⚠️  AVISO: Nenhum servidor MCP conectado!");
-            logger.warn("   Isso pode acontecer se:");
-            logger.warn("   - Node.js não estiver instalado (para servidores weather/filesystem)");
-            logger.warn("   - Python/uvx não estiver instalado (para servidor time)");
-            logger.warn("   - Os comandos não estiverem no PATH do sistema");
-            logger.warn("   O sistema continuará funcionando com funcionalidade limitada.");
+            String message = """
+                [DEBUG] ⚠️ WARNING: No MCP server connected!
+                   This may happen if:
+                   - Node.js is not installed (for weather/filesystem servers)
+                   - Python/uvx is not installed (for time server)
+                   - The commands are not in the system's PATH
+                   The system will continue operating with limited functionality.
+                """;
+            System.out.println(message);
+            logger.warn(message);
         }
-    }
+   }
     
     private McpSyncClient createMcpClient(MCPConfig.ServerConfig serverConfig) throws Exception {
         try {
-            // USAR A MESMA ABORDAGEM QUE FUNCIONAVA NO JavaCLI
-            String[] command;
+             String[] command;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                // No Windows, usar cmd.exe /c para executar o comando completo
-                command = new String[]{"cmd.exe", "/c", serverConfig.command};
+                 command = new String[]{"cmd.exe", "/c", serverConfig.command};
             } else {
-                // No Unix/Linux, fazer split do comando
                 command = serverConfig.command.split(" ");
             }
             
             logger.debug("Executando comando: {}", Arrays.toString(command));
             
-            // Criar parâmetros do servidor
-            ServerParameters serverParams = ServerParameters.builder(command[0])
+             ServerParameters serverParams = ServerParameters.builder(command[0])
                 .args(Arrays.copyOfRange(command, 1, command.length))
                 .env(serverConfig.env)
                 .build();
             
-            // Criar transport STDIO
             StdioClientTransport stdioTransport = new StdioClientTransport(serverParams);
             
-            // Criar cliente com timeout adequado
             return McpClient.sync(stdioTransport)
                 .requestTimeout(Duration.ofSeconds(requestTimeoutSeconds))
                 .build();
@@ -437,19 +357,15 @@ public class MCPService {
     }
     
     private String[] parseCommand(String command) {
-        // Parse simples do comando - pode ser melhorado para suportar aspas, etc.
         return command.split("\\s+");
     }
     
     private void loadServerTools(Server server, McpSyncClient client) {
         try {
-            // Solicitar lista de ferramentas do servidor
             ListToolsResult toolsResult = client.listTools();
-            
-            // Converter e adicionar ferramentas ao servidor
             for (io.modelcontextprotocol.spec.McpSchema.Tool mcpTool : toolsResult.tools()) {
                 Tool tool = Tool.fromMcp(mcpTool, server.getId());
-                tool.setDomain(server.getDomain()); // Herda domínio do servidor
+                tool.setDomain(server.getDomain()); 
                 server.addTool(tool);
             }
             
@@ -475,7 +391,7 @@ public class MCPService {
                 
                 if (attempt < MAX_RETRY_ATTEMPTS) {
                     try {
-                        Thread.sleep(1000 * attempt); // Backoff exponencial simples
+                        Thread.sleep(1000 * attempt); 
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         break;
@@ -493,23 +409,14 @@ public class MCPService {
         if (client == null) {
             throw new Exception("Cliente não encontrado para servidor: " + server.getId());
         }
-        
-        // Criar requisição de chamada de ferramenta
         CallToolRequest request = new CallToolRequest(tool.getName(), args);
-        
-        // Executar chamada
         CallToolResult result = client.callTool(request);
-        
-        // Verificar se houve erro
         Boolean isError = result.isError();
         if (isError != null && isError) {
             throw new Exception("Erro na execução da ferramenta: " + result.toString());
         }
         
-        // Extrair conteúdo da resposta
         String content = extractContentAsString(result.content());
-        
-        // Atualizar métricas do servidor
         server.updateHeartbeat();
         
         return ToolExecutionResult.success(tool, content);
@@ -531,9 +438,6 @@ public class MCPService {
         return "Nenhuma mensagem encontrada";
     }
     
-    /**
-     * Retorna estatísticas do sistema MCP.
-     */
     public MCPStats getStats() {
         int totalServers = servers.size();
         int connectedServers = (int) servers.values().stream().filter(Server::isConnected).count();
@@ -547,9 +451,6 @@ public class MCPService {
         return new MCPStats(totalServers, connectedServers, totalTools, toolsByDomain);
     }
     
-    /**
-     * Estatísticas do sistema MCP.
-     */
     public static class MCPStats {
         public final int totalServers;
         public final int connectedServers;
@@ -570,9 +471,6 @@ public class MCPService {
         }
     }
     
-    /**
-     * Resultado da execução de uma ferramenta.
-     */
     public static class ToolExecutionResult {
         public final boolean success;
         public final Tool tool;

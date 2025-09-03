@@ -8,18 +8,20 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import com.gazapps.llm.LlmConfig;
 import com.gazapps.llm.LlmProvider;
 import com.gazapps.mcp.MCPConfig;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 public class Config {
 
@@ -31,16 +33,13 @@ public class Config {
 	private final MCPConfig mcpConfig;
 
 	public Config() {
-		// 1. Inicializar properties
 		this.properties = new Properties();
 		loadApplicationProperties();
 		
-		// 2. Inicializar componentes especializados
 		this.llmConfig = new LlmConfig();
 		File configDir = new File("./config"); 
 		this.mcpConfig = new MCPConfig(configDir);
 		
-		// 3. Setup logging
 		if ("true".equals(properties.getProperty("log.recreate", "false"))) {
 			deleteAllLogFiles();
 		}
@@ -48,9 +47,7 @@ public class Config {
 		logger.info("📋 Configuration initialized with LlmConfig and MCPConfig");
 	}
 	
-	// ✅ DELEGAR para LlmConfig
 	public LlmProvider getPreferredProvider() {
-		// Tentar provider configurado no properties
 		String providerName = properties.getProperty("llm.provider", "gemini");
 		try {
 			LlmProvider configuredProvider = LlmProvider.fromString(providerName);
@@ -61,7 +58,6 @@ public class Config {
 			logger.warn("Invalid provider in config: {}", providerName);
 		}
 		
-		// Usar primeiro disponível
 		List<LlmProvider> configured = llmConfig.getAllConfiguredProviders();
 		if (!configured.isEmpty()) {
 			LlmProvider firstAvailable = configured.get(0);
@@ -74,27 +70,15 @@ public class Config {
 		return LlmProvider.GEMINI;
 	}
 	
-	// ✅ DELEGAR para LlmConfig
 	public List<LlmProvider> getConfiguredProviders() {
 		return llmConfig.getAllConfiguredProviders();
 	}
 	
-	// ✅ DELEGAR para LlmConfig
 	public boolean isProviderConfigured(LlmProvider provider) {
 		return llmConfig.isLlmConfigValid(provider);
 	}
 	
-	// ✅ SIMPLIFICAR - apenas delegar
-	public void createConfigStructure() {
-		try {
-			// MCPConfig já cria toda estrutura necessária
-			logger.info("✅ Config structure created successfully");
-		} catch (Exception e) {
-			logger.error("❌ Error creating config structure: {}", e.getMessage());
-		}
-	}
 	
-	// ✅ EXPOR acesso aos componentes se necessário
 	public LlmConfig getLlmConfig() {
 		return llmConfig;
 	}
@@ -163,69 +147,70 @@ public class Config {
 	}
 
 	private void deleteAllLogFiles() {
-		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-		loggerContext.stop();
-		File logDir = new File("log");
-		if (logDir.exists() && logDir.isDirectory()) {
-			deleteDirectory(logDir);
-		}
+	    List<String> logMessages = new ArrayList<>(); // Buffer log messages
+	    List<String> errorMessages = new ArrayList<>(); // Buffer error messages
 
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
+	    LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+	    logMessages.add("Stopping LoggerContext to release log file handles");
+	    loggerContext.stop();
 
-		try {
-			Files.createDirectories(Paths.get("log"));
-			Files.createDirectories(Paths.get("log/llm"));
-			Files.createDirectories(Paths.get("log/inference"));
-		} catch (IOException e) {
-			logger.error("❌ Error recreating log directories: {}", e.getMessage());
-		}
+	    Path logDir = Paths.get("log");
+	    logMessages.add("Attempting to delete log directory: " + logDir.toAbsolutePath());
 
-		loggerContext.reset();
-		JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(loggerContext);
+	    try {
+	        // Delete log directory and contents
+	        if (Files.exists(logDir)) {
+	            Files.walk(logDir)
+	                .sorted((p1, p2) -> -p1.compareTo(p2)) // Delete files before directories
+	                .forEach(path -> {
+	                    int retries = 3;
+	                    while (retries > 0) {
+	                        try {
+	                            Files.delete(path);
+	                            logMessages.add("✅ Deleted: " + path.toAbsolutePath());
+	                            break;
+	                        } catch (IOException e) {
+	                            retries--;
+	                            if (retries == 0) {
+	                                errorMessages.add("❌ Failed to delete: " + path.toAbsolutePath() + ". Reason: " + e.getMessage());
+	                            } else {
+	                                try {
+	                                    Thread.sleep(100); // Wait before retry
+	                                } catch (InterruptedException ie) {
+	                                    Thread.currentThread().interrupt();
+	                                }
+	                            }
+	                        }
+	                    }
+	                });
+	        }
 
-		URL configUrl = getClass().getClassLoader().getResource("logback.xml");
+	        // Recreate log directories
+	        Files.createDirectories(logDir);
+	        Files.createDirectories(logDir.resolve("llm"));
+	        Files.createDirectories(logDir.resolve("inference"));
+	        logMessages.add("✅ Log directories recreated: log, log/llm, log/inference");
 
-		if (configUrl != null) {
-			try {
-				configurator.doConfigure(configUrl);
-				logger.info("✅ Logback configuration reloaded successfully!");
-			} catch (JoranException e) {
-				logger.error("❌ Error reloading Logback configuration: {}", e.getMessage());
-			}
-		} else {
-			logger.error("❌ 'logback.xml' file not found in classpath.");
-		}
-	}
+	        // Reload Logback configuration
+	        loggerContext.reset();
+	        JoranConfigurator configurator = new JoranConfigurator();
+	        configurator.setContext(loggerContext);
 
-	private void deleteDirectory(File dir) {
-		if (dir == null) {
-			return;
-		}
+	        URL configUrl = getClass().getClassLoader().getResource("logback.xml");
+	        if (configUrl != null) {
+	            configurator.doConfigure(configUrl);
+	            logMessages.add("✅ Logback configuration reloaded from: " + configUrl);
+	        } else {
+	            errorMessages.add("❌ 'logback.xml' not found in classpath. Logging may not work as expected.");
+	        }
 
-		File[] files = dir.listFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (file.isDirectory()) {
-					deleteDirectory(file);
-				} else {
-					if (file.delete()) {
-						logger.info("✅ File deleted successfully: {}", file.getAbsolutePath());
-					} else {
-						logger.error("❌ Failed to delete file: {}", file.getAbsolutePath());
-					}
-				}
-			}
-		}
+	    } catch (IOException | JoranException e) {
+	        errorMessages.add("❌ Error during log file recreation: " + e.getMessage());
+	    }
 
-		if (dir.delete()) {
-			logger.info("✅ Directory deleted successfully: {}", dir.getAbsolutePath());
-		} else {
-			logger.error("❌ Failed to delete directory: {}", dir.getAbsolutePath());
-		}
+	    // Write buffered messages after LoggerContext is reset
+	    Logger postResetLogger = LoggerFactory.getLogger(Config.class);
+	    logMessages.forEach(msg -> postResetLogger.info(msg));
+	    errorMessages.forEach(msg -> postResetLogger.error(msg));
 	}
 }

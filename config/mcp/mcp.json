@@ -16,8 +16,8 @@
       "domain" : "internet",
       "description" : "Busca web oficial sem browser",
       "env" : {
-        "REQUIRES_ONLINE" : "true",
-        "REQUIRES_PYTHON" : "true"
+        "REQUIRES_PYTHON" : "true",
+        "REQUIRES_ONLINE" : "true"
       },
       "priority" : 2,
       "command" : "uvx mcp-server-fetch",
@@ -39,8 +39,8 @@
       "domain" : "weather",
       "description" : "Previsões meteorológicas via NWS",
       "env" : {
-        "REQUIRES_ONLINE" : "true",
-        "REQUIRES_NODEJS" : "true"
+        "REQUIRES_NODEJS" : "true",
+        "REQUIRES_ONLINE" : "true"
       },
       "priority" : 1,
       "command" : "npx @h1deya/mcp-server-weather",
@@ -62,8 +62,8 @@
       "domain" : "internet",
       "description" : "Feeds RSS básicos",
       "env" : {
-        "REQUIRES_ONLINE" : "true",
-        "REQUIRES_PYTHON" : "true"
+        "REQUIRES_PYTHON" : "true",
+        "REQUIRES_ONLINE" : "true"
       },
       "priority" : 1,
       "command" : "uvx mcp-server-rss",

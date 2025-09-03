@@ -21,20 +21,17 @@ import com.gazapps.mcp.domain.Tool;
 
 public class ReAct implements Inference {
     
-    private static final Logger logger = LoggerFactory.getLogger(ReAct.class);
-    private static final Logger conversationLogger = LoggerFactory.getLogger("com.gazapps.inference.react.ReAct.conversations");
-    
     private final MCPManager mcpManager;
     private final Llm llm;
     private final Map<String, Object> options;
     private final int maxIterations;
     private final boolean debug;
     private InferenceObserver observer;
+    private final ReActLogger logger;
     
-    // Cache simples para tool selection
     private String cachedQuery;
     private Map<Tool, Map<String, Object>> cachedTools;
-    private String lastToolResult = ""; // Armazenar resultado da ferramenta anterior
+    private String lastToolResult = ""; 
 
     public ReAct(MCPManager mcpManager, Llm llm, Map<String, Object> options) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
@@ -43,54 +40,31 @@ public class ReAct implements Inference {
         this.maxIterations = (Integer) options.getOrDefault("maxIterations", 5);
         this.debug = (Boolean) options.getOrDefault("debug", false);
         this.observer = (InferenceObserver) options.get("observer");
+        this.logger = new ReActLogger();
         
-        logger.info("[REACT] Initialized with LLM: {} - logs em JavaCLI/log/inference/react-conversations.log", llm.getProviderName());
+        logger.logDebug("[REACT] Initialized with LLM: {} - logs em JavaCLI/log/inference/react-conversations.log", llm.getProviderName());
     }
 
     @Override
     public String processQuery(String query) {
-        logger.debug("Processing query with ReAct: {}", query);
-        
-        // Notificar observer do início
+        logger.logDebug("Processing query with ReAct: {}", query);
         if (observer != null) {
             observer.onInferenceStart(query, "ReAct");
         }
-        
-        if (conversationLogger.isInfoEnabled()) {
-            conversationLogger.info("=== REACT INFERENCE START ===");
-            conversationLogger.info("Query: {}", query);
-            conversationLogger.info("Max iterations: {}", maxIterations);
-        }
+        logger.logInferenceStart(query, maxIterations);
         
         try {
             ReActResult result = executeReActCycle(query);
-            
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("=== REACT INFERENCE END ===");
-                conversationLogger.info("Iterations completed: {}", result.iterations.size());
-                conversationLogger.info("Final result: {}", result.finalAnswer);
-                conversationLogger.info("===============================");
-            }
-            
-            // Notificar observer da conclusão
+            logger.logInferenceEnd(result.finalAnswer, result.iterations.size());
             if (observer != null) {
                 observer.onInferenceComplete(result.finalAnswer);
             }
-            
             return result.finalAnswer;
             
         } catch (Exception e) {
-            logger.error("Error processing query with ReAct", e);
-            
-            // Notificar observer do erro
+            logger.logError(e);
             if (observer != null) {
                 observer.onError("Error processing query with ReAct", e);
-            }
-            
-            if (conversationLogger.isErrorEnabled()) {
-                conversationLogger.error("=== REACT INFERENCE ERROR ===");
-                conversationLogger.error("Error: {}", e.getMessage());
-                conversationLogger.error("==============================");
             }
             return "Error processing query: " + e.getMessage();
         }
@@ -101,74 +75,56 @@ public class ReAct implements Inference {
         String context = "Initial query: " + query;
         
         for (int i = 1; i <= maxIterations; i++) {
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("--- Iteration {} ---", i);
-            }
+            logger.logIterationStart(i);
             
-            // THOUGHT
             String thought = generateThought(query, context);
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Thought: {}", thought);
-            }
+            logger.logThought(thought);
             
-            // Notificar observer do pensamento
             if (observer != null) {
                 observer.onThought(thought);
             }
             
-            // ACTION
             ActionDecision decision = decideAction(thought, query, context);
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Action Decision: {}", decision.actionType);
-            }
+            logger.logActionDecision(decision.actionType);
             
-            // Check if final answer
             if ("FINAL_ANSWER".equals(decision.actionType)) {
                 ReActStep finalStep = new ReActStep(thought, "Final Answer", decision.finalAnswer, true);
                 iterations.add(finalStep);
                 return new ReActResult(decision.finalAnswer, iterations);
             }
             
-            // Execute action
             String actionResult = executeAction(decision);
-            
-            // OBSERVATION
             String observation = observeResult(actionResult, decision);
-            if (conversationLogger.isInfoEnabled()) {
-                conversationLogger.info("Observation: {}", observation);
-            }
-            
+            logger.logObservation(observation);
             ReActStep step = new ReActStep(thought, decision.actionType + " " + decision.toolName, observation, false);
             iterations.add(step);
-            
-            // Update context for next iteration
             context = buildContextForNextIteration(iterations, query);
-            
-            // Check if should continue
-            if (!shouldContinue(iterations, i, query) || i >= 7) {
+             if (!shouldContinue(iterations, i, query) || i >= 7) {
                 break;
             }
         }
         
-        // Generate final answer if max iterations reached
         String finalAnswer = generateFinalAnswer(query, iterations);
         return new ReActResult(finalAnswer, iterations);
     }
 
     private String generateThought(String query, String context) {
-        String prompt = String.format(
-            "Você é um assistente que usa o método ReAct (Reasoning and Acting).\n\n" +
-            "Contexto atual:\n%s\n\n" +
-            "PENSE sobre qual é o próximo passo para responder: \"%s\"\n\n" +
-            "Analise:\n" +
-            "- O que você já sabe?\n" +
-            "- O que precisa descobrir?\n" +
-            "- Qual ferramenta pode ajudar?\n\n" +
-            "Responda apenas com seu raciocínio/pensamento.",
-            context, query
-        );
-        
-        LlmResponse response = llm.generateResponse(prompt);
+    	String prompt = """
+    		    You are an assistant that uses the ReAct (Reasoning and Acting) method.
+
+    		    Current context:
+    		    %s
+
+    		    THINK about the next step to answer: "%s"
+
+    		    Analyze:
+    		    - What do you already know?
+    		    - What do you need to find out?
+    		    - Which tool can help?
+
+    		    Respond only with your reasoning/thought.
+    		    """.formatted(context, query);
+    	LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() : "Não consegui processar o pensamento.";
     }
 
@@ -190,6 +146,12 @@ public class ReAct implements Inference {
             cachedTools = availableTools;
         }
 
+        if (observer != null && !availableTools.isEmpty()) {
+            var toolNames = availableTools.keySet().stream()
+                .map(Tool::getName).toList();
+            observer.onToolDiscovery(toolNames);
+        }
+
         if (availableTools.isEmpty()) {
             return new ActionDecision("FINAL_ANSWER", null, new HashMap<>(), 
                     "Nenhuma ferramenta relevante disponível - respondendo com conhecimento base.");
@@ -203,44 +165,53 @@ public class ReAct implements Inference {
         
         String prompt;
         if (hasUsefulData || hasRepeatedTool) {
-            // Se já tem dados ou repetiu ferramentas, ser mais provável a dar resposta final
-            prompt = String.format(
-                "Com base no pensamento: \"%s\"\n\n" +
-                "Contexto: %s\n\n" +
-                "Ferramentas disponíveis:\n%s\n\n" +
-                "OBSERVAÇÃO: Você já coletou algumas informações ou já tentou ferramentas múltiplas vezes. " +
-                "Considere se tem informação suficiente para responder.\n\n" +
-                "Para a pergunta: \"%s\"\n" +
-                "- Se tem informação suficiente para uma resposta útil, escolha: FINAL_ANSWER\n" +
-                "- Se ainda precisa de dados específicos importantes, escolha: USE_TOOL\n\n" +
-                "Responda no formato JSON:\n" +
-                "{\n" +
-                "  \"action\": \"USE_TOOL\" ou \"FINAL_ANSWER\",\n" +
-                "  \"tool_name\": \"nome_da_ferramenta\" (se USE_TOOL),\n" +
-                "  \"parameters\": {parâmetros} (se USE_TOOL),\n" +
-                "  \"final_answer\": \"resposta\" (se FINAL_ANSWER)\n" +
-                "}",
-                thought, context, toolsInfo, query
-            );
+        	prompt = """
+        		    Based on the thought: "%s"
+
+        		    Context: %s
+
+        		    Available tools:
+        		    %s
+
+        		    OBSERVATION: You have already collected some information or tried tools multiple times. Consider whether you have enough information to respond.
+
+        		    For the question: "%s"
+        		    - If you have enough information for a useful response, choose: FINAL_ANSWER
+        		    - If you still need specific important data, choose: USE_TOOL
+
+        		    Respond in JSON format:
+        		    {
+        		      "action": "USE_TOOL" or "FINAL_ANSWER",
+        		      "tool_name": "tool_name" (if USE_TOOL),
+        		      "parameters": {parameters} (if USE_TOOL),
+        		      "final_answer": "response" (if FINAL_ANSWER)
+        		    }
+        		    """.formatted(thought, context, toolsInfo, query);
         } else {
-            prompt = String.format(
-                "Com base no pensamento: \"%s\"\n\n" +
-                "Contexto: %s\n\n" +
-                "Ferramentas disponíveis:\n%s\n\n" +
-                "IMPORTANTE: Se há ferramentas disponíveis que podem executar a tarefa, você DEVE usar USE_TOOL.\n" +
-                "APENAS use FINAL_ANSWER se não houver ferramentas relevantes ou se a tarefa já foi completada.\n\n" +
-                "Para a pergunta: \"%s\"\n" +
-                "- Se há ferramenta que pode executar a ação, escolha: USE_TOOL\n" +
-                "- Apenas se não há ferramenta adequada, escolha: FINAL_ANSWER\n\n" +
-                "Responda no formato JSON:\n" +
-                "{\n" +
-                "  \"action\": \"USE_TOOL\" ou \"FINAL_ANSWER\",\n" +
-                "  \"tool_name\": \"nome_da_ferramenta\" (se USE_TOOL),\n" +
-                "  \"parameters\": {parâmetros} (se USE_TOOL),\n" +
-                "  \"final_answer\": \"resposta\" (se FINAL_ANSWER)\n" +
-                "}",
-                thought, context, toolsInfo, query
-            );
+        	prompt = """
+        		    Based on the thought: "%s"
+
+        		    Context: %s
+
+        		    Available tools:
+        		    %s
+
+        		    IMPORTANT: If there are available tools that can perform the task, you MUST use USE_TOOL.
+        		    ONLY use FINAL_ANSWER if there are no relevant tools or if the task is already completed.
+
+        		    For the question: "%s"
+        		    - If there is a tool that can perform the action, choose: USE_TOOL
+        		    - Only if there is no suitable tool, choose: FINAL_ANSWER
+
+        		    Respond in JSON format:
+        		    {
+        		      "action": "USE_TOOL" or "FINAL_ANSWER",
+        		      "tool_name": "tool_name" (if USE_TOOL),
+        		      "parameters": {parameters} (if USE_TOOL),
+        		      "final_answer": "response" (if FINAL_ANSWER)
+        		    }
+        		    """.formatted(thought, context, toolsInfo, query);
+        
         }
         
         LlmResponse response = llm.generateResponse(prompt);
@@ -257,12 +228,18 @@ public class ReAct implements Inference {
         }
         
         try {
-            // Substituir placeholders nos parâmetros
             Map<String, Object> processedParams = processPlaceholders(decision.parameters);
+            
+            if (observer != null) {
+                observer.onToolSelection(decision.toolName, processedParams);
+            }
             
             MCPService.ToolExecutionResult result = mcpManager.executeTool(decision.toolName, processedParams);
             
-            // Armazenar resultado para próxima iteração
+            if (observer != null) {
+                observer.onToolExecution(decision.toolName, result.message);
+            }
+            
             if (result.success && result.content != null) {
                 lastToolResult = result.content;
             }
@@ -281,7 +258,6 @@ public class ReAct implements Inference {
             Object value = entry.getValue();
             if (value instanceof String) {
                 String strValue = (String) value;
-                // Substituir {{RESULT_1}} com resultado da ferramenta anterior
                 if (strValue.contains("{{RESULT_1}}") && !lastToolResult.isEmpty()) {
                     strValue = strValue.replace("{{RESULT_1}}", lastToolResult);
                 }
@@ -302,22 +278,17 @@ public class ReAct implements Inference {
     }
 
     private boolean shouldContinue(List<ReActStep> iterations, int iteration, String originalQuery) {
-        // Limite rígido: máximo 7 iterações
-        if (iteration >= 7) {
+         if (iteration >= 7) {
             return false;
         }
         
-        // Parar se já tem dados úteis suficientes
-        int usefulDataCount = 0;
+         int usefulDataCount = 0;
         Map<String, Integer> toolUsage = new HashMap<>();
         
         for (ReActStep step : iterations) {
-            // Contar dados úteis
             if (classifyObservation(step.observation, originalQuery) == ObservationType.USEFUL_DATA) {
                 usefulDataCount++;
             }
-            
-            // Contar uso de ferramentas
             if (step.action.startsWith("USE_TOOL")) {
                 String[] parts = step.action.split(" ");
                 if (parts.length > 1) {
@@ -327,19 +298,16 @@ public class ReAct implements Inference {
             }
         }
         
-        // Parar se já coletou dados úteis suficientes
         if (usefulDataCount >= 2) {
             return false;
         }
         
-        // Parar se alguma ferramenta foi usada 3+ vezes sem sucesso
         for (Integer count : toolUsage.values()) {
             if (count >= 3) {
                 return false;
             }
         }
         
-        // Parar se nas últimas 2 iterações só teve erros ou mensagens genéricas
         if (iterations.size() >= 2) {
             boolean hasRecentUsefulData = false;
             int startIndex = Math.max(0, iterations.size() - 2);
@@ -352,7 +320,7 @@ public class ReAct implements Inference {
             }
             
             if (!hasRecentUsefulData && iterations.size() >= 3) {
-                return false; // Sem progresso recente
+                return false; 
             }
         }
         
@@ -362,8 +330,6 @@ public class ReAct implements Inference {
     private String buildContextForNextIteration(List<ReActStep> iterations, String query) {
         StringBuilder context = new StringBuilder();
         context.append("Query original: ").append(query).append("\n\n");
-        
-        // Adicionar resumo de progresso
         context.append(buildProgressSummary(iterations, query));
         context.append("\n");
         
@@ -387,12 +353,14 @@ public class ReAct implements Inference {
             context.append("Resultado: ").append(step.observation).append("\n");
         }
         
-        String prompt = String.format(
-            "Com base nas ações executadas, forneça uma resposta final para: \"%s\"\n\n" +
-            "Informações coletadas:\n%s\n\n" +
-            "Responda de forma clara e completa.",
-            query, context.toString()
-        );
+        String prompt = """
+        	    Based on the actions performed, provide a final response for: "%s"
+
+        	    Collected information:
+        	    %s
+
+        	    Respond clearly and completely.
+        	    """.formatted(query, context.toString());
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() : "Não foi possível gerar resposta final.";
@@ -419,7 +387,6 @@ public class ReAct implements Inference {
 
     private ActionDecision parseActionDecision(String jsonResponse, Map<Tool, Map<String, Object>> availableTools) {
         try {
-            // Clean JSON response
             jsonResponse = jsonResponse.trim();
             if (jsonResponse.startsWith("```json")) {
                 jsonResponse = jsonResponse.substring(7);
@@ -430,16 +397,13 @@ public class ReAct implements Inference {
             jsonResponse = jsonResponse.trim();
             
             if (jsonResponse.contains("USE_TOOL")) {
-                // Extract tool name
                 String toolName = extractJsonValue(jsonResponse, "tool_name");
                 if (toolName != null) {
-                    // Find matching tool and use its parameters
-                    for (Map.Entry<Tool, Map<String, Object>> entry : availableTools.entrySet()) {
+                     for (Map.Entry<Tool, Map<String, Object>> entry : availableTools.entrySet()) {
                         if (entry.getKey().getName().equals(toolName)) {
                             return new ActionDecision("USE_TOOL", toolName, entry.getValue(), null);
                         }
                     }
-                    // If tool not found in matched tools, try to extract parameters from JSON
                     Map<String, Object> extractedParams = extractParametersFromJson(jsonResponse);
                     return new ActionDecision("USE_TOOL", toolName, extractedParams, null);
                 }
@@ -459,34 +423,27 @@ public class ReAct implements Inference {
             }
             
         } catch (Exception e) {
-            logger.debug("Error parsing action decision: {}", e.getMessage());
+        	 logger.logParseActionError(e.getMessage());
         }
         
         return new ActionDecision("FINAL_ANSWER", null, new HashMap<>(), "Erro ao interpretar decisão.");
     }
 
-    // Novos métodos para detecção inteligente de progresso
-    
     private ObservationType classifyObservation(String observation, String originalQuery) {
         if (observation == null) {
             return ObservationType.ERROR;
         }
         
-        // Detectar erros explícitos
         String lower = observation.toLowerCase();
         if (lower.contains("erro") || lower.contains("error") || 
             lower.contains("failed") || lower.contains("falhou")) {
             return ObservationType.ERROR;
         }
-        
-        // Usar análise semântica via MCPManager
         try {
             boolean isUseful = mcpManager.isObservationUseful(observation, originalQuery);
             return isUseful ? ObservationType.USEFUL_DATA : ObservationType.GENERIC_SUCCESS;
         } catch (Exception e) {
-            logger.debug("Erro na classificação semântica, usando fallback: {}", e.getMessage());
-            
-            // Fallback: se tem conteúdo substancial, pode ser útil
+            logger.logClassifyObservationError(e.getMessage());
             if (observation.trim().length() > 50 && !lower.contains("executada com sucesso")) {
                 return ObservationType.USEFUL_DATA;
             }
@@ -503,15 +460,12 @@ public class ReAct implements Inference {
         }
         
         String lower = observation.toLowerCase();
-        
-        // Extrair temperatura
         java.util.regex.Pattern tempPattern = java.util.regex.Pattern.compile("(\\d+)[°]?\\s*[cf]");
         java.util.regex.Matcher tempMatcher = tempPattern.matcher(lower);
         if (tempMatcher.find()) {
             keyInfo.put("temperature", tempMatcher.group());
         }
         
-        // Extrair condições climáticas
         String[] conditions = {"sunny", "cloudy", "rainy", "clear", "storm", "snow"};
         for (String condition : conditions) {
             if (lower.contains(condition)) {
@@ -520,7 +474,6 @@ public class ReAct implements Inference {
             }
         }
         
-        // Extrair localização se mencionada
         if (lower.contains("nyc") || lower.contains("new york")) {
             keyInfo.put("location", "NYC");
         }
@@ -559,15 +512,13 @@ public class ReAct implements Inference {
         StringBuilder keyInfo = new StringBuilder();
         
         for (ReActStep step : iterations) {
-            // Contar uso de ferramentas
-            if (step.action.startsWith("USE_TOOL")) {
+             if (step.action.startsWith("USE_TOOL")) {
                 String[] parts = step.action.split(" ");
                 if (parts.length > 1) {
                     toolUsage.put(parts[1], toolUsage.getOrDefault(parts[1], 0) + 1);
                 }
             }
             
-            // Classificar observações
             ObservationType type = classifyObservation(step.observation, originalQuery);
             if (type == ObservationType.USEFUL_DATA) {
                 usefulDataCount++;
@@ -617,8 +568,7 @@ public class ReAct implements Inference {
         Map<String, Object> params = new HashMap<>();
         
         try {
-            // Look for parameters object
-            int paramStart = json.indexOf("\"parameters\":");
+           int paramStart = json.indexOf("\"parameters\":");
             if (paramStart == -1) return params;
             
             int objectStart = json.indexOf("{", paramStart);
@@ -629,7 +579,6 @@ public class ReAct implements Inference {
             
             String paramsJson = json.substring(objectStart + 1, objectEnd);
             
-            // Simple parsing of key-value pairs
             String[] pairs = paramsJson.split(",");
             for (String pair : pairs) {
                 String[] keyValue = pair.split(":");
@@ -641,8 +590,8 @@ public class ReAct implements Inference {
             }
             
         } catch (Exception e) {
-            logger.debug("Error extracting parameters: {}", e.getMessage());
-        }
+            logger.logParseActionError(e.getMessage());
+       }
         
         return params;
     }
@@ -659,19 +608,16 @@ public class ReAct implements Inference {
 
     @Override
     public void close() {
-        logger.debug("[REACT] Inference strategy closed - logs salvos em JavaCLI/log/inference/");
+    	 logger.logDebug("[REACT] Inference strategy closed - logs salvos em JavaCLI/log/inference/");
+    	 logger.logClose();
     }
 
-    // Inner classes
-    
-    // Enum para classificação de observações
     public enum ObservationType {
-        USEFUL_DATA,    // Contém dados específicos úteis
-        GENERIC_SUCCESS, // Apenas "ferramenta executada com sucesso"
-        ERROR           // Erro na execução
+        USEFUL_DATA,    
+        GENERIC_SUCCESS, 
+        ERROR           
     }
     
-    // Resultado de uma observação com classificação
     public static class ObservationResult {
         public final String formattedText;
         public final ObservationType type;

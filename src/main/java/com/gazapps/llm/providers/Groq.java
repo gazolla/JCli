@@ -26,10 +26,6 @@ import com.gazapps.llm.tool.ToolDefinition;
 
 import io.modelcontextprotocol.spec.McpSchema.Tool;
 
-/**
- * Implementação da interface Llm para Groq. Converte todas as estruturas
- * específicas do Groq para os tipos padronizados.
- */
 public class Groq implements Llm {
 
 	private static final Logger logger = LoggerFactory.getLogger(Groq.class);
@@ -53,25 +49,16 @@ public class Groq implements Llm {
 	public Groq() {
 
 		this.apiKey = System.getenv("GROQ_API_KEY");
-		System.out.println("[DEBUG] GROQ_API_KEY from env: " + (this.apiKey != null ? "[SET]" : "[NULL]"));
-		
 		LlmConfig config = new LlmConfig();
 		Map<String, String> groqConfig = config.getGroqConfig();
-		System.out.println("[DEBUG] groqConfig loaded: " + groqConfig);
 		
 		this.apiKey = this.apiKey == null ? groqConfig.get("api.key") : this.apiKey;
 		this.baseUrl = groqConfig.get("base.url");
 		this.model = groqConfig.get("model");
 		this.timeout = Integer.parseInt(groqConfig.get("timeout"));
 		this.debug = Boolean.parseBoolean(groqConfig.get("debug"));
-		
-		System.out.println("[DEBUG] Final values - apiKey: " + (this.apiKey != null ? "[SET]" : "[NULL]") + 
-						   ", baseUrl: " + this.baseUrl + ", model: " + this.model);
-
 		this.capabilities = LlmCapabilities.builder().functionCalling(true).systemMessages(true).streaming(false)
 				.maxTokens(50000).supportedFormats(java.util.Set.of("text", "json")).build();
-
-		System.out.println(this);
 
 		if (this.apiKey == null || this.apiKey.startsWith("YOUR_")) {
 			throw new LlmException(LlmProvider.GROQ, LlmException.ErrorType.AUTHENTICATION,
@@ -95,7 +82,6 @@ public class Groq implements Llm {
 		try {
 			validateInput(prompt);
 
-			// === LOGGING REQUEST ===
 			if (conversationLogger.isInfoEnabled()) {
 				conversationLogger.info("=== GROQ REQUEST ===");
 				conversationLogger.info("Model: {}", model);
@@ -247,8 +233,6 @@ public class Groq implements Llm {
 			return LlmException.ErrorType.UNKNOWN;
 		}
 	}
-
-	// Classes internas para request/response do Groq
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private static class GroqRequest {

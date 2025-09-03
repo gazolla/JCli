@@ -58,13 +58,6 @@ public class MCPManager implements AutoCloseable {
         this.llm = Objects.requireNonNull(llm, "LLM cannot be null");
         
         Path domainConfigPath = configDirectory.toPath().resolve("mcp").resolve("domains.json");
-        System.out.println("[DEBUG] MCPManager - current working directory: " + System.getProperty("user.dir"));
-        System.out.println("[DEBUG] MCPManager - configDirectory: " + configDirectory.getAbsolutePath());
-        System.out.println("[DEBUG] MCPManager - domainConfigPath: " + domainConfigPath.toAbsolutePath());
-        System.out.println("[DEBUG] MCPManager - arquivo existe? " + Files.exists(domainConfigPath));
-        System.out.println("[DEBUG] MCPManager - arquivo é legível? " + Files.isReadable(domainConfigPath));
-
-
         this.domainRegistry = new DomainRegistry(llm, domainConfigPath);
         
         this.scheduler = Executors.newScheduledThreadPool(2);

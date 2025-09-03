@@ -19,9 +19,6 @@ import com.gazapps.llm.LlmProvider;
 import com.gazapps.mcp.MCPManager;
 import com.github.lalyos.jfiglet.FigletFont;
 
-/**
- * Aplicação principal do JCli com interface de chat interativo.
- */
 public class JCliApp implements AutoCloseable {
     
     private static final Logger logger = LoggerFactory.getLogger(JCliApp.class);
@@ -74,8 +71,8 @@ public class JCliApp implements AutoCloseable {
     
     public void runChatLoop() {
 
-            var jtp = new JavaTree();
-            jtp.printTree(configDir, "");
+          //  var jtp = new JavaTree();
+          //  jtp.printTree(configDir, "");
 
         System.out.println("""
                 
