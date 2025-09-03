@@ -45,7 +45,7 @@ public class Simple implements Inference {
                 observer.onInferenceStart(query, getStrategyName().name());
             }
             
-            QueryAnalysis analysis = analyzeQuery(query, llm);
+            QueryAnalysis analysis = mcpManager.analyzeQuery(query, llm);
             logger.logQueryAnalysis(analysis);
             
             return switch (analysis.execution) {
@@ -268,79 +268,6 @@ public class Simple implements Inference {
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
                                     : "Multi-step execution completed:\n" + results;
-    }
-    
-    public QueryAnalysis analyzeQuery(String query, Llm llm) {
-        if (llm == null) return new QueryAnalysis(QueryAnalysis.ExecutionType.DIRECT_ANSWER, "No LLM available");
-        
-        String prompt = """
-                Analyze the query and determine its execution requirements.
-                
-                Perform syntactic and semantic analysis:
-                
-                1. **Knowledge Assessment**: Does this require information beyond your training data cutoff (January 2024) or real-time data?
-                
-                2. **Action Analysis**: Examine the linguistic structure for:
-                   - Multiple verbs indicating distinct sequential actions
-                   - Conjunctions and connectors ("and", "then", "after", "furthermore") that link separate operations
-                   - Dependencies where one task's output becomes another's input
-                   
-                3. **Execution Classification**:
-                   - DIRECT_ANSWER: Can be answered using existing knowledge without external tools
-                   - SINGLE_TOOL: Requires one external tool or data source
-                   - MULTI_TOOL: Requires multiple tools with sequential execution or dependencies
-                
-                Respond in JSON format: {"execution": "DIRECT_ANSWER|SINGLE_TOOL|MULTI_TOOL", "reasoning": "brief syntactic/semantic justification"}
-                
-                Query: %s
-                """.formatted(query);
-        
-        var response = llm.generateResponse(prompt);
-        
-        if (!response.isSuccess()) {
-            return new QueryAnalysis(QueryAnalysis.ExecutionType.SINGLE_TOOL, "LLM analysis failed");
-        }
-        
-        return parseQueryAnalysis(response.getContent());
-    }
-    
-    private QueryAnalysis parseQueryAnalysis(String jsonResponse) {
-        try {
-            String content = jsonResponse.trim();
-            if (content.startsWith("```json")) {
-                content = content.substring(7);
-            }
-            if (content.endsWith("```")) {
-                content = content.substring(0, content.length() - 3);
-            }
-            content = content.trim();
-            
-            QueryAnalysis.ExecutionType execution;
-            if (content.contains("DIRECT_ANSWER")) {
-                execution = QueryAnalysis.ExecutionType.DIRECT_ANSWER;
-            } else if (content.contains("MULTI_TOOL")) {
-                execution = QueryAnalysis.ExecutionType.MULTI_TOOL;
-            } else {
-                execution = QueryAnalysis.ExecutionType.SINGLE_TOOL;
-            }
-            
-            String reasoning = "Parsed from LLM response";
-            
-            // Extract reasoning if possible
-            int reasoningStart = content.indexOf("\"reasoning\":");
-            if (reasoningStart != -1) {
-                int start = content.indexOf("\"", reasoningStart + 12);
-                int end = content.indexOf("\"", start + 1);
-                if (start != -1 && end != -1) {
-                    reasoning = content.substring(start + 1, end);
-                }
-            }
-            
-            return new QueryAnalysis(execution, reasoning);
-            
-        } catch (Exception e) {
-            return new QueryAnalysis(QueryAnalysis.ExecutionType.SINGLE_TOOL, "JSON parsing failed: " + e.getMessage());
-        }
     }
 
     @Override

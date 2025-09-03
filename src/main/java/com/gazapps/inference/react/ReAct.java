@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.gazapps.inference.Inference;
 import com.gazapps.inference.InferenceObserver;
 import com.gazapps.inference.InferenceStrategy;
+import com.gazapps.inference.simple.QueryAnalysis;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.MCPManager;
@@ -74,6 +72,20 @@ public class ReAct implements Inference {
         List<ReActStep> iterations = new ArrayList<>();
         String context = "Initial query: " + query;
         
+        // Check if direct answer is possible
+        QueryAnalysis initialAnalysis = mcpManager.analyzeQuery(query, llm);
+        if (initialAnalysis.execution == QueryAnalysis.ExecutionType.DIRECT_ANSWER) {
+            String directAnswer = generateDirectResponse(query);
+            ReActStep directStep = new ReActStep(
+                "This query can be answered with internal knowledge.", 
+                "Direct Answer", 
+                directAnswer, 
+                true
+            );
+            iterations.add(directStep);
+            return new ReActResult(directAnswer, iterations);
+        }
+        
         for (int i = 1; i <= maxIterations; i++) {
             logger.logIterationStart(i);
             
@@ -127,17 +139,30 @@ public class ReAct implements Inference {
     	LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() : "Não consegui processar o pensamento.";
     }
+    
+    private String generateDirectResponse(String query) {
+        String prompt = "Answer the following question using your knowledge:\n\n" + query;
+        LlmResponse response = llm.generateResponse(prompt);
+        return response.isSuccess() ? response.getContent() 
+                                    : "Failed to generate response: " + response.getErrorMessage();
+    }
 
     private ActionDecision decideAction(String thought, String query, String context) {
-       
-        boolean isMultiStep = mcpManager.isMultiStep(query, llm);
         
+        QueryAnalysis analysis = mcpManager.analyzeQuery(query, llm);
+        
+        // Handle direct answer capability 
+        if (analysis.execution == QueryAnalysis.ExecutionType.DIRECT_ANSWER) {
+            return new ActionDecision("FINAL_ANSWER", null, new HashMap<>(), 
+                    "Posso responder com conhecimento interno sem ferramentas externas.");
+        }
 
         Map<Tool, Map<String, Object>> availableTools;
         if (query.equals(cachedQuery) && cachedTools != null) {
             availableTools = cachedTools;
         } else {
-            Optional<Map<Tool, Map<String, Object>>> toolsOptional = isMultiStep
+            Optional<Map<Tool, Map<String, Object>>> toolsOptional = 
+                (analysis.execution == QueryAnalysis.ExecutionType.MULTI_TOOL)
                     ? mcpManager.findMultiStepTools(query)
                     : mcpManager.findSingleStepTools(query);
             
@@ -157,62 +182,29 @@ public class ReAct implements Inference {
                     "Nenhuma ferramenta relevante disponível - respondendo com conhecimento base.");
         }        
    
-        
         String toolsInfo = buildToolsInfo(availableTools);
 
-        boolean hasUsefulData = context.contains("Dados úteis coletados: 1") || context.contains("Dados úteis coletados: 2");
-        boolean hasRepeatedTool = context.contains("(2x)") || context.contains("(3x)");
-        
-        String prompt;
-        if (hasUsefulData || hasRepeatedTool) {
-        	prompt = """
-        		    Based on the thought: "%s"
+        // Simplified decision logic
+        String prompt = """
+                Based on the thought: "%s"
 
-        		    Context: %s
+                Context: %s
 
-        		    Available tools:
-        		    %s
+                Available tools:
+                %s
 
-        		    OBSERVATION: You have already collected some information or tried tools multiple times. Consider whether you have enough information to respond.
+                For the question: "%s"
+                - If you have enough information for a useful response, choose: FINAL_ANSWER
+                - If you need to use a tool to get more information, choose: USE_TOOL
 
-        		    For the question: "%s"
-        		    - If you have enough information for a useful response, choose: FINAL_ANSWER
-        		    - If you still need specific important data, choose: USE_TOOL
-
-        		    Respond in JSON format:
-        		    {
-        		      "action": "USE_TOOL" or "FINAL_ANSWER",
-        		      "tool_name": "tool_name" (if USE_TOOL),
-        		      "parameters": {parameters} (if USE_TOOL),
-        		      "final_answer": "response" (if FINAL_ANSWER)
-        		    }
-        		    """.formatted(thought, context, toolsInfo, query);
-        } else {
-        	prompt = """
-        		    Based on the thought: "%s"
-
-        		    Context: %s
-
-        		    Available tools:
-        		    %s
-
-        		    IMPORTANT: If there are available tools that can perform the task, you MUST use USE_TOOL.
-        		    ONLY use FINAL_ANSWER if there are no relevant tools or if the task is already completed.
-
-        		    For the question: "%s"
-        		    - If there is a tool that can perform the action, choose: USE_TOOL
-        		    - Only if there is no suitable tool, choose: FINAL_ANSWER
-
-        		    Respond in JSON format:
-        		    {
-        		      "action": "USE_TOOL" or "FINAL_ANSWER",
-        		      "tool_name": "tool_name" (if USE_TOOL),
-        		      "parameters": {parameters} (if USE_TOOL),
-        		      "final_answer": "response" (if FINAL_ANSWER)
-        		    }
-        		    """.formatted(thought, context, toolsInfo, query);
-        
-        }
+                Respond in JSON format:
+                {
+                  "action": "USE_TOOL" or "FINAL_ANSWER",
+                  "tool_name": "tool_name" (if USE_TOOL),
+                  "parameters": {parameters} (if USE_TOOL),
+                  "final_answer": "response" (if FINAL_ANSWER)
+                }
+                """.formatted(thought, context, toolsInfo, query);
         
         LlmResponse response = llm.generateResponse(prompt);
         if (response.isSuccess()) {
@@ -452,64 +444,10 @@ public class ReAct implements Inference {
         }
     }
     
-    private Map<String, String> extractKeyInformation(String observation) {
-        Map<String, String> keyInfo = new HashMap<>();
-        
-        if (observation == null) {
-            return keyInfo;
-        }
-        
-        String lower = observation.toLowerCase();
-        java.util.regex.Pattern tempPattern = java.util.regex.Pattern.compile("(\\d+)[°]?\\s*[cf]");
-        java.util.regex.Matcher tempMatcher = tempPattern.matcher(lower);
-        if (tempMatcher.find()) {
-            keyInfo.put("temperature", tempMatcher.group());
-        }
-        
-        String[] conditions = {"sunny", "cloudy", "rainy", "clear", "storm", "snow"};
-        for (String condition : conditions) {
-            if (lower.contains(condition)) {
-                keyInfo.put("condition", condition);
-                break;
-            }
-        }
-        
-        if (lower.contains("nyc") || lower.contains("new york")) {
-            keyInfo.put("location", "NYC");
-        }
-        
-        return keyInfo;
-    }
-    
-    private int countToolUsage(String context, String toolName) {
-        if (context == null || toolName == null) {
-            return 0;
-        }
-        
-        int count = 0;
-        String[] lines = context.split("\\n");
-        for (String line : lines) {
-            if (line.contains("Ação: USE_TOOL " + toolName)) {
-                count++;
-            }
-        }
-        return count;
-    }
-    
-    private boolean hasUsefulData(List<ReActStep> iterations, String originalQuery) {
-        for (ReActStep step : iterations) {
-            if (classifyObservation(step.observation, originalQuery) == ObservationType.USEFUL_DATA) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private String buildProgressSummary(List<ReActStep> iterations, String originalQuery) {
         Map<String, Integer> toolUsage = new HashMap<>();
         int usefulDataCount = 0;
         int errorCount = 0;
-        StringBuilder keyInfo = new StringBuilder();
         
         for (ReActStep step : iterations) {
              if (step.action.startsWith("USE_TOOL")) {
@@ -522,10 +460,6 @@ public class ReAct implements Inference {
             ObservationType type = classifyObservation(step.observation, originalQuery);
             if (type == ObservationType.USEFUL_DATA) {
                 usefulDataCount++;
-                Map<String, String> info = extractKeyInformation(step.observation);
-                for (Map.Entry<String, String> entry : info.entrySet()) {
-                    keyInfo.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
-                }
             } else if (type == ObservationType.ERROR) {
                 errorCount++;
             }
@@ -541,10 +475,6 @@ public class ReAct implements Inference {
                 summary.append(entry.getKey()).append(" (").append(entry.getValue()).append("x), ");
             }
             summary.append("\\n");
-        }
-        
-        if (keyInfo.length() > 0) {
-            summary.append("- Informações coletadas: ").append(keyInfo.toString()).append("\\n");
         }
         
         return summary.toString();
@@ -618,18 +548,6 @@ public class ReAct implements Inference {
         ERROR           
     }
     
-    public static class ObservationResult {
-        public final String formattedText;
-        public final ObservationType type;
-        public final Map<String, String> keyInformation;
-        
-        public ObservationResult(String formattedText, ObservationType type, Map<String, String> keyInformation) {
-            this.formattedText = formattedText;
-            this.type = type;
-            this.keyInformation = keyInformation;
-        }
-    }
-
     public static class ReActResult {
         public final String finalAnswer;
         public final List<ReActStep> iterations;

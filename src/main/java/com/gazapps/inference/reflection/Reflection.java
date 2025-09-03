@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gazapps.inference.Inference;
+import com.gazapps.inference.InferenceObserver;
 import com.gazapps.inference.InferenceStrategy;
+import com.gazapps.inference.simple.QueryAnalysis;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.MCPManager;
@@ -27,6 +29,7 @@ public class Reflection implements Inference {
     private final Map<String, Object> options;
     private final int maxIterations;
     private final boolean debug;
+    private InferenceObserver observer;
 
     public Reflection(MCPManager mcpManager, Llm llm, int maxIterations, boolean debug) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
@@ -44,6 +47,7 @@ public class Reflection implements Inference {
         this.options = Objects.requireNonNull(options, "Options is required");
         this.maxIterations = (Integer) options.getOrDefault("maxIterations", 3);
         this.debug = (Boolean) options.getOrDefault("debug", false);
+        this.observer = (InferenceObserver) options.get("observer");
         
         logger.info("[REFLECTION] Initialized with LLM: {} - logs em JavaCLI/log/inference/reflection-conversations.log", llm.getProviderName());
     }
@@ -51,6 +55,10 @@ public class Reflection implements Inference {
     @Override
     public String processQuery(String query) {
         logger.debug("Processing query with Reflection: {}", query);
+        
+        if (observer != null) {
+            observer.onInferenceStart(query, getStrategyName().name());
+        }
         
         if (conversationLogger.isInfoEnabled()) {
             conversationLogger.info("=== REFLECTION INFERENCE START ===");
@@ -60,6 +68,10 @@ public class Reflection implements Inference {
         
         try {
             ReflectionResult result = executeReflectionCycle(query);
+            
+            if (observer != null) {
+                observer.onInferenceComplete(result.finalResponse);
+            }
             
             if (conversationLogger.isInfoEnabled()) {
                 conversationLogger.info("=== REFLECTION INFERENCE END ===");
@@ -73,6 +85,9 @@ public class Reflection implements Inference {
             
         } catch (Exception e) {
             logger.error("Error processing query with Reflection", e);
+            if (observer != null) {
+                observer.onError("Error processing query with Reflection", e);
+            }
             if (conversationLogger.isErrorEnabled()) {
                 conversationLogger.error("=== REFLECTION INFERENCE ERROR ===");
                 conversationLogger.error("Error: {}", e.getMessage());
@@ -134,8 +149,16 @@ public class Reflection implements Inference {
     }
 
     private String generateInitialResponse(String query) {
-        // Analyze if tools are needed
-        Map<Tool, Map<String, Object>> relevantTools = findRelevantTools(query);
+        // Use unified query analysis (DRY)
+        QueryAnalysis analysis = mcpManager.analyzeQuery(query, llm);
+        
+        // Handle direct answer capability (KISS)
+        if (analysis.execution == QueryAnalysis.ExecutionType.DIRECT_ANSWER) {
+            return generateDirectResponse(query);
+        }
+        
+        // Find relevant tools based on analysis
+        Map<Tool, Map<String, Object>> relevantTools = findRelevantTools(query, analysis);
         
         if (!relevantTools.isEmpty()) {
             return generateToolBasedResponse(query, relevantTools);
@@ -144,14 +167,22 @@ public class Reflection implements Inference {
         }
     }
 
-    private Map<Tool, Map<String, Object>> findRelevantTools(String query) {
-        boolean isMultiStep = mcpManager.isMultiStep(query, llm);
-
-        Optional<Map<Tool, Map<String, Object>>> toolsOptional = isMultiStep 
+    private Map<Tool, Map<String, Object>> findRelevantTools(String query, QueryAnalysis analysis) {
+        Optional<Map<Tool, Map<String, Object>>> toolsOptional = 
+            (analysis.execution == QueryAnalysis.ExecutionType.MULTI_TOOL) 
                 ? mcpManager.findMultiStepTools(query) 
                 : mcpManager.findSingleStepTools(query);
 
-        return toolsOptional.orElse(Map.of());
+        Map<Tool, Map<String, Object>> tools = toolsOptional.orElse(Map.of());
+        
+        // Observer notification for tools discovered
+        if (observer != null && !tools.isEmpty()) {
+            var toolNames = tools.keySet().stream()
+                .map(Tool::getName).toList();
+            observer.onToolDiscovery(toolNames);
+        }
+        
+        return tools;
     }
 
     private String generateToolBasedResponse(String query, Map<Tool, Map<String, Object>> tools) {
@@ -162,7 +193,16 @@ public class Reflection implements Inference {
             Map<String, Object> params = entry.getValue();
             
             try {
+                if (observer != null) {
+                    observer.onToolSelection(tool.getName(), params);
+                }
+                
                 MCPService.ToolExecutionResult result = mcpManager.executeTool(tool, params);
+                
+                if (observer != null) {
+                    observer.onToolExecution(tool.getName(), result.message);
+                }
+                
                 if (result.success) {
                     response.append(result.message).append("\n");
                 }
