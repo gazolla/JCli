@@ -1,10 +1,12 @@
 package com.gazapps.chat;
 
+import com.gazapps.chat.wizard.ServerWizard;
 import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.mcp.MCPManager;
 import com.gazapps.mcp.domain.Server;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class CommandHandler {
 		case "clear" -> clearScreen();
 		case "disable" -> disableServer(args);
 		case "enable" -> enableServer(args);
+		case "addserver" -> addNewServer();
 		case "quit", "exit" -> System.exit(0);
 		default -> showUnknownCommand(cmd);
 		}
@@ -104,6 +107,7 @@ public class CommandHandler {
 				/llm <provider>          - Change LLM provider (openai|claude|gemini|groq)
 				/disable [num]           - Disable server (removes tools from LLM)
 				/enable [num]            - Enable server (adds tools to LLM)
+				/addserver               - Add new MCP server (wizard)
 				/debug                   - Toggle debug mode
 				/clear                   - Clear screen
 				/quit                    - Exit
@@ -288,6 +292,21 @@ public class CommandHandler {
 		}
 		
 		System.out.println("\nDigite /enable [número] para habilitar");
+	}
+	
+	private void addNewServer() {
+		ServerWizard wizard = new ServerWizard(mcpManager);
+		boolean success = wizard.runWizard();
+		
+		if (success) {
+			System.out.println("✅ Servidor adicionado e conectado com sucesso!");
+			System.out.println("   • mcp.json atualizado");
+			System.out.println("   • domains.json atualizado (se necessário)");
+			System.out.println("   • Tools disponíveis para a LLM");
+			System.out.println("💡 Use /servers para verificar o status");
+		} else {
+			System.out.println("❌ Operação cancelada ou falhou");
+		}
 	}
 	
 	private List<String> getConnectedServerIds() {

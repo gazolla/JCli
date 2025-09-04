@@ -1,8 +1,16 @@
 package com.gazapps.mcp;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -10,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.gazapps.exceptions.MCPConfigException;
 import com.gazapps.mcp.domain.DomainDefinition;
 import com.gazapps.mcp.domain.Server;
 
@@ -381,6 +390,39 @@ public class MCPConfig {
         Map<String, Object> rootConfig = new HashMap<>();
         Map<String, Object> serversConfig = new HashMap<>();
         
+        // Calculator
+        Map<String, Object> calculatorConfig = new HashMap<>();
+        calculatorConfig.put("description", "Calculadora matemática");
+        calculatorConfig.put("domain", "math");
+        calculatorConfig.put("command", "uvx calculator-mcp-server");
+        calculatorConfig.put("priority", 1);
+        calculatorConfig.put("enabled", true);
+        calculatorConfig.put("env", Map.of("REQUIRES_PYTHON", "true"));
+        calculatorConfig.put("args", Collections.emptyList());
+        serversConfig.put("calculator", calculatorConfig);
+        
+        // Web-fetch
+        Map<String, Object> webFetchConfig = new HashMap<>();
+        webFetchConfig.put("description", "Busca web oficial sem browser");
+        webFetchConfig.put("domain", "internet");
+        webFetchConfig.put("command", "uvx mcp-server-fetch");
+        webFetchConfig.put("priority", 2);
+        webFetchConfig.put("enabled", true);
+        webFetchConfig.put("env", Map.of("REQUIRES_PYTHON", "true", "REQUIRES_ONLINE", "true"));
+        webFetchConfig.put("args", Collections.emptyList());
+        serversConfig.put("web-fetch", webFetchConfig);
+        
+        // Time
+        Map<String, Object> timeConfig = new HashMap<>();
+        timeConfig.put("description", "Servidor para ferramentas de tempo e fuso horário");
+        timeConfig.put("domain", "time");
+        timeConfig.put("command", "uvx mcp-server-time");
+        timeConfig.put("priority", 1);
+        timeConfig.put("enabled", true);
+        timeConfig.put("env", Map.of("REQUIRES_UVX", "true"));
+        timeConfig.put("args", Collections.emptyList());
+        serversConfig.put("time", timeConfig);
+        
         // Weather NWS
         Map<String, Object> weatherConfig = new HashMap<>();
         weatherConfig.put("description", "Previsões meteorológicas via NWS");
@@ -403,16 +445,16 @@ public class MCPConfig {
         filesystemConfig.put("args", Collections.emptyList());
         serversConfig.put("filesystem", filesystemConfig);
         
-        // Time
-        Map<String, Object> timeConfig = new HashMap<>();
-        timeConfig.put("description", "Servidor para ferramentas de tempo e fuso horário");
-        timeConfig.put("domain", "time");
-        timeConfig.put("command", "uvx mcp-server-time");
-        timeConfig.put("priority", 1);
-        timeConfig.put("enabled", true);
-        timeConfig.put("env", Map.of("REQUIRES_UVX", "true"));
-        timeConfig.put("args", Collections.emptyList());
-        serversConfig.put("time", timeConfig);
+        // RSS-feeds
+        Map<String, Object> rssConfig = new HashMap<>();
+        rssConfig.put("description", "Feeds RSS básicos");
+        rssConfig.put("domain", "internet");
+        rssConfig.put("command", "uvx mcp-server-rss");
+        rssConfig.put("priority", 1);
+        rssConfig.put("enabled", true);
+        rssConfig.put("env", Map.of("REQUIRES_PYTHON", "true", "REQUIRES_ONLINE", "true"));
+        rssConfig.put("args", Collections.emptyList());
+        serversConfig.put("rss-feeds", rssConfig);
         
         rootConfig.put("mcpServers", serversConfig);
         
@@ -604,10 +646,7 @@ public class MCPConfig {
         Files.writeString(domainsFile, jsonContent);
     }
     
-    /**
-     * Atualiza configuração de um servidor específico.
-     */
-    public void updateServerConfig(String serverId, ServerConfig config) {
+      public void updateServerConfig(String serverId, ServerConfig config) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         Objects.requireNonNull(config, "Server config cannot be null");
         
@@ -622,31 +661,8 @@ public class MCPConfig {
         }
     }
     
-    /**
-     * Remove um servidor da configuração.
-     */
-    public boolean removeServer(String serverId) {
-        Objects.requireNonNull(serverId, "Server ID cannot be null");
-        
-        boolean removed = servers.remove(serverId) != null;
-        
-        if (removed) {
-            try {
-                saveConfiguration();
-                logger.info("Servidor '{}' removido da configuração", serverId);
-            } catch (Exception e) {
-                logger.error("Erro ao salvar configuração após remoção do servidor '{}'", serverId, e);
-                throw new MCPConfigException("Erro ao remover servidor da configuração: " + e.getMessage(), e);
-            }
-        }
-        
-        return removed;
-    }
-    
-    /**
-     * Atualiza configuração de um domínio específico.
-     */
-    public void updateDomainConfig(String domain, DomainDefinition definition) {
+     
+     public void updateDomainConfig(String domain, DomainDefinition definition) {
         Objects.requireNonNull(domain, "Domain cannot be null");
         Objects.requireNonNull(definition, "Domain definition cannot be null");
         
@@ -661,10 +677,7 @@ public class MCPConfig {
         }
     }
     
-    /**
-     * Classe para representar configuração de servidor.
-     */
-    public static class ServerConfig {
+      public static class ServerConfig {
         public final String id;
         public final String description;
         public final String command;
@@ -733,9 +746,46 @@ public class MCPConfig {
         }
     }
     
-    /**
-     * Habilita/desabilita um servidor específico.
-     */
+    public void addNewServer(String serverId, ServerConfig config) {
+        Objects.requireNonNull(serverId, "Server ID cannot be null");
+        Objects.requireNonNull(config, "Server config cannot be null");
+        
+        if (servers.containsKey(serverId)) {
+            throw new MCPConfigException("Servidor já existe: " + serverId);
+        }
+        
+        servers.put(serverId, config);
+        
+        try {
+            saveConfiguration();
+            logger.info("Novo servidor '{}' adicionado à configuração", serverId);
+        } catch (Exception e) {
+            servers.remove(serverId); // Rollback
+            throw new MCPConfigException("Erro ao adicionar servidor: " + e.getMessage(), e);
+        }
+    }
+    
+    public void updateDomainsIfNeeded(String domainName, String description) {
+        if (domainName == null || domains.containsKey(domainName)) {
+            return; 
+        }
+        
+        DomainDefinition newDomain = DomainDefinition.builder()
+            .name(domainName)
+            .description(description)
+            .build();
+        
+        domains.put(domainName, newDomain);
+        
+        try {
+            saveConfiguration(); // Salva domains.json também
+            logger.info("Novo domínio '{}' adicionado", domainName);
+        } catch (Exception e) {
+            domains.remove(domainName); // Rollback
+            throw new MCPConfigException("Erro ao adicionar domínio: " + e.getMessage(), e);
+        }
+    }
+    
     public void setServerEnabled(String serverId, boolean enabled) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         
@@ -766,23 +816,26 @@ public class MCPConfig {
         }
     }
     
-    /**
-     * Retorna configuração de um servidor específico.
-     */
+    public boolean removeServer(String serverId) {
+        Objects.requireNonNull(serverId, "Server ID cannot be null");
+        
+        boolean removed = servers.remove(serverId) != null;
+        
+        if (removed) {
+            try {
+                saveConfiguration();
+                logger.info("Servidor '{}' removido da configuração", serverId);
+            } catch (Exception e) {
+                logger.error("Erro ao salvar configuração após remoção do servidor '{}'", serverId, e);
+                throw new MCPConfigException("Erro ao remover servidor da configuração: " + e.getMessage(), e);
+            }
+        }
+        
+        return removed;
+    }
+    
     public ServerConfig getServerConfig(String serverId) {
         return servers.get(serverId);
     }
     
-    /**
-     * Exceção específica para erros de configuração MCP.
-     */
-    public static class MCPConfigException extends RuntimeException {
-        public MCPConfigException(String message) {
-            super(message);
-        }
-        
-        public MCPConfigException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 }
