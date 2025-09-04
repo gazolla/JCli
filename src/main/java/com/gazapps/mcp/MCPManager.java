@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -423,7 +424,7 @@ public class MCPManager implements AutoCloseable {
         mcpService.refreshServerConnections();
     }
     
-     @Override
+    @Override
     public void close() {
         logger.info("Fechando MCPManager...");
         
@@ -443,6 +444,9 @@ public class MCPManager implements AutoCloseable {
         } catch (Exception e) {
             logger.error("Erro ao fechar MCPManager", e);
         }
+        
+        // Forçar encerramento do programa devido a threads MCP em background
+        System.exit(0);
     }
     
     public MCPService getMcpService() {
@@ -507,6 +511,80 @@ public class MCPManager implements AutoCloseable {
         }
         
         return null;
+    }
+    
+    public boolean disableServer(String serverId) {
+        Objects.requireNonNull(serverId, "Server ID cannot be null");
+        
+        try {
+            // 1. Desconectar servidor (fecha client, marca disconnected)
+            mcpService.disconnectServer(serverId);
+            
+            // 2. CRÍTICO: Remover servidor do Map servers 
+            //    (isso remove automaticamente todas as tools da LLM)
+            mcpService.removeServerFromMemory(serverId);
+            
+            // 3. Persistir estado disabled
+            config.setServerEnabled(serverId, false);
+            
+            // 4. Limpar caches
+            clearCachesForServer(serverId);
+            
+            logger.info("Servidor '{}' desabilitado - tools removidas das coleções da LLM", serverId);
+            return true;
+            
+        } catch (Exception e) {
+            logger.error("Erro ao desabilitar servidor '{}'", serverId, e);
+            return false;
+        }
+    }
+    
+    public boolean enableServer(String serverId) {
+        Objects.requireNonNull(serverId, "Server ID cannot be null");
+        
+        try {
+            // 1. Atualizar config para enabled=true PRIMEIRO
+            config.setServerEnabled(serverId, true);
+            
+            // 2. Buscar config ATUALIZADA do servidor
+            MCPConfig.ServerConfig serverConfig = config.getServerConfig(serverId);
+            if (serverConfig == null) {
+                logger.error("Configuração não encontrada para servidor: {}", serverId);
+                return false;
+            }
+            
+            // 3. CRÍTICO: Conectar servidor 
+            //    (isso adiciona automaticamente todas as tools na LLM)
+            boolean connected = mcpService.connectServer(serverConfig);
+            
+            if (connected) {
+                logger.info("Servidor '{}' habilitado - tools adicionadas às coleções da LLM", serverId);
+            } else {
+                // Reverter config se não conseguiu conectar
+                config.setServerEnabled(serverId, false);
+            }
+            
+            return connected;
+            
+        } catch (Exception e) {
+            logger.error("Erro ao habilitar servidor '{}'", serverId, e);
+            return false;
+        }
+    }
+    
+    public List<String> getDisabledServerIds() {
+        Map<String, MCPConfig.ServerConfig> allServers = config.loadServers();
+        return allServers.entrySet().stream()
+            .filter(entry -> !entry.getValue().enabled)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+    }
+    
+    private void clearCachesForServer(String serverId) {
+        // Limpar caches relacionados ao servidor
+        toolSelectionCache.clear();
+        observationUtilityCache.clear();
+        logger.debug("Caches limpos para servidor: {}", serverId);
     }
     
     public void reloadRules() {

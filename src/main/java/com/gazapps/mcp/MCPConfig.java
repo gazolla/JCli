@@ -734,6 +734,46 @@ public class MCPConfig {
     }
     
     /**
+     * Habilita/desabilita um servidor específico.
+     */
+    public void setServerEnabled(String serverId, boolean enabled) {
+        Objects.requireNonNull(serverId, "Server ID cannot be null");
+        
+        ServerConfig existingConfig = servers.get(serverId);
+        if (existingConfig == null) {
+            throw new MCPConfigException("Servidor não encontrado: " + serverId);
+        }
+        
+        ServerConfig newConfig = new ServerConfig(
+            serverId,
+            existingConfig.description,
+            existingConfig.command,
+            existingConfig.args,
+            existingConfig.env,
+            existingConfig.priority,
+            enabled,
+            existingConfig.domain
+        );
+        
+        servers.put(serverId, newConfig);
+        
+        try {
+            saveConfiguration();
+            logger.info("Servidor '{}' {} na configuração", serverId, enabled ? "habilitado" : "desabilitado");
+        } catch (Exception e) {
+            logger.error("Erro ao atualizar configuração do servidor '{}'", serverId, e);
+            throw new MCPConfigException("Erro ao atualizar servidor: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Retorna configuração de um servidor específico.
+     */
+    public ServerConfig getServerConfig(String serverId) {
+        return servers.get(serverId);
+    }
+    
+    /**
      * Exceção específica para erros de configuração MCP.
      */
     public static class MCPConfigException extends RuntimeException {

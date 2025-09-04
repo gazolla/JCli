@@ -1,0 +1,57 @@
+10:55:51.448 INFO  com.gazapps.mcp.MCPConfig - Arquivos de regras padrão criados em: .\config\rules
+10:55:51.448 INFO  com.gazapps.mcp.MCPConfig - Propriedades carregadas: rules.enabled=true, rules.path=config/rules
+10:55:51.449 INFO  com.gazapps.mcp.MCPConfig - Carregados 6 servidores da configuração
+10:55:51.450 INFO  com.gazapps.mcp.MCPConfig - Carregados 5 domínios da configuração
+10:55:51.451 INFO  com.gazapps.mcp.MCPService - Inicializing 6 servers MCP...
+10:55:51.452 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+10:55:51.551 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+10:55:51.552 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
+10:55:51.553 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
+10:55:52.555 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
+10:55:52.555 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
+10:55:52.555 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+10:55:52.662 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+10:55:52.663 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+10:55:52.663 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+10:55:54.434 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+10:55:54.434 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+10:55:54.434 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+10:55:54.541 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+10:55:54.541 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+10:55:54.541 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+10:55:56.668 DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+10:55:56.669 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+10:55:56.669 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+10:55:56.798 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+10:55:56.798 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
+10:55:56.798 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
+10:55:57.938 DEBUG com.gazapps.mcp.MCPService - Carregadas 5 ferramentas para servidor 'calculator'
+10:55:57.938 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'calculator' conectado com sucesso! Ferramentas: 5
+10:55:57.938 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+10:55:58.065 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+10:55:58.065 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
+10:55:58.065 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
+10:55:59.254 DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'rss-feeds'
+10:55:59.254 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'rss-feeds' conectado com sucesso! Ferramentas: 1
+10:55:59.255 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+10:55:59.372 DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+10:55:59.372 INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+10:55:59.372 DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+10:56:00.168 DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+10:56:00.168 INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+10:56:00.168 INFO  com.gazapps.mcp.MCPService - MCPService inicialized: 6/6 servers conected - logs in JavaCLI/log/mcp-operations.log
+10:56:00.177 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+10:56:00.178 DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+10:56:00.178 INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+10:56:00.181 INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+10:56:06.252 INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+10:56:06.252 INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+10:56:06.256 INFO  com.gazapps.mcp.MCPService - Servidor 'web-fetch' desconectado
+10:56:06.257 INFO  com.gazapps.mcp.MCPService - Servidor 'calculator' desconectado
+10:56:06.258 INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+10:56:06.259 INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+10:56:06.259 INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+10:56:06.260 INFO  com.gazapps.mcp.MCPService - Servidor 'rss-feeds' desconectado
+10:56:06.260 INFO  com.gazapps.mcp.MCPService - MCPService fechado
+10:56:06.268 INFO  com.gazapps.mcp.MCPConfig - Configuração salva com sucesso
+10:56:06.268 INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso

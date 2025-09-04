@@ -279,6 +279,16 @@ public class MCPService {
         logger.info("Atualização concluída. Servidores: {}/{} conectados", connectedCount, totalCount);
     }
     
+    public boolean removeServerFromMemory(String serverId) {
+        try {
+            Server removed = servers.remove(serverId);
+            return removed != null;
+        } catch (Exception e) {
+            logger.error("Erro ao remover servidor da memória: '{}'", serverId, e);
+            return false;
+        }
+    }
+    
     public void close() {
         logger.info("Fechando MCPService...");
         

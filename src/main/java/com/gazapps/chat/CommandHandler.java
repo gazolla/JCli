@@ -4,6 +4,10 @@ import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.mcp.MCPManager;
+import com.gazapps.mcp.domain.Server;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CommandHandler {
 
@@ -29,6 +33,8 @@ public class CommandHandler {
 		case "llm" -> changeLlm(args);
 		case "debug" -> toggleDebug();
 		case "clear" -> clearScreen();
+		case "disable" -> disableServer(args);
+		case "enable" -> enableServer(args);
 		case "quit", "exit" -> System.exit(0);
 		default -> showUnknownCommand(cmd);
 		}
@@ -96,6 +102,8 @@ public class CommandHandler {
 				/servers                 - List MCP servers
 				/strategy <name>         - Change inference (simple|react|reflection)
 				/llm <provider>          - Change LLM provider (openai|claude|gemini|groq)
+				/disable [num]           - Disable server (removes tools from LLM)
+				/enable [num]            - Enable server (adds tools to LLM)
 				/debug                   - Toggle debug mode
 				/clear                   - Clear screen
 				/quit                    - Exit
@@ -174,6 +182,118 @@ public class CommandHandler {
 		System.out.flush();
 	}
 
+	private void disableServer(String args) {
+		if (args.trim().isEmpty()) {
+			showServerListForAction("desabilitar", "disable");
+			return;
+		}
+		
+		try {
+			int serverIndex = Integer.parseInt(args.trim());
+			List<String> serverIds = getConnectedServerIds();
+			
+			if (serverIndex < 1 || serverIndex > serverIds.size()) {
+				System.out.println("❌ Número inválido");
+				return;
+			}
+			
+			String serverId = serverIds.get(serverIndex - 1);
+			
+			System.out.printf("🔄 Desabilitando servidor '%s'...%n", serverId);
+			
+			if (mcpManager.disableServer(serverId)) {
+				System.out.printf("✅ Servidor '%s' desabilitado com sucesso!%n", serverId);
+				System.out.println("   • Tools removidas das coleções da LLM");
+				System.out.println("   • Servidor desconectado");
+				System.out.println("   • mcp.json atualizado");
+			} else {
+				System.out.printf("❌ Falha ao desabilitar servidor '%s'%n", serverId);
+			}
+			
+		} catch (NumberFormatException e) {
+			System.out.println("❌ Use um número válido ou /disable sem argumentos para listar");
+		}
+	}
+	
+	private void enableServer(String args) {
+		if (args.trim().isEmpty()) {
+			showDisabledServers();
+			return;
+		}
+		
+		try {
+			int serverIndex = Integer.parseInt(args.trim());
+			List<String> disabledIds = mcpManager.getDisabledServerIds();
+			
+			if (serverIndex < 1 || serverIndex > disabledIds.size()) {
+				System.out.println("❌ Número inválido");
+				return;
+			}
+			
+			String serverId = disabledIds.get(serverIndex - 1);
+			
+			System.out.printf("🔄 Habilitando servidor '%s'...%n", serverId);
+			
+			if (mcpManager.enableServer(serverId)) {
+				System.out.printf("✅ Servidor '%s' habilitado com sucesso!%n", serverId);
+				System.out.println("   • Servidor conectado");
+				System.out.println("   • Tools adicionadas às coleções da LLM");
+				System.out.println("   • mcp.json atualizado");
+			} else {
+				System.out.printf("❌ Falha ao habilitar servidor '%s'%n", serverId);
+			}
+			
+		} catch (NumberFormatException e) {
+			System.out.println("❌ Use um número válido ou /enable sem argumentos para listar");
+		}
+	}
+	
+	private void showServerListForAction(String action, String command) {
+		Map<String, Server> servers = mcpManager.getConnectedServers();
+		
+		System.out.printf("🔧 Servidores Disponíveis para %s:%n%n", action);
+		
+		if (servers.isEmpty()) {
+			System.out.println("  Nenhum servidor conectado");
+			return;
+		}
+		
+		int index = 1;
+		for (Map.Entry<String, Server> entry : servers.entrySet()) {
+			String id = entry.getKey();
+			Server server = entry.getValue();
+			String status = server.isHealthy() ? "✅" : "❌";
+			
+			System.out.printf("[%d] %s (%s) - %d tools %s%n", 
+						 index++, id, server.getDomain(), 
+						 server.getTools().size(), status);
+		}
+		
+		System.out.printf("%nDigite /%s [número] para %s%n", command, action);
+	}
+	
+	private void showDisabledServers() {
+		List<String> disabledIds = mcpManager.getDisabledServerIds();
+		
+		System.out.println("🔧 Servidores Desabilitados:\n");
+		
+		if (disabledIds.isEmpty()) {
+			System.out.println("  Nenhum servidor desabilitado");
+			return;
+		}
+		
+		for (int i = 0; i < disabledIds.size(); i++) {
+			String id = disabledIds.get(i);
+			System.out.printf("[%d] %s%n", i + 1, id);
+		}
+		
+		System.out.println("\nDigite /enable [número] para habilitar");
+	}
+	
+	private List<String> getConnectedServerIds() {
+		return new ArrayList<>(mcpManager.getConnectedServers().keySet());
+	}
+	
 	private void showUnknownCommand(String cmd) {
 		System.out.printf("❌ Unknown command: %s. Type /help for available commands.%n", cmd);
 	}
