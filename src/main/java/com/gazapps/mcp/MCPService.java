@@ -36,22 +36,22 @@ public class MCPService {
         initializeServers();
     }
     
-     public boolean connectServer(MCPConfig.ServerConfig serverConfig) {
+    public boolean connectServer(MCPConfig.ServerConfig serverConfig) {
         Objects.requireNonNull(serverConfig, "Server config cannot be null");
         
         if (!serverConfig.enabled) {
-            logger.info("Servidor '{}' está desabilitado, ignorando", serverConfig.id);
+            logger.info("Server '{}' is disabled, ignoring", serverConfig.id);
             return false;
         }
         
         if (!isCommandAvailable(serverConfig)) {
-            logger.warn("Comando '{}' não disponível para servidor '{}' - pulando", 
+            logger.warn("Command '{}' not available for server '{}' - skipping", 
                        getMainCommand(serverConfig.command), serverConfig.id);
             return false;
         }
         
         try {
-            logger.info("Conectando ao servidor MCP '{}'...", serverConfig.id);
+            logger.info("Connecting to MCP server '{}'...", serverConfig.id);
             
             Server server = serverConfig.toServer();
             McpSyncClient client = createMcpClient(serverConfig);
@@ -62,23 +62,23 @@ public class MCPService {
             clients.put(server.getId(), client);
             
             server.connect();
-            logger.info("✅ Servidor '{}' conectado com sucesso! Ferramentas: {}", 
+            logger.info("✅ Server '{}' connected successfully! Tools: {}", 
                        server.getId(), server.getTools().size());
             
             return true;
             
         } catch (Exception e) {
-            logger.warn("❌ Falha ao conectar servidor '{}': {} - continuando sem este servidor", 
+            logger.warn("❌ Failed to connect server '{}': {} - continuing without this server", 
                        serverConfig.id, e.getMessage());
             return false;
         }
     }
     
-     private boolean isCommandAvailable(MCPConfig.ServerConfig serverConfig) {
+    private boolean isCommandAvailable(MCPConfig.ServerConfig serverConfig) {
         String command = serverConfig.command;
         String mainCommand = getMainCommand(command);
         
-        logger.debug("Verificação do comando '{}': verificando", mainCommand);
+        logger.debug("Checking command '{}': verifying", mainCommand);
         
         try {
             ProcessBuilder pb = new ProcessBuilder();
@@ -94,16 +94,16 @@ public class MCPService {
             
             if (!finished) {
                 process.destroyForcibly();
-                 logger.debug("Verificação do comando '{}': timeout", mainCommand);
+                logger.debug("Checking command '{}': timeout", mainCommand);
                 return false;
             }
             
             boolean available = process.exitValue() == 0;
-            logger.debug("Verificação do comando '{}': {}", mainCommand, available ? "disponível" : "indisponível");
+            logger.debug("Checking command '{}': {}", mainCommand, available ? "available" : "unavailable");
             return available;
             
         } catch (Exception e) {
-            logger.error("Erro ao verificar comando '{}': {}", mainCommand, e.getMessage());
+            logger.error("Error checking command '{}': {}", mainCommand, e.getMessage());
             return false;
         }
     }
@@ -127,16 +127,16 @@ public class MCPService {
             Server server = servers.get(serverId);
             if (server != null) {
                 server.disconnect();
-                logger.info("Servidor '{}' desconectado", serverId);
+                logger.info("Server '{}' disconnected", serverId);
             }
             
         } catch (Exception e) {
-            logger.error("Erro ao desconectar servidor '{}'", serverId, e);
+            logger.error("Error disconnecting server '{}'", serverId, e);
         }
     }
     
     /**
-     * Executa uma ferramenta em um servidor específico.
+     * Executes a tool on a specific server.
      */
     public ToolExecutionResult callTool(String serverId, String toolName, Map<String, Object> args) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
@@ -148,22 +148,22 @@ public class MCPService {
         
         Server server = servers.get(serverId);
         if (server == null) {
-            return ToolExecutionResult.error("Servidor não encontrado: " + serverId);
+            return ToolExecutionResult.error("Server not found: " + serverId);
         }
         
         if (!server.isConnected()) {
-            return ToolExecutionResult.error("Servidor não está conectado: " + serverId);
+            return ToolExecutionResult.error("Server is not connected: " + serverId);
         }
         
         Tool tool = server.getTool(toolName);
         if (tool == null) {
-            return ToolExecutionResult.error("Ferramenta não encontrada: " + toolName + " no servidor " + serverId);
+            return ToolExecutionResult.error("Tool not found: " + toolName + " on server " + serverId);
         }
         
         if (!tool.validateArgs(args)) {
             List<String> missingParams = tool.getMissingRequiredParams(args);
-            return ToolExecutionResult.error("Argumentos inválidos para ferramenta " + toolName + 
-                                 ". Parâmetros obrigatórios faltando: " + missingParams);
+            return ToolExecutionResult.error("Invalid arguments for tool " + toolName + 
+                                 ". Missing required parameters: " + missingParams);
         }
         
         Map<String, Object> normalizedArgs = tool.normalizeArgs(args);
@@ -171,7 +171,7 @@ public class MCPService {
         return executeToolWithRetry(server, tool, normalizedArgs);
     }
     
-     public List<Tool> getAvailableTools(String serverId) {
+    public List<Tool> getAvailableTools(String serverId) {
         Objects.requireNonNull(serverId, "Server ID cannot be null");
         
         Server server = servers.get(serverId);
@@ -194,16 +194,16 @@ public class MCPService {
         return allTools;
     }
     
-   public boolean isServerConnected(String serverId) {
+    public boolean isServerConnected(String serverId) {
         Server server = servers.get(serverId);
         return server != null && server.isConnected();
     }
     
-     public Server getServerInfo(String serverId) {
+    public Server getServerInfo(String serverId) {
         return servers.get(serverId);
     }
     
-   public Map<String, Server> getConnectedServers() {
+    public Map<String, Server> getConnectedServers() {
         Map<String, Server> connected = new HashMap<>();
         
         for (Map.Entry<String, Server> entry : servers.entrySet()) {
@@ -234,8 +234,8 @@ public class MCPService {
         return false;
     }
     
-     public void refreshServerConnections() {
-        logger.info("Atualizando conexões de servidores...");
+    public void refreshServerConnections() {
+        logger.info("Updating server connections...");
         
         Map<String, MCPConfig.ServerConfig> serverConfigs = config.loadServers();
         
@@ -245,7 +245,7 @@ public class MCPService {
             }
         }
         
-         List<String> unhealthyServers = new ArrayList<>();
+        List<String> unhealthyServers = new ArrayList<>();
         for (Map.Entry<String, Server> entry : servers.entrySet()) {
             String serverId = entry.getKey();
             Server server = entry.getValue();
@@ -259,14 +259,14 @@ public class MCPService {
         
         int reconnectAttempts = 0;
         for (String serverId : unhealthyServers) {
-            if (reconnectAttempts >= 2) { // Limitar tentativas de reconexão
-                logger.debug("Limite de tentativas de reconexão atingido");
+            if (reconnectAttempts >= 2) {
+                logger.debug("Reconnection attempt limit reached");
                 break;
             }
             
             MCPConfig.ServerConfig serverConfig = serverConfigs.get(serverId);
             if (serverConfig != null) {
-                logger.debug("Tentando reconectar servidor não saudável: {}", serverId);
+                logger.debug("Attempting to reconnect unhealthy server: {}", serverId);
                 disconnectServer(serverId);
                 if (connectServer(serverConfig)) {
                     reconnectAttempts++;
@@ -276,7 +276,7 @@ public class MCPService {
         
         int connectedCount = getConnectedServers().size();
         int totalCount = serverConfigs.size();
-        logger.info("Atualização concluída. Servidores: {}/{} conectados", connectedCount, totalCount);
+        logger.info("Update completed. Servers: {}/{} connected", connectedCount, totalCount);
     }
     
     public boolean removeServerFromMemory(String serverId) {
@@ -284,13 +284,13 @@ public class MCPService {
             Server removed = servers.remove(serverId);
             return removed != null;
         } catch (Exception e) {
-            logger.error("Erro ao remover servidor da memória: '{}'", serverId, e);
+            logger.error("Error removing server from memory: '{}'", serverId, e);
             return false;
         }
     }
     
     public void close() {
-        logger.info("Fechando MCPService...");
+        logger.info("Closing MCPService...");
         
         for (String serverId : new ArrayList<>(servers.keySet())) {
             disconnectServer(serverId);
@@ -299,29 +299,28 @@ public class MCPService {
         servers.clear();
         clients.clear();
         
-        logger.info("MCPService fechado");
+        logger.info("MCPService closed");
     }
     
-   private void initializeServers() {
+    private void initializeServers() {
         Map<String, MCPConfig.ServerConfig> serverConfigs = config.loadServers();
         
-        logger.info("Inicializing {} servers MCP...", serverConfigs.size());
-        System.out.printf("Inicializing %d servers MCP...\n", serverConfigs.size());
+        logger.info("Initializing {} MCP servers...", serverConfigs.size());
+        System.out.printf("Initializing %d MCP servers...\n", serverConfigs.size());
                
-         
         int successCount = 0;
         for (MCPConfig.ServerConfig serverConfig : serverConfigs.values()) {
             if (serverConfig.enabled) {
                 if (connectServer(serverConfig)) {
                     successCount++;
-                 } else {
-                    System.out.println("[DEBUG] ❌ Falha ao conectar servidor " + serverConfig.id);
+                } else {
+                    System.out.println("[DEBUG] ❌ Failed to connect server " + serverConfig.id);
                 }
             } else {
-                logger.info("Servidor '{}' desabilitado na configuração", serverConfig.id);
+                logger.info("Server '{}' disabled in configuration", serverConfig.id);
             }
         }
-        logger.info("MCPService inicialized: {}/{} servers conected - logs in JavaCLI/log/mcp-operations.log", 
+        logger.info("MCPService initialized: {}/{} servers connected - logs in JavaCLI/log/mcp-operations.log", 
                    successCount, serverConfigs.size());
         
         if (successCount == 0) {
@@ -336,20 +335,20 @@ public class MCPService {
             System.out.println(message);
             logger.warn(message);
         }
-   }
+    }
     
     private McpSyncClient createMcpClient(MCPConfig.ServerConfig serverConfig) throws Exception {
         try {
-             String[] command;
+            String[] command;
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                 command = new String[]{"cmd.exe", "/c", serverConfig.command};
+                command = new String[]{"cmd.exe", "/c", serverConfig.command};
             } else {
                 command = serverConfig.command.split(" ");
             }
             
-            logger.debug("Executando comando: {}", Arrays.toString(command));
+            logger.debug("Executing command: {}", Arrays.toString(command));
             
-             ServerParameters serverParams = ServerParameters.builder(command[0])
+            ServerParameters serverParams = ServerParameters.builder(command[0])
                 .args(Arrays.copyOfRange(command, 1, command.length))
                 .env(serverConfig.env)
                 .build();
@@ -361,8 +360,8 @@ public class MCPService {
                 .build();
                 
         } catch (Exception e) {
-            logger.error("Erro ao criar cliente MCP para servidor '{}'", serverConfig.id, e);
-            throw new Exception("Erro ao criar cliente MCP: " + e.getMessage(), e);
+            logger.error("Error creating MCP client for server '{}'", serverConfig.id, e);
+            throw new Exception("Error creating MCP client: " + e.getMessage(), e);
         }
     }
     
@@ -379,11 +378,11 @@ public class MCPService {
                 server.addTool(tool);
             }
             
-            logger.debug("Carregadas {} ferramentas para servidor '{}'", 
+            logger.debug("Loaded {} tools for server '{}'", 
                         toolsResult.tools().size(), server.getId());
             
         } catch (Exception e) {
-            logger.error("Erro ao carregar ferramentas do servidor '{}'", server.getId(), e);
+            logger.error("Error loading tools for server '{}'", server.getId(), e);
         }
     }
     
@@ -396,7 +395,7 @@ public class MCPService {
                 
             } catch (Exception e) {
                 lastException = e;
-                logger.error("Tentativa {} de {} falhou para ferramenta '{}': {}", 
+                logger.error("Attempt {} of {} failed for tool '{}': {}", 
                            attempt, MAX_RETRY_ATTEMPTS, tool.getName(), e.getMessage());
                 
                 if (attempt < MAX_RETRY_ATTEMPTS) {
@@ -410,20 +409,20 @@ public class MCPService {
             }
         }
         
-        return ToolExecutionResult.error("Falha ao executar ferramenta '" + tool.getName() + 
-                             "' após " + MAX_RETRY_ATTEMPTS + " tentativas", lastException);
+        return ToolExecutionResult.error("Failed to execute tool '" + tool.getName() + 
+                             "' after " + MAX_RETRY_ATTEMPTS + " attempts", lastException);
     }
     
     private ToolExecutionResult executeToolDirect(Server server, Tool tool, Map<String, Object> args) throws Exception {
         McpSyncClient client = clients.get(server.getId());
         if (client == null) {
-            throw new Exception("Cliente não encontrado para servidor: " + server.getId());
+            throw new Exception("Client not found for server: " + server.getId());
         }
         CallToolRequest request = new CallToolRequest(tool.getName(), args);
         CallToolResult result = client.callTool(request);
         Boolean isError = result.isError();
         if (isError != null && isError) {
-            throw new Exception("Erro na execução da ferramenta: " + result.toString());
+            throw new Exception("Error executing tool: " + result.toString());
         }
         
         String content = extractContentAsString(result.content());
@@ -434,7 +433,7 @@ public class MCPService {
     
     private String extractContentAsString(List<Content> contentList) {
         if (contentList == null || contentList.isEmpty()) {
-            return "Sem mensagem de retorno";
+            return "No return message";
         }
 
         for (Content content : contentList) {
@@ -445,7 +444,7 @@ public class MCPService {
             }
         }
 
-        return "Nenhuma mensagem encontrada";
+        return "No message found";
     }
     
     public MCPStats getStats() {
@@ -497,7 +496,7 @@ public class MCPService {
         }
         
         public static ToolExecutionResult success(Tool tool, String content) {
-            return new ToolExecutionResult(true, tool, content, "Ferramenta executada com sucesso", null);
+            return new ToolExecutionResult(true, tool, content, "Tool executed successfully", null);
         }
         
         public static ToolExecutionResult error(String message) {

@@ -1,0 +1,260 @@
+2025-09-13 14:26:19.228 [main] INFO  com.gazapps.config.Config - Stopping LoggerContext to release log file handles
+2025-09-13 14:26:19.228 [main] INFO  com.gazapps.config.Config - Attempting to delete log directory: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log
+2025-09-13 14:26:19.228 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\mcp-operations.log
+2025-09-13 14:26:19.228 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\llm\openai-conversations.log
+2025-09-13 14:26:19.228 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\llm\groq-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\llm\gemini-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\llm\claude-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\llm
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\inference\simple-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\inference\reflection-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\inference\react-conversations.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\inference
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\errors.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log\application.log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Deleted: C:\Users\gazol\AppData\MCP\WRKGRP\JCli\log
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Log directories recreated: log, log/llm, log/inference
+2025-09-13 14:26:19.229 [main] INFO  com.gazapps.config.Config - ✅ Logback configuration reloaded from: file:/C:/Users/gazol/AppData/MCP/WRKGRP/JCli/target/classes/logback.xml
+2025-09-13 14:26:19.230 [main] INFO  com.gazapps.config.Config - 📋 Configuration initialized with LlmConfig and MCPConfig
+2025-09-13 14:26:19.237 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Gemini initialized with capabilities: LlmCapabilities{functionCalling=true, systemMessages=true, streaming=false, maxTokens=50000, formats=[json, text]}
+2025-09-13 14:26:19.238 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using baseUrl: https://api.groq.com/openai/v1/chat/completions
+2025-09-13 14:26:19.238 [main] DEBUG com.gazapps.llm.providers.Groq - 🔧 Using model: llama-3.3-70b-versatile
+2025-09-13 14:26:19.242 [main] INFO  com.gazapps.mcp.MCPConfig - Default rule files created at: .\config\rules
+2025-09-13 14:26:19.243 [main] INFO  com.gazapps.mcp.MCPConfig - Properties loaded: rules.enabled=true, rules.path=config/rules
+2025-09-13 14:26:19.245 [main] INFO  com.gazapps.mcp.MCPConfig - Loaded 6 servers from configuration
+2025-09-13 14:26:19.246 [main] INFO  com.gazapps.mcp.MCPConfig - Loaded 5 domains from configuration
+2025-09-13 14:26:19.249 [main] INFO  com.gazapps.mcp.MCPService - Inicializing 6 servers MCP...
+2025-09-13 14:26:19.250 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+2025-09-13 14:26:19.411 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+2025-09-13 14:26:19.412 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'weather-nws'...
+2025-09-13 14:26:19.413 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx @h1deya/mcp-server-weather]
+2025-09-13 14:26:27.785 [pool-5-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Weather MCP Server running on stdio
+2025-09-13 14:26:27.852 [pool-2-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=weather, version=1.0.0] and Instructions null
+2025-09-13 14:26:27.908 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'weather-nws'
+2025-09-13 14:26:27.908 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'weather-nws' conectado com sucesso! Ferramentas: 2
+2025-09-13 14:26:27.908 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-13 14:26:28.134 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-13 14:26:28.134 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'web-fetch'...
+2025-09-13 14:26:28.134 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-fetch]
+2025-09-13 14:26:31.354 [pool-9-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-fetch, version=1.14.0] and Instructions null
+2025-09-13 14:26:31.383 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'web-fetch'
+2025-09-13 14:26:31.383 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'web-fetch' conectado com sucesso! Ferramentas: 1
+2025-09-13 14:26:31.383 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-13 14:26:31.947 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-13 14:26:31.947 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'time'...
+2025-09-13 14:26:31.947 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-time]
+2025-09-13 14:26:33.679 [pool-12-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=false]], Info: Implementation[name=mcp-time, version=1.14.0] and Instructions null
+2025-09-13 14:26:33.693 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 2 ferramentas para servidor 'time'
+2025-09-13 14:26:33.693 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'time' conectado com sucesso! Ferramentas: 2
+2025-09-13 14:26:33.693 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-13 14:26:34.266 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-13 14:26:34.266 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'rss-feeds'...
+2025-09-13 14:26:34.266 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx mcp-server-rss]
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
+2025-09-13 14:26:37.750 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     RSS Feed Server                        |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.3                                 |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.14.0                                 |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:37.751 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:37.753 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/13/25 14:26:37] INFO     Starting MCP server 'RSS Feed       server.py:1495
+2025-09-13 14:26:37.753 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
+2025-09-13 14:26:37.764 [pool-15-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=ResourceCapabilities[subscribe=false, listChanged=false], tools=ToolCapabilities[listChanged=true]], Info: Implementation[name=RSS Feed Server, version=1.14.0] and Instructions null
+2025-09-13 14:26:37.767 [pool-17-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 2025-09-13 14:26:37,768 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2025-09-13 14:26:37.775 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 1 ferramentas para servidor 'rss-feeds'
+2025-09-13 14:26:37.775 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'rss-feeds' conectado com sucesso! Ferramentas: 1
+2025-09-13 14:26:37.775 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': verificando
+2025-09-13 14:26:37.919 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'uvx': disponível
+2025-09-13 14:26:37.921 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'calculator'...
+2025-09-13 14:26:37.921 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, uvx calculator-mcp-server]
+2025-09-13 14:26:41.258 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:41.258 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:41.258 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-13 14:26:41.259 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.259 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |        _ __ ___  _____           __  __  _____________    ____    ____     |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                FastMCP  2.0                                |
+2025-09-13 14:26:41.260 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.261 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.261 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f5a5\ufe0f  Server name:     Calculator MCP Server                  |
+2025-09-13 14:26:41.263 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4e6 Transport:       STDIO                                  |
+2025-09-13 14:26:41.264 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.264 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f3ce\ufe0f  FastMCP version: 2.12.3                                 |
+2025-09-13 14:26:41.264 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f91d MCP SDK version: 1.14.0                                 |
+2025-09-13 14:26:41.264 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.264 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f4da Docs:            https://gofastmcp.com                  |
+2025-09-13 14:26:41.265 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                 \U0001f680 Deploy:          https://fastmcp.cloud                  |
+2025-09-13 14:26:41.265 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: |                                                                            |
+2025-09-13 14:26:41.265 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: +----------------------------------------------------------------------------+
+2025-09-13 14:26:41.265 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:41.265 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: 
+2025-09-13 14:26:41.272 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: [09/13/25 14:26:41] INFO     Starting MCP server 'Calculator MCP server.py:1495
+2025-09-13 14:26:41.272 [pool-20-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received:                              Server' with transport 'stdio'                    
+2025-09-13 14:26:41.299 [pool-18-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental={}, logging=null, prompts=PromptCapabilities[listChanged=false], resources=ResourceCapabilities[subscribe=false, listChanged=false], tools=ToolCapabilities[listChanged=true]], Info: Implementation[name=Calculator MCP Server, version=1.14.0] and Instructions null
+2025-09-13 14:26:41.315 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 5 ferramentas para servidor 'calculator'
+2025-09-13 14:26:41.316 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'calculator' conectado com sucesso! Ferramentas: 5
+2025-09-13 14:26:41.316 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': verificando
+2025-09-13 14:26:41.673 [main] DEBUG com.gazapps.mcp.MCPService - Verificação do comando 'npx': disponível
+2025-09-13 14:26:41.674 [main] INFO  com.gazapps.mcp.MCPService - Conectando ao servidor MCP 'filesystem'...
+2025-09-13 14:26:41.674 [main] DEBUG com.gazapps.mcp.MCPService - Executando comando: [cmd.exe, /c, npx -y @modelcontextprotocol/server-filesystem ./documents]
+2025-09-13 14:26:46.708 [pool-23-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Secure MCP Filesystem Server running on stdio
+2025-09-13 14:26:46.709 [pool-23-thread-1] INFO  i.m.c.transport.StdioClientTransport - STDERR Message received: Allowed directories: [ 'C:\\Users\\gazol\\AppData\\MCP\\WRKGRP\\JCli\\documents' ]
+2025-09-13 14:26:46.722 [pool-21-thread-1] INFO  i.m.client.McpAsyncClient - Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=null, tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=secure-filesystem-server, version=0.2.0] and Instructions null
+2025-09-13 14:26:46.735 [main] DEBUG com.gazapps.mcp.MCPService - Carregadas 12 ferramentas para servidor 'filesystem'
+2025-09-13 14:26:46.735 [main] INFO  com.gazapps.mcp.MCPService - ✅ Servidor 'filesystem' conectado com sucesso! Ferramentas: 12
+2025-09-13 14:26:46.735 [main] INFO  com.gazapps.mcp.MCPService - MCPService inicialized: 6/6 servers conected - logs in JavaCLI/log/mcp-operations.log
+2025-09-13 14:26:46.745 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: mcp-server-time
+2025-09-13 14:26:46.746 [main] DEBUG com.gazapps.mcp.rules.RuleEngine - Loaded rules for server: server-filesystem
+2025-09-13 14:26:46.746 [main] INFO  com.gazapps.mcp.rules.RuleEngine - Loaded rules for 2 servers
+2025-09-13 14:26:46.750 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager inicializado com sucesso - logs em JavaCLI/log/
+2025-09-13 14:27:17.076 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs in JavaCLI/log/inference/simple-conversations.log
+2025-09-13 14:27:17.076 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Qual a estrela do sistema solar?
+2025-09-13 14:27:18.579 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:18.579 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-227f12cb-616f-4082-8d0b-a2956c837ae3","object":"chat.completion","created":1757784442,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"execution\": \"DIRECT_ANSWER\", \"reasoning\": \"A query sobre a estrela do sistema solar pode ser respondida utilizando conhecimento existente sobre o Sol, que é a estrela central do nosso sistema solar, sem necessidade de ferramentas ou dados externos.\")"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268031365,"prompt_tokens":233,"prompt_time":0.025374911,"completion_tokens":61,"completion_time":0.185464375,"total_tokens":294,"total_time":0.210839286},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521w19tebp8n82n5d8fvpjx"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:18.589 [main] DEBUG com.gazapps.inference.simple.Simple - Generating direct LLM response
+2025-09-13 14:27:19.439 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:19.440 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-548d987b-483a-469b-bd7f-66a2d57ccad8","object":"chat.completion","created":1757784443,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"A estrela do nosso sistema solar é o Sol. O Sol é uma estrela amarela-anã, que é o centro do nosso sistema solar e serve como a principal fonte de luz e calor para os planetas. Ele é uma esfera de plasma incrivelmente quente, composta principalmente por hidrogênio e hélio, e é mantido estável pela fusão nuclear no seu núcleo. O Sol é essencial para a vida na Terra e influencia os climas e órbitas dos planetas no sistema solar."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270277171,"prompt_tokens":52,"prompt_time":0.011485399,"completion_tokens":121,"completion_time":0.357829348,"total_tokens":173,"total_time":0.369314747},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521w1znf43vakaagx2fqzbs"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:19.444 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-13 14:27:39.440 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs in JavaCLI/log/inference/simple-conversations.log
+2025-09-13 14:27:39.441 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Que horas são em Salvador,BA ?
+2025-09-13 14:27:40.059 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:40.059 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-e8a9edc7-4492-404a-8a69-f4acbd7430ac","object":"chat.completion","created":1757784464,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"execution\": \"SINGLE_TOOL\", \"reasoning\": \"The query requires real-time or current data about the time in Salvador, BA, which typically involves accessing an external tool or data source that provides time zone information or current time.”}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269895748,"prompt_tokens":232,"prompt_time":0.03232751,"completion_tokens":50,"completion_time":0.181441978,"total_tokens":282,"total_time":0.213769488},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521wp99f43s9fsdn5vjzxg4"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:40.062 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Que horas são em Salvador,BA ?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:27:40.598 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:40.598 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-f312cf03-f00c-4dda-9cbf-e1946372b106","object":"chat.completion","created":1757784464,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"weather\": 0.0, \"time\": 1.0, \"math\": 0.0, \"filesystem\": 0.0, \"internet\": 0.0}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268180319,"prompt_tokens":180,"prompt_time":0.020899587,"completion_tokens":41,"completion_time":0.058190967,"total_tokens":221,"total_time":0.079090554},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521wpy9e50sk7y1z92ek7v2"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:40.598 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 1.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:27:40.604 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que horas são em Salvador,BA ?': {time=1.0}
+2025-09-13 14:27:41.166 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:41.166 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-9a429a1b-7781-4299-bb73-7cadb1959367","object":"chat.completion","created":1757784465,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"tool_number\": 1,\n  \"parameters\": {\"timezone\": \"America/Bahia\"}\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268792345,"prompt_tokens":396,"prompt_time":0.036279834,"completion_tokens":28,"completion_time":0.07887422,"total_tokens":424,"total_time":0.115154054},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521wqd7f43tpq95kang09f8"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:41.168 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Que horas são em Salvador,BA ?'
+2025-09-13 14:27:41.179 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: get_current_time with parameters: {timezone=America/Bahia}
+2025-09-13 14:27:41.943 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:27:41.943 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-e36221b8-4e75-40da-89e1-27750283c2e7","object":"chat.completion","created":1757784466,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"Atualmente, em Salvador, Bahia, são 14h27min. A cidade está no fuso horário America/Bahia, e não está em horário de verão. A informação foi atualizada em 13 de setembro de 2025."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268601335,"prompt_tokens":129,"prompt_time":0.017355621,"completion_tokens":57,"completion_time":0.176104996,"total_tokens":186,"total_time":0.193460617},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521wr4ce50t5skzxpcqgcza"},"service_tier":"on_demand"}
+
+2025-09-13 14:27:41.945 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-13 14:28:08.079 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs in JavaCLI/log/inference/simple-conversations.log
+2025-09-13 14:28:08.079 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Que horas são em Denver, CO?
+2025-09-13 14:28:08.722 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:08.722 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-d50ab0ee-8458-4a76-a9a0-237e46a6d645","object":"chat.completion","created":1757784492,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"execution\": \"SINGLE_TOOL\", \"reasoning\": \"The query requires real-time data about the current time in Denver, CO, which is beyond static knowledge and necessitates access to a time zone or world clock tool.\"}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270784349,"prompt_tokens":232,"prompt_time":0.025401597,"completion_tokens":48,"completion_time":0.181957221,"total_tokens":280,"total_time":0.207358818},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521xj9be51rk5hafct26m4z"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:08.722 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Que horas são em Denver, CO?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:28:09.210 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:09.210 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-eb8cb655-87c4-420b-9cab-7852c45af9d7","object":"chat.completion","created":1757784493,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"weather\": 0.0, \"time\": 1.0, \"math\": 0.0, \"filesystem\": 0.0, \"internet\": 0.0}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.274665558,"prompt_tokens":179,"prompt_time":0.015940818,"completion_tokens":41,"completion_time":0.058771454,"total_tokens":220,"total_time":0.074712272},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521xjwhebrs90901vwv75k8"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:09.211 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 0.0, "time": 1.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:28:09.212 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Que horas são em Denver, CO?': {time=1.0}
+2025-09-13 14:28:09.728 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:09.728 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-fb9431e2-ae13-484e-892f-46935a39f6bd","object":"chat.completion","created":1757784493,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"tool_number\": 1,\n  \"parameters\": {\"timezone\": \"America/Denver\"}\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269286464,"prompt_tokens":395,"prompt_time":0.036363561,"completion_tokens":28,"completion_time":0.067359381,"total_tokens":423,"total_time":0.103722942},"usage_breakdown":null,"system_fingerprint":"fp_3f3b593e33","x_groq":{"id":"req_01k521xkbte51sr7byr4f5n2tb"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:09.729 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Que horas são em Denver, CO?'
+2025-09-13 14:28:09.729 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: get_current_time with parameters: {timezone=America/Denver}
+2025-09-13 14:28:10.277 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:10.278 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-e6a00205-ecae-4448-aefd-c69f5e411e7b","object":"chat.completion","created":1757784494,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"Atualmente, em Denver, CO, são 11:28 da manhã, considerando o fuso horário America/Denver, que está no horário de verão."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.272097009,"prompt_tokens":129,"prompt_time":0.017256291,"completion_tokens":40,"completion_time":0.126344446,"total_tokens":169,"total_time":0.143600737},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521xkvtf44rpn9s3q9hr6eq"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:10.278 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-13 14:28:36.031 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs in JavaCLI/log/inference/simple-conversations.log
+2025-09-13 14:28:36.031 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Qual a diferença de fusos entre Denver,CO e Salvador, BA ?
+2025-09-13 14:28:36.830 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:36.830 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-450224d8-e84c-4877-be99-8230cc87bc27","object":"chat.completion","created":1757784520,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"execution\": \"DIRECT_ANSWER\", \"reasoning\": \"A query about time zone differences can be answered using existing geographical knowledge without needing external tools or real-time data, as time zones are generally static information.\"}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270808446,"prompt_tokens":241,"prompt_time":0.02604926,"completion_tokens":45,"completion_time":0.128518868,"total_tokens":286,"total_time":0.154568128},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521ydqte55993agz6gcda57"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:36.831 [main] DEBUG com.gazapps.inference.simple.Simple - Generating direct LLM response
+2025-09-13 14:28:38.351 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:28:38.351 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-32298bc7-ee43-47e0-811c-fea49f3dfbb0","object":"chat.completion","created":1757784522,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"A diferença de fusos horários entre Denver, Colorado (EUA) e Salvador, Bahia (Brasil) depende do período do ano devido às regras de horário de verão em ambos os lugares.\n\nNo geral, aqui estão as principais diferenças de fusos horários entre essas cidades:\n\n1. **Horário Padrão:**\n   - Denver, Colorado: UTC-7 (Horário das Montanhas, MST - Mountain Standard Time)\n   - Salvador, Bahia: UTC-3 (Horário de Brasília, BRT - Brasília Time)\n\nNesse caso, a diferença de fuso horário é de 4 horas, com Salvador estando à frente.\n\n2. **Horário de Verão:**\n   - Denver, Colorado: UTC-6 (Horário de Verão das Montanhas, MDT - Mountain Daylight Time) - Normalmente, de segunda-feira, a seguir ao segundo domingo de março até o primeiro domingo de novembro.\n   - Salvador, Bahia: Não observa horário de verão.\n\nDurante o período de horário de verão nos EUA, a diferença de fuso horário entre Denver e Salvador seria de 3 horas, com Salvador estando à frente.\n\nÉ importante notar que essas diferenças podem variar anualmente, dependendo das datas exatas em que o horário de verão começa e termina nos EUA, bem como de qualquer alteração nas políticas de horário de verão em ambos os países. Além disso, a Bahia, no Brasil, não adota o horário de verão, mantendo o UTC-3 durante todo o ano."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.269506311,"prompt_tokens":60,"prompt_time":0.019060749,"completion_tokens":366,"completion_time":1.069848279,"total_tokens":426,"total_time":1.088909028},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k521yeb6f459swys4kqtc94h"},"service_tier":"on_demand"}
+
+2025-09-13 14:28:38.353 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-13 14:29:42.639 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Initialized with LLM: GROQ - logs in JavaCLI/log/inference/simple-conversations.log
+2025-09-13 14:29:42.640 [main] DEBUG com.gazapps.inference.simple.Simple - Processing query: Qual o clima em Dallas, TX?
+2025-09-13 14:29:43.242 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:29:43.242 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-3895be70-83fa-4d55-b36b-533ea13941cd","object":"chat.completion","created":1757784587,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"execution\": \"SINGLE_TOOL\", \"reasoning\": \"The query requires real-time or frequently updated information about the current weather in Dallas, TX, which typically involves accessing a weather API or database, thus necessitating an external tool.\"}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270659953,"prompt_tokens":233,"prompt_time":0.036045642,"completion_tokens":50,"completion_time":0.14805093,"total_tokens":283,"total_time":0.184096572},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k5220ekqebwvdgee5yd1b7fe"},"service_tier":"on_demand"}
+
+2025-09-13 14:29:43.243 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering prompt: Analyze the query and determine relevance scores:
+
+Query: "Qual o clima em Dallas, TX?"
+
+Domains:
+1. weather - Informações meteorológicas e previsões do tempo
+2. time - Date, time, timezone operations
+3. math - Operações matemáticas e cálculos
+4. filesystem - filesystem Operations
+5. internet - Operações de busca web e feeds RSS
+DO NOT EXPLAIN ANYTHING
+Answer in JSON with scores 0.0-1.0:
+{"weather": 0.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:29:43.708 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:29:43.708 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-da2c65d1-c91a-4604-9063-92f8aa115f93","object":"chat.completion","created":1757784587,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"{\"weather\": 1.0, \"time\": 0.0, \"math\": 0.0, \"filesystem\": 0.0, \"internet\": 0.0}"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.268730322,"prompt_tokens":180,"prompt_time":0.020916375,"completion_tokens":41,"completion_time":0.069188321,"total_tokens":221,"total_time":0.090104696},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k5220f5he5b91z712dgp39xg"},"service_tier":"on_demand"}
+
+2025-09-13 14:29:43.709 [main] DEBUG com.gazapps.mcp.DomainRegistry - Domain filtering response: {"weather": 1.0, "time": 0.0, "math": 0.0, "filesystem": 0.0, "internet": 0.0}
+2025-09-13 14:29:43.709 [main] INFO  com.gazapps.mcp.DomainRegistry - Domain scores for 'Qual o clima em Dallas, TX?': {weather=1.0}
+2025-09-13 14:29:44.228 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:29:44.228 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-6ccfe9ff-a2aa-4b88-b9f6-6f6b8819666b","object":"chat.completion","created":1757784588,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"```\n{\n  \"tool_number\": 1,\n  \"parameters\": {\n    \"latitude\": 32.7763,\n    \"longitude\": -96.7970\n  }\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.270085413,"prompt_tokens":242,"prompt_time":0.026345466,"completion_tokens":41,"completion_time":0.089597382,"total_tokens":283,"total_time":0.115942848},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k5220fm6f46a4mcs7d6bs553"},"service_tier":"on_demand"}
+
+2025-09-13 14:29:44.229 [main] DEBUG com.gazapps.mcp.MCPManager - Encontradas 1 ferramentas single-step para query: 'Qual o clima em Dallas, TX?'
+2025-09-13 14:29:44.230 [main] DEBUG com.gazapps.inference.simple.Simple - Executing single tool: get-forecast with parameters: {latitude=32.7763, longitude=-96.797}
+2025-09-13 14:29:47.251 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response status: 200
+2025-09-13 14:29:47.251 [main] DEBUG com.gazapps.llm.providers.Groq - Groq response body: {"id":"chatcmpl-b302fd83-c05b-461a-86d4-72fecaed1d8a","object":"chat.completion","created":1757784591,"model":"llama-3.3-70b-versatile","choices":[{"index":0,"message":{"role":"assistant","content":"O clima em Dallas, TX está previsto para ser bastante ensolarado nos próximos dias. Nesta tarde, a temperatura deve chegar a 95°F, com ventos de 5 a 10 mph vindo do sudeste e céu mostly sunny. À noite, a temperatura cairá para 74°F, com ventos de 5 a 10 mph vindo do sudeste e céu partly cloudy.\n\nPara o domingo, a previsão é de temperatura de 94°F, com ventos de 5 a 10 mph vindo do sul e céu mostly sunny. À noite, a temperatura cairá para 75°F, com ventos de 5 mph vindo do sudeste e céu partly cloudy.\n\nNos dias subsequentes, a temperatura deve manter-se em torno dos 90°F, com céu mostly sunny ou sunny durante o dia e partly cloudy ou mostly clear à noite. É importante notar que na quinta-feira há uma ligeira chance de chuvas e tempestades, com temperatura de 91°F e ventos de 5 mph vindo do sul.\n\nEm resumo, o clima em Dallas, TX deve ser quente e ensolarado nos próximos dias, com temperaturas acima dos 90°F e céu mostly sunny ou sunny durante o dia. É sempre uma boa ideia verificar a previsão do tempo novamente antes de planejar qualquer atividade ao ar livre."},"logprobs":null,"finish_reason":"stop"}],"usage":{"queue_time":0.279344785,"prompt_tokens":423,"prompt_time":0.036795453,"completion_tokens":314,"completion_time":0.781225071,"total_tokens":737,"total_time":0.818020524},"usage_breakdown":null,"system_fingerprint":"fp_2ddfbb0da0","x_groq":{"id":"req_01k5220hwxf46bk5cj38hhtc0s"},"service_tier":"on_demand"}
+
+2025-09-13 14:29:47.254 [main] DEBUG com.gazapps.inference.simple.Simple - [SIMPLE] Inference strategy closed - logs salvos em JavaCLI/log/inference/
+2025-09-13 14:38:58.262 [main] INFO  com.gazapps.mcp.MCPManager - Fechando MCPManager...
+2025-09-13 14:38:58.262 [main] INFO  com.gazapps.mcp.MCPService - Fechando MCPService...
+2025-09-13 14:38:58.266 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'web-fetch' desconectado
+2025-09-13 14:38:58.266 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'calculator' desconectado
+2025-09-13 14:38:58.267 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'time' desconectado
+2025-09-13 14:38:58.267 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'weather-nws' desconectado
+2025-09-13 14:38:58.268 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'rss-feeds' desconectado
+2025-09-13 14:38:58.269 [main] INFO  com.gazapps.mcp.MCPService - Servidor 'filesystem' desconectado
+2025-09-13 14:38:58.269 [main] INFO  com.gazapps.mcp.MCPService - MCPService fechado
+2025-09-13 14:38:58.285 [main] INFO  com.gazapps.mcp.MCPConfig - Configuration saved successfully
+2025-09-13 14:38:58.285 [main] INFO  com.gazapps.mcp.MCPManager - MCPManager fechado com sucesso

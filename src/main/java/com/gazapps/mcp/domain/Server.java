@@ -14,7 +14,6 @@ public class Server {
     private final int priority;
     private final boolean enabled;
     
-    // Estado dinâmico
     private boolean connected;
     private String domain;
     private final Map<String, Tool> tools;
@@ -32,7 +31,6 @@ public class Server {
         this.priority = priority;
         this.enabled = enabled;
         
-        // Estado inicial
         this.connected = false;
         this.tools = new HashMap<>();
         this.lastHeartbeat = null;
@@ -99,8 +97,7 @@ public class Server {
         }
     }
     
-    // Getters básicos
-    
+
     public String getId() {
         return id;
     }
@@ -132,9 +129,7 @@ public class Server {
     public boolean isEnabled() {
         return enabled;
     }
-    
-    // Estado dinâmico
-    
+
     public boolean isConnected() {
         return connected;
     }

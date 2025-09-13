@@ -3,9 +3,7 @@ package com.gazapps.chat;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Formatação de saída para o chat.
- */
+
 public class ChatFormatter {
     
     private static final String THINKING_ICON = "🤔";

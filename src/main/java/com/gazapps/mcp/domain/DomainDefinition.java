@@ -4,10 +4,6 @@ import java.util.*;
 
 import com.gazapps.llm.Llm;
 
-/**
- * Definição de domínio que encapsula padrões de texto, palavras-chave semânticas
- * e capacidades de matching inteligente usando LLM.
- */
 public class DomainDefinition {
     
     private final String name;
@@ -22,10 +18,7 @@ public class DomainDefinition {
         this.semanticKeywords = semanticKeywords != null ? new ArrayList<>(semanticKeywords) : new ArrayList<>();
     }
     
-    /**
-     * Builder para criar instâncias DomainDefinition de forma fluida.
-     */
-    public static Builder builder() {
+     public static Builder builder() {
         return new Builder();
     }
     
@@ -54,9 +47,7 @@ public class DomainDefinition {
             this.patterns.add(pattern);
             return this;
         }
-        
 
-        
         public Builder semanticKeywords(List<String> semanticKeywords) {
             this.semanticKeywords = new ArrayList<>(semanticKeywords);
             return this;
@@ -74,8 +65,7 @@ public class DomainDefinition {
         }
     }
     
-    // Getters básicos
-    
+     
     public String getName() {
         return name;
     }
@@ -94,17 +84,11 @@ public class DomainDefinition {
         return List.copyOf(semanticKeywords);
     }
     
-
-    
-    // Métodos de modificação
-    
     public void addPattern(String pattern) {
         if (pattern != null && !pattern.trim().isEmpty() && !patterns.contains(pattern.trim())) {
             patterns.add(pattern.trim().toLowerCase());
         }
     }
-    
-
     
     public void addSemanticKeyword(String keyword) {
         if (keyword != null && !keyword.trim().isEmpty() && !semanticKeywords.contains(keyword.trim())) {
@@ -112,25 +96,17 @@ public class DomainDefinition {
         }
     }
     
-    // Métodos de matching
-    
     public boolean containsPattern(String pattern) {
         if (pattern == null) return false;
         return patterns.contains(pattern.trim().toLowerCase());
     }
     
-
-    
-    /**
-     * Calcula similaridade baseada em padrões de texto usando matching simples.
-     */
     public double calculatePatternMatch(String query) {
         if (query == null || query.trim().isEmpty()) return 0.0;
         
         String normalizedQuery = query.trim().toLowerCase();
         double maxScore = 0.0;
         
-        // Verificar padrões exatos
         for (String pattern : patterns) {
             if (normalizedQuery.contains(pattern)) {
                 double score = (double) pattern.length() / normalizedQuery.length();
@@ -138,21 +114,16 @@ public class DomainDefinition {
             }
         }
         
-        // Verificar palavras-chave semânticas
         for (String keyword : semanticKeywords) {
             if (normalizedQuery.contains(keyword)) {
                 double score = (double) keyword.length() / normalizedQuery.length();
-                maxScore = Math.max(maxScore, score * 0.8); // Peso menor para keywords
+                maxScore = Math.max(maxScore, score * 0.8); 
             }
         }
         
         return Math.min(1.0, maxScore);
     }
     
-    /**
-     * Calcula similaridade semântica usando LLM.
-     * Este método deve ser usado quando matching simples não for suficiente.
-     */
     public double calculateSemanticMatch(String query, Llm llm) {
         if (query == null || query.trim().isEmpty() || llm == null) {
             return calculatePatternMatch(query);
@@ -171,8 +142,6 @@ public class DomainDefinition {
         
         return calculatePatternMatch(query);
     }
-    
-    // Métodos de serialização/deserialização
     
     public Map<String, Object> toConfigMap() {
         Map<String, Object> config = new HashMap<>();
@@ -195,8 +164,6 @@ public class DomainDefinition {
         return new DomainDefinition(name, description, patterns, semanticKeywords);
     }
     
-    // Métodos privados auxiliares
-    
     private String createSemanticMatchingPrompt(String query) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("Analise se a seguinte query está relacionada ao domínio '").append(name).append("'.\n\n");
@@ -212,14 +179,12 @@ public class DomainDefinition {
         if (llmResponse == null) return 0.0;
         
         try {
-            // Tentar extrair o primeiro número decimal da resposta
-            String cleaned = llmResponse.trim().replaceAll("[^0-9.]", "");
+             String cleaned = llmResponse.trim().replaceAll("[^0-9.]", "");
             if (!cleaned.isEmpty()) {
                 double score = Double.parseDouble(cleaned);
-                return Math.max(0.0, Math.min(1.0, score)); // Garantir que está entre 0 e 1
+                return Math.max(0.0, Math.min(1.0, score)); 
             }
         } catch (NumberFormatException e) {
-            // Fallback: procurar por palavras indicativas de alta/baixa relevância
             String response = llmResponse.toLowerCase();
             if (response.contains("alta") || response.contains("muito") || response.contains("sim")) {
                 return 0.8;

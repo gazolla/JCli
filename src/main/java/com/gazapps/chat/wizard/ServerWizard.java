@@ -1,9 +1,13 @@
 package com.gazapps.chat.wizard;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
 import com.gazapps.mcp.MCPConfig;
 import com.gazapps.mcp.MCPManager;
-import com.gazapps.mcp.domain.DomainDefinition;
-import java.util.*;
 
 public class ServerWizard {
     private final Scanner scanner;
@@ -20,59 +24,59 @@ public class ServerWizard {
         try {
             printHeader();
             
-            // Etapa 1: Info básica
+            // Step 1: Basic Info
             String serverId = collectServerId();
             if (serverId == null) return false;
             
             String description = collectDescription();
             
-            // Etapa 2: Comando
+            // Step 2: Command
             String command = collectAndValidateCommand();
             if (command == null) return false;
             
-            // Etapa 3: Domínio
+            // Step 3: Domain
             String domain = selectOrCreateDomain();
             if (domain == null) return false;
             
-            // Etapa 4: Opções
+            // Step 4: Options
             int priority = collectPriority();
             
-            // Etapa 5: Ambiente (auto-detectado)
+            // Step 5: Environment (auto-detected)
             Map<String, String> env = detectEnvironment(command);
             
-            // Etapa 6: Confirmação
+            // Step 6: Confirmation
             return confirmAndCreateServer(serverId, description, command, domain, priority, env);
             
         } catch (Exception e) {
-            System.out.println("❌ Erro durante wizard: " + e.getMessage());
+            System.out.println("❌ Error during wizard: " + e.getMessage());
             return false;
         }
     }
     
     private void printHeader() {
-        System.out.println("\n🚀 Assistente para Adicionar Servidor MCP\n");
+        System.out.println("\n🚀 MCP Server Addition Wizard\n");
     }
     
     private String collectServerId() {
-        System.out.println("📝 Etapa 1/6 - Informações Básicas");
+        System.out.println("📝 Step 1/6 - Basic Information");
         System.out.println("━".repeat(40));
         
         while (true) {
-            System.out.print("ID do servidor (único): ");
+            System.out.print("Server ID (unique): ");
             String id = scanner.nextLine().trim();
             
             if (id.isEmpty()) {
-                System.out.println("❌ ID não pode ser vazio");
+                System.out.println("❌ ID cannot be empty");
                 continue;
             }
             
             if (config.getServerConfig(id) != null) {
-                System.out.println("❌ Servidor já existe: " + id);
+                System.out.println("❌ Server already exists: " + id);
                 continue;
             }
             
             if (!id.matches("[a-zA-Z0-9_-]+")) {
-                System.out.println("❌ Use apenas letras, números, _ ou -");
+                System.out.println("❌ Use only letters, numbers, _ or -");
                 continue;
             }
             
@@ -81,21 +85,21 @@ public class ServerWizard {
     }
     
     private String collectDescription() {
-        System.out.print("Descrição: ");
+        System.out.print("Description: ");
         String desc = scanner.nextLine().trim();
-        return desc.isEmpty() ? "Servidor MCP customizado" : desc;
+        return desc.isEmpty() ? "Custom MCP Server" : desc;
     }
     
     private String collectAndValidateCommand() {
-        System.out.println("\n📝 Etapa 2/6 - Comando de Execução");
+        System.out.println("\n📝 Step 2/6 - Execution Command");
         System.out.println("━".repeat(40));
         
         while (true) {
-            System.out.print("Comando: ");
+            System.out.print("Command: ");
             String command = scanner.nextLine().trim();
             
             if (command.isEmpty()) {
-                System.out.println("❌ Comando não pode ser vazio");
+                System.out.println("❌ Command cannot be empty");
                 continue;
             }
             
@@ -103,8 +107,8 @@ public class ServerWizard {
                 return command;
             }
             
-            System.out.print("Tentar outro comando? (s/N): ");
-            if (!scanner.nextLine().toLowerCase().startsWith("s")) {
+            System.out.print("Try another command? (y/N): ");
+            if (!scanner.nextLine().toLowerCase().startsWith("y")) {
                 return null;
             }
         }
@@ -113,14 +117,14 @@ public class ServerWizard {
     private boolean validateCommand(String command) {
         String mainCommand = getMainCommand(command);
         
-        System.out.printf("🔍 Verificando comando '%s'... ", mainCommand);
+        System.out.printf("🔍 Checking command '%s'... ", mainCommand);
         
         if (!isCommandAvailable(mainCommand)) {
-            System.out.println("❌ Não disponível");
+            System.out.println("❌ Not available");
             return false;
         }
         
-        System.out.println("✅ Disponível");
+        System.out.println("✅ Available");
         return true;
     }
     
@@ -154,19 +158,19 @@ public class ServerWizard {
     }
     
     private String selectOrCreateDomain() {
-        System.out.println("\n📝 Etapa 3/6 - Domínio");
+        System.out.println("\n📝 Step 3/6 - Domain");
         System.out.println("━".repeat(40));
         
         List<String> domains = mcpManager.getAvailableDomains();
         
-        System.out.println("Domínios existentes:");
+        System.out.println("Existing domains:");
         for (int i = 0; i < domains.size(); i++) {
             System.out.printf("[%d] %s%n", i + 1, domains.get(i));
         }
-        System.out.printf("[%d] 🆕 Criar novo domínio%n", domains.size() + 1);
+        System.out.printf("[%d] 🆕 Create new domain%n", domains.size() + 1);
         
         while (true) {
-            System.out.printf("Selecione domínio (1-%d): ", domains.size() + 1);
+            System.out.printf("Select domain (1-%d): ", domains.size() + 1);
             try {
                 int choice = Integer.parseInt(scanner.nextLine().trim());
                 
@@ -175,52 +179,52 @@ public class ServerWizard {
                 } else if (choice == domains.size() + 1) {
                     return createNewDomain();
                 } else {
-                    System.out.println("❌ Opção inválida");
+                    System.out.println("❌ Invalid option");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("❌ Digite um número válido");
+                System.out.println("❌ Enter a valid number");
             }
         }
     }
     
     private String createNewDomain() {
         while (true) {
-            System.out.print("Nome do novo domínio: ");
+            System.out.print("New domain name: ");
             String name = scanner.nextLine().trim().toLowerCase();
             
             if (name.isEmpty()) {
-                System.out.println("❌ Nome não pode ser vazio");
+                System.out.println("❌ Name cannot be empty");
                 continue;
             }
             
             if (!name.matches("[a-zA-Z0-9_-]+")) {
-                System.out.println("❌ Use apenas letras, números, _ ou -");
+                System.out.println("❌ Use only letters, numbers, _ or -");
                 continue;
             }
             
             if (mcpManager.getAvailableDomains().contains(name)) {
-                System.out.println("❌ Domínio já existe");
+                System.out.println("❌ Domain already exists");
                 continue;
             }
             
-            System.out.print("Descrição do domínio: ");
+            System.out.print("Domain description: ");
             String description = scanner.nextLine().trim();
             if (description.isEmpty()) {
-                description = "Domínio " + name;
+                description = "Domain " + name;
             }
             
-            // Salvar novo domínio
+            // Save new domain
             config.updateDomainsIfNeeded(name, description);
             return name;
         }
     }
     
     private int collectPriority() {
-        System.out.println("\n📝 Etapa 4/6 - Configurações");
+        System.out.println("\n📝 Step 4/6 - Settings");
         System.out.println("━".repeat(40));
         
         while (true) {
-            System.out.print("Prioridade (1=alta, 5=baixa) [2]: ");
+            System.out.print("Priority (1=high, 5=low) [2]: ");
             String input = scanner.nextLine().trim();
             
             if (input.isEmpty()) {
@@ -232,16 +236,16 @@ public class ServerWizard {
                 if (priority >= 1 && priority <= 5) {
                     return priority;
                 } else {
-                    System.out.println("❌ Prioridade deve ser entre 1 e 5");
+                    System.out.println("❌ Priority must be between 1 and 5");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("❌ Digite um número válido");
+                System.out.println("❌ Enter a valid number");
             }
         }
     }
     
     private Map<String, String> detectEnvironment(String command) {
-        System.out.println("\n📝 Etapa 5/6 - Ambiente (auto-detectado)");
+        System.out.println("\n📝 Step 5/6 - Environment (auto-detected)");
         System.out.println("━".repeat(40));
         
         Map<String, String> env = new HashMap<>();
@@ -251,25 +255,25 @@ public class ServerWizard {
             case "uvx" -> {
                 env.put("REQUIRES_UVX", "true");
                 env.put("REQUIRES_PYTHON", "true");
-                System.out.println("🐍 Detectado: Python/uvx");
+                System.out.println("🐍 Detected: Python/uvx");
             }
             case "npx" -> {
                 env.put("REQUIRES_NODEJS", "true");
-                System.out.println("📦 Detectado: Node.js/npx");
+                System.out.println("📦 Detected: Node.js/npx");
                 if (command.contains("@")) {
                     env.put("REQUIRES_ONLINE", "true");
-                    System.out.println("🌐 Detectado: Requer internet");
+                    System.out.println("🌐 Detected: Requires internet");
                 }
             }
             case "python", "python3" -> {
                 env.put("REQUIRES_PYTHON", "true");
-                System.out.println("🐍 Detectado: Python");
+                System.out.println("🐍 Detected: Python");
             }
             case "node" -> {
                 env.put("REQUIRES_NODEJS", "true");
-                System.out.println("📦 Detectado: Node.js");
+                System.out.println("📦 Detected: Node.js");
             }
-            default -> System.out.println("❓ Ambiente não reconhecido");
+            default -> System.out.println("❓ Environment not recognized");
         }
         
         return env;
@@ -277,22 +281,22 @@ public class ServerWizard {
     
     private boolean confirmAndCreateServer(String serverId, String description, String command, 
                                          String domain, int priority, Map<String, String> env) {
-        System.out.println("\n📝 Etapa 6/6 - Confirmação");
+        System.out.println("\n📝 Step 6/6 - Confirmation");
         System.out.println("━".repeat(40));
         
-        System.out.println("\n📋 Resumo da Configuração:");
+        System.out.println("\n📋 Configuration Summary:");
         System.out.println("┏" + "━".repeat(42) + "┓");
         System.out.printf("┃ ID: %-35s ┃%n", serverId);
-        System.out.printf("┃ Comando: %-30s ┃%n", limitString(command, 30));
-        System.out.printf("┃ Domínio: %-30s ┃%n", domain);
-        System.out.printf("┃ Prioridade: %d | Habilitado: Sim      ┃%n", priority);
-        System.out.printf("┃ Ambiente: %-27s ┃%n", limitString(String.join(", ", env.keySet()), 27));
+        System.out.printf("┃ Command: %-30s ┃%n", limitString(command, 30));
+        System.out.printf("┃ Domain: %-30s ┃%n", domain);
+        System.out.printf("┃ Priority: %d | Enabled: Yes        ┃%n", priority);
+        System.out.printf("┃ Environment: %-27s ┃%n", limitString(String.join(", ", env.keySet()), 27));
         System.out.println("┗" + "━".repeat(42) + "┛");
         
-        System.out.print("\nConfirmar adição? (S/n): ");
+        System.out.print("\nConfirm addition? (Y/n): ");
         String confirm = scanner.nextLine().trim();
         
-        if (!confirm.isEmpty() && !confirm.toLowerCase().startsWith("s")) {
+        if (!confirm.isEmpty() && !confirm.toLowerCase().startsWith("y")) {
             return false;
         }
         
@@ -306,44 +310,44 @@ public class ServerWizard {
     private boolean createServer(String serverId, String description, String command,
                                String domain, int priority, Map<String, String> env) {
         try {
-            System.out.println("\n🔄 Adicionando servidor...");
+            System.out.println("\n🔄 Adding server...");
             
-            // Criar configuração
+            // Create configuration
             MCPConfig.ServerConfig serverConfig = new MCPConfig.ServerConfig(
                 serverId, description, command, Collections.emptyList(),
                 env, priority, true, domain
             );
             
-            System.out.println("  💾 Salvando em mcp.json");
+            System.out.println("  💾 Saving to mcp.json");
             config.addNewServer(serverId, serverConfig);
             
-            System.out.println("  🔌 Conectando servidor");
+            System.out.println("  🔌 Connecting server");
             boolean connected = mcpManager.getMcpService().connectServer(serverConfig);
             
             if (connected) {
-                System.out.println("  ✅ Tools adicionadas às coleções da LLM");
+                System.out.println("  ✅ Tools added to LLM collections");
                 return true;
             } else {
-                System.out.println("  ❌ Falha ao conectar servidor");
+                System.out.println("  ❌ Failed to connect server");
                 // Rollback
                 config.removeServer(serverId);
                 return false;
             }
             
         } catch (Exception e) {
-            System.out.println("  ❌ Erro: " + e.getMessage());
+            System.out.println("  ❌ Error: " + e.getMessage());
             return false;
         }
     }
     
     private Object getConfigFromManager(MCPManager mcpManager) {
         try {
-            // Usar reflection para acessar o campo config privado
+            // Use reflection to access private config field
             var field = mcpManager.getClass().getDeclaredField("config");
             field.setAccessible(true);
             return field.get(mcpManager);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao acessar configuração", e);
+            throw new RuntimeException("Error accessing configuration", e);
         }
     }
 }

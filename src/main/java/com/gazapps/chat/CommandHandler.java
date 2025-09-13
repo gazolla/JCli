@@ -13,307 +13,307 @@ import java.util.Map;
 
 public class CommandHandler {
 
-	private final ChatProcessor chatProcessor;
-	private final MCPManager mcpManager;
+    private final ChatProcessor chatProcessor;
+    private final MCPManager mcpManager;
 
-	public CommandHandler(ChatProcessor chatProcessor, MCPManager mcpManager) {
-		this.chatProcessor = chatProcessor;
-		this.mcpManager = mcpManager;
-	}
+    public CommandHandler(ChatProcessor chatProcessor, MCPManager mcpManager) {
+        this.chatProcessor = chatProcessor;
+        this.mcpManager = mcpManager;
+    }
 
-	public void handle(String command) {
-		String[] parts = command.substring(1).split("\\s+", 2);
-		String cmd = parts[0].toLowerCase();
-		String args = parts.length > 1 ? parts[1] : "";
+    public void handle(String command) {
+        String[] parts = command.substring(1).split("\\s+", 2);
+        String cmd = parts[0].toLowerCase();
+        String args = parts.length > 1 ? parts[1] : "";
 
-		switch (cmd) {
-		case "help" -> showHelp();
-		case "status" -> showStatus();
-		case "tools" -> showTools();
-		case "servers" -> showServers();
-		case "strategy" -> changeStrategy(args);
-		case "llm" -> changeLlm(args);
-		case "debug" -> toggleDebug();
-		case "clear" -> clearScreen();
-		case "disable" -> disableServer(args);
-		case "enable" -> enableServer(args);
-		case "addserver" -> addNewServer();
-		case "quit", "exit" -> System.exit(0);
-		default -> showUnknownCommand(cmd);
-		}
-	}
+        switch (cmd) {
+            case "help" -> showHelp();
+            case "status" -> showStatus();
+            case "tools" -> showTools();
+            case "servers" -> showServers();
+            case "strategy" -> changeStrategy(args);
+            case "llm" -> changeLlm(args);
+            case "debug" -> toggleDebug();
+            case "clear" -> clearScreen();
+            case "disable" -> disableServer(args);
+            case "enable" -> enableServer(args);
+            case "addserver" -> addNewServer();
+            case "quit", "exit" -> System.exit(0);
+            default -> showUnknownCommand(cmd);
+        }
+    }
 
-	private void changeLlm(String providerName) {
-		if (providerName.trim().isEmpty()) {
-			System.out.println("❌ LLM provider name required. Available: openai, claude, gemini, groq");
-			System.out.printf("   Current provider: %s%n", chatProcessor.getCurrentLlm().getProviderName());
-			return;
-		}
+    private void changeLlm(String providerName) {
+        if (providerName.trim().isEmpty()) {
+            System.out.println("❌ LLM provider name required. Available: openai, claude, gemini, groq");
+            System.out.printf("   Current provider: %s%n", chatProcessor.getCurrentLlm().getProviderName());
+            return;
+        }
 
-		String provider = providerName.toLowerCase().trim();
-		String currentProvider = chatProcessor.getCurrentLlm().getProviderName().toString().toLowerCase();
+        String provider = providerName.toLowerCase().trim();
+        String currentProvider = chatProcessor.getCurrentLlm().getProviderName().toString().toLowerCase();
 
-		if (currentProvider.equals(provider)) {
-			System.out.printf("✅ Already using %s%n", provider);
-			return;
-		}
+        if (currentProvider.equals(provider)) {
+            System.out.printf("✅ Already using %s%n", provider);
+            return;
+        }
 
-		try {
-			System.out.printf("🔄 Switching from %s to %s...%n", currentProvider, provider);
+        try {
+            System.out.printf("🔄 Switching from %s to %s...%n", currentProvider, provider);
 
-			Llm newLlm = switch (provider) {
-			case "openai" -> LlmBuilder.openai(null);
-			case "claude" -> LlmBuilder.claude(null);
-			case "gemini" -> LlmBuilder.gemini(null);
-			case "groq" -> LlmBuilder.groq(null);
-			default -> {
-				System.out.printf("❌ Unknown LLM provider: %s%n", provider);
-				System.out.println("   Available providers: openai, claude, gemini, groq");
-				yield null;
-			}
-			};
+            Llm newLlm = switch (provider) {
+                case "openai" -> LlmBuilder.openai(null);
+                case "claude" -> LlmBuilder.claude(null);
+                case "gemini" -> LlmBuilder.gemini(null);
+                case "groq" -> LlmBuilder.groq(null);
+                default -> {
+                    System.out.printf("❌ Unknown LLM provider: %s%n", provider);
+                    System.out.println("   Available providers: openai, claude, gemini, groq");
+                    yield null;
+                }
+            };
 
-			if (newLlm != null) {
-				boolean success = chatProcessor.changeLlm(newLlm);
+            if (newLlm != null) {
+                boolean success = chatProcessor.changeLlm(newLlm);
 
-				if (success) {
-					System.out.printf("✅ Successfully switched to %s%n", provider);
+                if (success) {
+                    System.out.printf("✅ Successfully switched to %s%n", provider);
 
-					System.out.printf("   Provider: %s%n", newLlm.getProviderName());
-					if (newLlm.getCapabilities() != null) {
-						System.out.printf("   Capabilities: %s%n", newLlm.getCapabilities());
-					}
-				} else {
-					System.out.println("❌ Failed to switch LLM provider");
-					System.out.printf("   Staying with %s%n", currentProvider);
-				}
-			}
+                    System.out.printf("   Provider: %s%n", newLlm.getProviderName());
+                    if (newLlm.getCapabilities() != null) {
+                        System.out.printf("   Capabilities: %s%n", newLlm.getCapabilities());
+                    }
+                } else {
+                    System.out.println("❌ Failed to switch LLM provider");
+                    System.out.printf("   Staying with %s%n", currentProvider);
+                }
+            }
 
-		} catch (Exception e) {
-			System.out.printf("❌ Error switching LLM: %s%n", e.getMessage());
-			System.out.printf("   Staying with %s%n", currentProvider);
-		}
-	}
+        } catch (Exception e) {
+            System.out.printf("❌ Error switching LLM: %s%n", e.getMessage());
+            System.out.printf("   Staying with %s%n", currentProvider);
+        }
+    }
 
-	private void showHelp() {
-		System.out.println("""
-				🔧 JCli Commands:
+    private void showHelp() {
+        System.out.println("""
+                🔧 JCli Commands:
 
-				/help                    - Show this help
-				/status                  - System status
-				/tools                   - List MCP tools
-				/servers                 - List MCP servers
-				/strategy <name>         - Change inference (simple|react|reflection)
-				/llm <provider>          - Change LLM provider (openai|claude|gemini|groq)
-				/disable [num]           - Disable server (removes tools from LLM)
-				/enable [num]            - Enable server (adds tools to LLM)
-				/addserver               - Add new MCP server (wizard)
-				/debug                   - Toggle debug mode
-				/clear                   - Clear screen
-				/quit                    - Exit
+                /help                    - Show this help
+                /status                  - System status
+                /tools                   - List MCP tools
+                /servers                 - List MCP servers
+                /strategy <name>         - Change inference (simple|react|reflection)
+                /llm <provider>          - Change LLM provider (openai|claude|gemini|groq)
+                /disable [num]           - Disable server (removes tools from LLM)
+                /enable [num]            - Enable server (adds tools to LLM)
+                /addserver               - Add new MCP server (wizard)
+                /debug                   - Toggle debug mode
+                /clear                   - Clear screen
+                /quit                    - Exit
 
-				💡 Just type your questions naturally!
-				""");
-	}
+                💡 Just type your questions naturally!
+                """);
+    }
 
-	private void showStatus() {
-		var servers = mcpManager.getConnectedServers();
-		var domains = mcpManager.getAvailableDomains();
+    private void showStatus() {
+        var servers = mcpManager.getConnectedServers();
+        var domains = mcpManager.getAvailableDomains();
 
-		System.out.printf("""
-				📊 System Status:
-				🖥️ Servers: %d connected
-				🛠️ Tools: Available across %d domains
-				🤖 LLM: %s
-				🧠 Strategy: %s
-				🔧 Debug: %s
-				⚡ Health: %s
-				%n""", servers.size(), domains.size(), chatProcessor.getCurrentLlm().getProviderName(),
-				chatProcessor.getCurrentStrategy().name().toLowerCase(), chatProcessor.isDebugMode() ? "ON" : "OFF",
-				mcpManager.isHealthy() ? "✅ Healthy" : "❌ Issues");
-	}
+        System.out.printf("""
+                📊 System Status:
+                🖥️ Servers: %d connected
+                🛠️ Tools: Available across %d domains
+                🤖 LLM: %s
+                🧠 Strategy: %s
+                🔧 Debug: %s
+                ⚡ Health: %s
+                %n""", servers.size(), domains.size(), chatProcessor.getCurrentLlm().getProviderName(),
+                chatProcessor.getCurrentStrategy().name().toLowerCase(), chatProcessor.isDebugMode() ? "ON" : "OFF",
+                mcpManager.isHealthy() ? "✅ Healthy" : "❌ Issues");
+    }
 
-	private void showTools() {
-		var domains = mcpManager.getAvailableDomains();
+    private void showTools() {
+        var domains = mcpManager.getAvailableDomains();
 
-		System.out.println("🔧 Available Tools:");
-		for (String domain : domains) {
-			var tools = mcpManager.getToolsByDomain(domain);
-			if (!tools.isEmpty()) {
-				System.out.printf("%n📁 %s Domain:%n", domain);
-				tools.forEach(tool -> System.out.printf("  • %s - %s%n", tool.getName(), tool.getDescription()));
-			}
-		}
-		System.out.println();
-	}
+        System.out.println("🔧 Available Tools:");
+        for (String domain : domains) {
+            var tools = mcpManager.getToolsByDomain(domain);
+            if (!tools.isEmpty()) {
+                System.out.printf("%n📁 %s Domain:%n", domain);
+                tools.forEach(tool -> System.out.printf("  • %s - %s%n", tool.getName(), tool.getDescription()));
+            }
+        }
+        System.out.println();
+    }
 
-	private void showServers() {
-		var servers = mcpManager.getConnectedServers();
+    private void showServers() {
+        var servers = mcpManager.getConnectedServers();
 
-		System.out.println("🖥️ MCP Servers:");
-		if (servers.isEmpty()) {
-			System.out.println("  No servers connected");
-		} else {
-			servers.values().forEach(server -> System.out.printf("  • %s (%s) - %d tools%n", server.getId(),
-					server.isHealthy() ? "✅" : "❌", server.getTools().size()));
-		}
-		System.out.println();
-	}
+        System.out.println("🖥️ MCP Servers:");
+        if (servers.isEmpty()) {
+            System.out.println("  No servers connected");
+        } else {
+            servers.values().forEach(server -> System.out.printf("  • %s (%s) - %d tools%n", server.getId(),
+                    server.isHealthy() ? "✅" : "❌", server.getTools().size()));
+        }
+        System.out.println();
+    }
 
-	private void changeStrategy(String strategyName) {
-		if (strategyName.trim().isEmpty()) {
-			System.out.println("❌ Strategy name required. Available: simple, react, reflection");
-			return;
-		}
+    private void changeStrategy(String strategyName) {
+        if (strategyName.trim().isEmpty()) {
+            System.out.println("❌ Strategy name required. Available: simple, react, reflection");
+            return;
+        }
 
-		try {
-			InferenceStrategy strategy = InferenceStrategy.fromString(strategyName);
-			chatProcessor.setCurrentStrategy(strategy);
-			System.out.printf("✅ Strategy changed to: %s%n", strategy.name().toLowerCase());
-		} catch (IllegalArgumentException e) {
-			System.out.println("❌ Invalid strategy. Available: simple, react, reflection");
-		}
-	}
+        try {
+            InferenceStrategy strategy = InferenceStrategy.fromString(strategyName);
+            chatProcessor.setCurrentStrategy(strategy);
+            System.out.printf("✅ Strategy changed to: %s%n", strategy.name().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("❌ Invalid strategy. Available: simple, react, reflection");
+        }
+    }
 
-	private void toggleDebug() {
-		boolean oldState = chatProcessor.isDebugMode();
-		boolean newState = chatProcessor.toggleDebug();
-		System.out.printf("🔧 Debug mode: %s → %s%n", oldState ? "ON" : "OFF", newState ? "ON" : "OFF");
-	}
+    private void toggleDebug() {
+        boolean oldState = chatProcessor.isDebugMode();
+        boolean newState = chatProcessor.toggleDebug();
+        System.out.printf("🔧 Debug mode: %s → %s%n", oldState ? "ON" : "OFF", newState ? "ON" : "OFF");
+    }
 
-	private void clearScreen() {
-		System.out.print("\\033[2J\\033[H");
-		System.out.flush();
-	}
+    private void clearScreen() {
+        System.out.print("\\033[2J\\033[H");
+        System.out.flush();
+    }
 
-	private void disableServer(String args) {
-		if (args.trim().isEmpty()) {
-			showServerListForAction("desabilitar", "disable");
-			return;
-		}
-		
-		try {
-			int serverIndex = Integer.parseInt(args.trim());
-			List<String> serverIds = getConnectedServerIds();
-			
-			if (serverIndex < 1 || serverIndex > serverIds.size()) {
-				System.out.println("❌ Número inválido");
-				return;
-			}
-			
-			String serverId = serverIds.get(serverIndex - 1);
-			
-			System.out.printf("🔄 Desabilitando servidor '%s'...%n", serverId);
-			
-			if (mcpManager.disableServer(serverId)) {
-				System.out.printf("✅ Servidor '%s' desabilitado com sucesso!%n", serverId);
-				System.out.println("   • Tools removidas das coleções da LLM");
-				System.out.println("   • Servidor desconectado");
-				System.out.println("   • mcp.json atualizado");
-			} else {
-				System.out.printf("❌ Falha ao desabilitar servidor '%s'%n", serverId);
-			}
-			
-		} catch (NumberFormatException e) {
-			System.out.println("❌ Use um número válido ou /disable sem argumentos para listar");
-		}
-	}
-	
-	private void enableServer(String args) {
-		if (args.trim().isEmpty()) {
-			showDisabledServers();
-			return;
-		}
-		
-		try {
-			int serverIndex = Integer.parseInt(args.trim());
-			List<String> disabledIds = mcpManager.getDisabledServerIds();
-			
-			if (serverIndex < 1 || serverIndex > disabledIds.size()) {
-				System.out.println("❌ Número inválido");
-				return;
-			}
-			
-			String serverId = disabledIds.get(serverIndex - 1);
-			
-			System.out.printf("🔄 Habilitando servidor '%s'...%n", serverId);
-			
-			if (mcpManager.enableServer(serverId)) {
-				System.out.printf("✅ Servidor '%s' habilitado com sucesso!%n", serverId);
-				System.out.println("   • Servidor conectado");
-				System.out.println("   • Tools adicionadas às coleções da LLM");
-				System.out.println("   • mcp.json atualizado");
-			} else {
-				System.out.printf("❌ Falha ao habilitar servidor '%s'%n", serverId);
-			}
-			
-		} catch (NumberFormatException e) {
-			System.out.println("❌ Use um número válido ou /enable sem argumentos para listar");
-		}
-	}
-	
-	private void showServerListForAction(String action, String command) {
-		Map<String, Server> servers = mcpManager.getConnectedServers();
-		
-		System.out.printf("🔧 Servidores Disponíveis para %s:%n%n", action);
-		
-		if (servers.isEmpty()) {
-			System.out.println("  Nenhum servidor conectado");
-			return;
-		}
-		
-		int index = 1;
-		for (Map.Entry<String, Server> entry : servers.entrySet()) {
-			String id = entry.getKey();
-			Server server = entry.getValue();
-			String status = server.isHealthy() ? "✅" : "❌";
-			
-			System.out.printf("[%d] %s (%s) - %d tools %s%n", 
-						 index++, id, server.getDomain(), 
-						 server.getTools().size(), status);
-		}
-		
-		System.out.printf("%nDigite /%s [número] para %s%n", command, action);
-	}
-	
-	private void showDisabledServers() {
-		List<String> disabledIds = mcpManager.getDisabledServerIds();
-		
-		System.out.println("🔧 Servidores Desabilitados:\n");
-		
-		if (disabledIds.isEmpty()) {
-			System.out.println("  Nenhum servidor desabilitado");
-			return;
-		}
-		
-		for (int i = 0; i < disabledIds.size(); i++) {
-			String id = disabledIds.get(i);
-			System.out.printf("[%d] %s%n", i + 1, id);
-		}
-		
-		System.out.println("\nDigite /enable [número] para habilitar");
-	}
-	
-	private void addNewServer() {
-		ServerWizard wizard = new ServerWizard(mcpManager);
-		boolean success = wizard.runWizard();
-		
-		if (success) {
-			System.out.println("✅ Servidor adicionado e conectado com sucesso!");
-			System.out.println("   • mcp.json atualizado");
-			System.out.println("   • domains.json atualizado (se necessário)");
-			System.out.println("   • Tools disponíveis para a LLM");
-			System.out.println("💡 Use /servers para verificar o status");
-		} else {
-			System.out.println("❌ Operação cancelada ou falhou");
-		}
-	}
-	
-	private List<String> getConnectedServerIds() {
-		return new ArrayList<>(mcpManager.getConnectedServers().keySet());
-	}
-	
-	private void showUnknownCommand(String cmd) {
-		System.out.printf("❌ Unknown command: %s. Type /help for available commands.%n", cmd);
-	}
+    private void disableServer(String args) {
+        if (args.trim().isEmpty()) {
+            showServerListForAction("disable", "disable");
+            return;
+        }
+
+        try {
+            int serverIndex = Integer.parseInt(args.trim());
+            List<String> serverIds = getConnectedServerIds();
+
+            if (serverIndex < 1 || serverIndex > serverIds.size()) {
+                System.out.println("❌ Invalid number");
+                return;
+            }
+
+            String serverId = serverIds.get(serverIndex - 1);
+
+            System.out.printf("🔄 Disabling server '%s'...%n", serverId);
+
+            if (mcpManager.disableServer(serverId)) {
+                System.out.printf("✅ Server '%s' disabled successfully!%n", serverId);
+                System.out.println("   • Tools removed from LLM collections");
+                System.out.println("   • Server disconnected");
+                System.out.println("   • mcp.json updated");
+            } else {
+                System.out.printf("❌ Failed to disable server '%s'%n", serverId);
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Use a valid number or /disable without arguments to list");
+        }
+    }
+
+    private void enableServer(String args) {
+        if (args.trim().isEmpty()) {
+            showDisabledServers();
+            return;
+        }
+
+        try {
+            int serverIndex = Integer.parseInt(args.trim());
+            List<String> disabledIds = mcpManager.getDisabledServerIds();
+
+            if (serverIndex < 1 || serverIndex > disabledIds.size()) {
+                System.out.println("❌ Invalid number");
+                return;
+            }
+
+            String serverId = disabledIds.get(serverIndex - 1);
+
+            System.out.printf("🔄 Enabling server '%s'...%n", serverId);
+
+            if (mcpManager.enableServer(serverId)) {
+                System.out.printf("✅ Server '%s' enabled successfully!%n", serverId);
+                System.out.println("   • Server connected");
+                System.out.println("   • Tools added to LLM collections");
+                System.out.println("   • mcp.json updated");
+            } else {
+                System.out.printf("❌ Failed to enable server '%s'%n", serverId);
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Use a valid number or /enable without arguments to list");
+        }
+    }
+
+    private void showServerListForAction(String action, String command) {
+        Map<String, Server> servers = mcpManager.getConnectedServers();
+
+        System.out.printf("🔧 Servers Available to %s:%n%n", action);
+
+        if (servers.isEmpty()) {
+            System.out.println("  No servers connected");
+            return;
+        }
+
+        int index = 1;
+        for (Map.Entry<String, Server> entry : servers.entrySet()) {
+            String id = entry.getKey();
+            Server server = entry.getValue();
+            String status = server.isHealthy() ? "✅" : "❌";
+
+            System.out.printf("[%d] %s (%s) - %d tools %s%n",
+                    index++, id, server.getDomain(),
+                    server.getTools().size(), status);
+        }
+
+        System.out.printf("%nType /%s [number] to %s%n", command, action);
+    }
+
+    private void showDisabledServers() {
+        List<String> disabledIds = mcpManager.getDisabledServerIds();
+
+        System.out.println("🔧 Disabled Servers:\n");
+
+        if (disabledIds.isEmpty()) {
+            System.out.println("  No servers disabled");
+            return;
+        }
+
+        for (int i = 0; i < disabledIds.size(); i++) {
+            String id = disabledIds.get(i);
+            System.out.printf("[%d] %s%n", i + 1, id);
+        }
+
+        System.out.println("\nType /enable [number] to enable");
+    }
+
+    private void addNewServer() {
+        ServerWizard wizard = new ServerWizard(mcpManager);
+        boolean success = wizard.runWizard();
+
+        if (success) {
+            System.out.println("✅ Server added and connected successfully!");
+            System.out.println("   • mcp.json updated");
+            System.out.println("   • domains.json updated (if necessary)");
+            System.out.println("   • Tools available for the LLM");
+            System.out.println("💡 Use /servers to check status");
+        } else {
+            System.out.println("❌ Operation canceled or failed");
+        }
+    }
+
+    private List<String> getConnectedServerIds() {
+        return new ArrayList<>(mcpManager.getConnectedServers().keySet());
+    }
+
+    private void showUnknownCommand(String cmd) {
+        System.out.printf("❌ Unknown command: %s. Type /help for available commands.%n", cmd);
+    }
 }

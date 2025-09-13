@@ -2,10 +2,6 @@ package com.gazapps.mcp.domain;
 
 import java.util.*;
 
-/**
- * Entidade que representa uma ferramenta MCP com schema completo de parâmetros,
- * validação e normalização de argumentos.
- */
 public class Tool {
     
     private final String name;
@@ -23,12 +19,9 @@ public class Tool {
         this.schema = schema != null ? Map.copyOf(schema) : Collections.emptyMap();
         this.requiredParams = extractRequiredParams();
         this.optionalParams = extractOptionalParams();
-        this.domain = null; // Será setado pelo servidor
+        this.domain = null; 
     }
     
-    /**
-     * Factory method para converter de ferramenta MCP do SDK.
-     */
     public static Tool fromMcp(io.modelcontextprotocol.spec.McpSchema.Tool mcpTool, String serverId) {
         Objects.requireNonNull(mcpTool, "MCP tool cannot be null");
         
@@ -45,9 +38,6 @@ public class Tool {
         );
     }
     
-    /**
-     * Builder para criar instâncias Tool de forma fluida.
-     */
     public static Builder builder() {
         return new Builder();
     }
@@ -93,8 +83,7 @@ public class Tool {
         }
     }
     
-    // Getters básicos
-    
+
     public String getName() {
         return name;
     }
@@ -127,20 +116,17 @@ public class Tool {
         return optionalParams;
     }
     
-    // Métodos de validação e utilitários
     
     public boolean validateArgs(Map<String, Object> args) {
         if (args == null) args = Collections.emptyMap();
         
-        // Verificar parâmetros obrigatórios
         for (String required : requiredParams) {
             if (!args.containsKey(required) || args.get(required) == null) {
                 return false;
             }
         }
         
-        // Verificar tipos básicos se disponível no schema
-        Map<String, Object> properties = getProperties();
+         Map<String, Object> properties = getProperties();
         for (Map.Entry<String, Object> entry : args.entrySet()) {
             String paramName = entry.getKey();
             if (properties.containsKey(paramName)) {
@@ -180,7 +166,7 @@ public class Tool {
             Map<String, Object> paramDef = (Map<String, Object>) properties.get(paramName);
             return (String) paramDef.get("type");
         }
-        return "string"; // default type
+        return "string"; 
     }
     
     public String getParamDescription(String paramName) {
@@ -219,7 +205,6 @@ public class Tool {
         Map<String, Object> normalized = new HashMap<>(args);
         Map<String, Object> properties = getProperties();
         
-        // Aplicar valores padrão para parâmetros opcionais ausentes
         for (String optionalParam : optionalParams) {
             if (!normalized.containsKey(optionalParam)) {
                 Object defaultValue = getParamDefault(optionalParam);
@@ -229,7 +214,6 @@ public class Tool {
             }
         }
         
-        // Normalizar tipos se necessário
         for (Map.Entry<String, Object> entry : normalized.entrySet()) {
             String paramName = entry.getKey();
             Object value = entry.getValue();
@@ -244,8 +228,7 @@ public class Tool {
         return normalized;
     }
     
-    // Métodos privados auxiliares
-    
+     
     @SuppressWarnings("unchecked")
     private List<String> extractRequiredParams() {
         if (schema.containsKey("required")) {
@@ -287,7 +270,7 @@ public class Tool {
 
     
     private boolean validateParameterType(String paramName, Object value, Map<String, Object> properties) {
-        if (value == null) return true; // null values são validados em outro lugar
+        if (value == null) return true; 
         
         @SuppressWarnings("unchecked")
         Map<String, Object> paramDef = (Map<String, Object>) properties.get(paramName);
@@ -310,7 +293,7 @@ public class Tool {
             case "object":
                 return value instanceof Map;
             default:
-                return true; // tipo desconhecido, assumir válido
+                return true; 
         }
     }
     
@@ -357,24 +340,20 @@ public class Tool {
         }
         
         try {
-            // KISS: Acesso direto às propriedades do JsonSchema
             if (inputSchema instanceof io.modelcontextprotocol.spec.McpSchema.JsonSchema) {
                 io.modelcontextprotocol.spec.McpSchema.JsonSchema jsonSchema = 
                     (io.modelcontextprotocol.spec.McpSchema.JsonSchema) inputSchema;
                 
                 Map<String, Object> result = new HashMap<>();
                 
-                // Copiar properties diretamente
                 if (jsonSchema.properties() != null && !jsonSchema.properties().isEmpty()) {
                     result.put("properties", new HashMap<>(jsonSchema.properties()));
                 }
                 
-                // Copiar required diretamente
                 if (jsonSchema.required() != null && !jsonSchema.required().isEmpty()) {
                     result.put("required", new ArrayList<>(jsonSchema.required()));
                 }
                 
-                // Copiar type se existir
                 if (jsonSchema.type() != null) {
                     result.put("type", jsonSchema.type());
                 }
@@ -382,8 +361,7 @@ public class Tool {
                 return result;
             }
             
-            // Fallback para Map genérico
-            if (inputSchema instanceof Map) {
+             if (inputSchema instanceof Map) {
                 return new HashMap<>((Map<String, Object>) inputSchema);
             }
             

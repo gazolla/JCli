@@ -18,12 +18,6 @@ import com.gazapps.mcp.rules.RuleEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Implementa a lógica de matching semântico de ferramentas usando um LLM. Esta
- * classe é responsável por analisar a intenção de uma query e encontrar as
- * ferramentas mais relevantes com base em seu significado, não apenas em
- * palavras-chave.
- */
 public class SemanticMatcher {
 
 	private static final Logger logger = LoggerFactory.getLogger(SemanticMatcher.class);
@@ -33,15 +27,6 @@ public class SemanticMatcher {
 		this.ruleEngine = ruleEngine;
 	}
 
-	/**
-	 * Encontra correspondências semânticas para uma query dentro de uma lista de
-	 * ferramentas.
-	 *
-	 * @param query A query do usuário
-	 * @param tools A lista de ferramentas para analisar
-	 * @param llm   A instância do LLM
-	 * @return Uma lista de ferramentas que correspondem semanticamente à query
-	 */
 	public List<Tool> findSemanticMatches(String query, List<Tool> tools, Llm llm) {
 		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
 			return Collections.emptyList();
@@ -109,9 +94,6 @@ public class SemanticMatcher {
 		return selectedTools;
 	}
 
-	/**
-	 * Encontra correspondências semânticas com extração de parâmetros.
-	 */
 	public Map<Tool, Map<String, Object>> findSemanticMatchesWithParams(String query, List<Tool> tools, Llm llm) {
 		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
 			return Collections.emptyMap();
@@ -132,10 +114,6 @@ public class SemanticMatcher {
 		return Collections.emptyMap();
 	}
 
-	/**
-	 * Encontra múltiplas correspondências semânticas com extração de parâmetros
-	 * (multi-tool).
-	 */
 	public Map<Tool, Map<String, Object>> findMultipleSemanticMatchesWithParams(String query, List<Tool> tools,
 			Llm llm) {
 		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
@@ -370,7 +348,6 @@ public class SemanticMatcher {
 		if (tools == null || tools.isEmpty()) {
 			return null;
 		}
-		// Usa o domínio da primeira ferramenta como aproximação do servidor
 		String domain = tools.get(0).getDomain();
 		if ("time".equals(domain)) {
 			return "mcp-server-time";
