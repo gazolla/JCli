@@ -16,9 +16,9 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\O
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\chat\CommandHandler.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\SemanticMatcher.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolDefinition.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\MatchingOptions.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmProvider.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Groq.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\ToolMatcher.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\react\ReActLogger.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolCall.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\DomainRegistry.java
@@ -38,7 +38,7 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\jtp\JavaTree.ja
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Claude.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\chat\wizard\ServerWizard.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\simple\QueryAnalysis.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ParameterExtractor.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ToolMatcher.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Tool.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\rules\ServerRules.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmBuilder.java

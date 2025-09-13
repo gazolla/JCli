@@ -26,53 +26,16 @@ public class SemanticMatcher {
 	public SemanticMatcher(RuleEngine ruleEngine) {
 		this.ruleEngine = ruleEngine;
 	}
-
-	public List<Tool> findSemanticMatches(String query, List<Tool> tools, Llm llm) {
-		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
-			return Collections.emptyList();
-		}
-
-		try {
-			String prompt = createToolMatchingPrompt(query, tools);
-			LlmResponse response = llm.generateResponse(prompt);
-
-			if (response.isSuccess()) {
-				return parseToolSelection(response.getContent(), tools);
-			}
-
-		} catch (Exception e) {
-			logger.error("Erro no matching semântico", e);
-		}
-
-		return Collections.emptyList();
+	
+	public RuleEngine getRuleEngine() {
+		return ruleEngine;
 	}
 
-	private String createToolMatchingPrompt(String query, List<Tool> tools) {
-		StringBuilder prompt = new StringBuilder();
-		prompt.append("Analise a query e selecione as ferramentas mais relevantes:\n\n");
-		prompt.append("Query: \"").append(query).append("\"\n\n");
-		prompt.append("Ferramentas disponíveis:\n");
+	// REMOVIDO: findSemanticMatches() - duplicado com ToolMatcher.findRelevantTools()
 
-		for (int i = 0; i < tools.size(); i++) {
-			Tool tool = tools.get(i);
-			prompt.append(i + 1).append(". ").append(tool.getName()).append(" - ").append(tool.getDescription())
-					.append(" (domain: ").append(tool.getDomain()).append(")\n");
-		}
+	// REMOVIDO: createToolMatchingPrompt() - movido para ToolMatcher
 
-		prompt.append("\nResponda apenas com os números das ferramentas relevantes, separados por vírgula.");
-		prompt.append("\nExemplo: 1,3");
-
-		// Apply rules if available
-		if (ruleEngine != null && ruleEngine.isEnabled()) {
-			String serverName = inferServerFromTools(tools);
-			List<String> parameters = extractParameterNames(tools);
-			return ruleEngine.enhancePrompt(prompt.toString(), serverName, parameters);
-		}
-
-		return prompt.toString();
-	}
-
-	private List<Tool> parseToolSelection(String llmResponse, List<Tool> tools) {
+	public List<Tool> parseToolSelection(String llmResponse, List<Tool> tools) {
 		if (llmResponse == null || llmResponse.trim().isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -94,89 +57,13 @@ public class SemanticMatcher {
 		return selectedTools;
 	}
 
-	public Map<Tool, Map<String, Object>> findSemanticMatchesWithParams(String query, List<Tool> tools, Llm llm) {
-		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
-			return Collections.emptyMap();
-		}
+	// REMOVIDO: findSemanticMatchesWithParams() - duplicado com ToolMatcher.findRelevantToolsWithParams()
 
-		try {
-			String prompt = createEnhancedPrompt(query, tools);
-			LlmResponse response = llm.generateResponse(prompt);
+	// REMOVIDO: findMultipleSemanticMatchesWithParams() - duplicado com ToolMatcher.findMultipleToolsWithParams()
 
-			if (response.isSuccess()) {
-				return parseToolSelectionWithParams(response.getContent(), tools);
-			}
+	// REMOVIDO: createEnhancedPrompt() - movido para ToolMatcher
 
-		} catch (Exception e) {
-			logger.error("Erro no matching semântico com parâmetros", e);
-		}
-
-		return Collections.emptyMap();
-	}
-
-	public Map<Tool, Map<String, Object>> findMultipleSemanticMatchesWithParams(String query, List<Tool> tools,
-			Llm llm) {
-		if (query == null || query.trim().isEmpty() || tools.isEmpty() || llm == null) {
-			return Collections.emptyMap();
-		}
-
-		try {
-			String prompt = createMultiToolPrompt(query, tools);
-			LlmResponse response = llm.generateResponse(prompt);
-
-			if (response.isSuccess()) {
-				return parseMultiToolSelection(response.getContent(), tools, query);
-			}
-
-		} catch (Exception e) {
-			logger.error("Erro no matching multi-tool", e);
-		}
-
-		return Collections.emptyMap();
-	}
-
-	private String createEnhancedPrompt(String query, List<Tool> tools) {
-		StringBuilder prompt = new StringBuilder();
-		prompt.append("""
-				Analise a query e selecione a ferramenta mais relevante.
-				Se a ferramenta selecionada tiver parâmetros obrigatórios
-				que não estão presentes na query, use seu conhecimento para
-				encontrar as informações ausentes e preencha os parâmetros
-				antes de retornar o JSON.
-
-				""");
-		prompt.append("Query: \"").append(query).append("\"\n\n");
-
-		for (int i = 0; i < tools.size(); i++) {
-			Tool tool = tools.get(i);
-			prompt.append(i + 1).append(". ").append(tool.getName()).append(" - ").append(tool.getDescription())
-					.append("\n");
-
-			Map<String, Object> properties = tool.getProperties();
-			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				String key = entry.getKey();
-				Object value = entry.getValue();
-				prompt.append("parameter: " + key + ", value: " + value + "\n");
-			}
-			prompt.append("\n");
-		}
-
-		prompt.append("NÃO EXPLIQUE NADA\n");
-		prompt.append("Responda em JSON:\n");
-		prompt.append("{\n  \"tool_number\": 1,\n  \"parameters\": {\"param\": \"value\"}\n}");
-
-		// Apply rules if available
-		String basePrompt = prompt.toString();
-		if (ruleEngine != null && ruleEngine.isEnabled()) {
-			String serverName = inferServerFromTools(tools);
-			List<String> parameters = extractParameterNames(tools);
-			return ruleEngine.enhancePrompt(basePrompt, serverName, parameters);
-		}
-
-		return basePrompt;
-	}
-
-	private Map<Tool, Map<String, Object>> parseToolSelectionWithParams(String llmResponse, List<Tool> tools) {
+	public Map<Tool, Map<String, Object>> parseToolSelectionWithParams(String llmResponse, List<Tool> tools) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonString = llmResponse.replaceAll("```json|```", "").trim();
@@ -259,59 +146,9 @@ public class SemanticMatcher {
 		}
 	}
 
-	private String createMultiToolPrompt(String query, List<Tool> tools) {
-		StringBuilder prompt = new StringBuilder();
-		prompt.append("""
-				Analise a query e selecione somente as ferramentas necessárias para concluir a solicitação. 
+	// REMOVIDO: createMultiToolPrompt() - movido para ToolMatcher
 
-				1. Planejamento: Identifique a sequência de ações para resolver a query.
-				2. Encadeamento: A saída de uma ferramenta pode ser usada como entrada para 
-				a próxima. Utilize "{{RESULT_X}}" (onde X é o número da ferramenta anterior) 
-				como um placeholder para o conteúdo que será gerado dinamicamente.
-				3. Parâmetros: Se as ferramentas selecionadas tiverem parâmetros obrigatórios que não 
-				estão presentes na query, use seu conhecimento para encontrar as informações ausentes. 
-				Se um parâmetro depende do resultado de outra ferramenta, use o placeholder.
-				
-				IMPORTANTE: 
-				- Use sempre o mínimo de ferramentas necessárias.
-				- Evite ferramentas redundantes
-				
-				""");
-		prompt.append("Query: \"").append(query).append("\"\n\n");
-
-		for (int i = 0; i < tools.size(); i++) {
-			Tool tool = tools.get(i);
-			prompt.append(i + 1).append(". ").append(tool.getName()).append(" - ").append(tool.getDescription())
-					.append("\n");
-
-			Map<String, Object> properties = tool.getProperties();
-			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				String key = entry.getKey();
-				Object value = entry.getValue();
-				prompt.append("parameter: " + key + ", value: " + value + "\n");
-			}
-			prompt.append("\n");
-		}
-
-		prompt.append("NÃO EXPLIQUE NADA\n");
-		prompt.append("Responda em JSON com TODAS as ferramentas necessárias:\n");
-		prompt.append("{\n  \"tools\": [\n");
-		prompt.append("    {\"tool_number\": 1, \"parameters\": {\"param\": \"value\"}},\n");
-		prompt.append("    {\"tool_number\": 2, \"parameters\": {\"param\": \"value\"}}\n");
-		prompt.append("  ]\n}");
-
-		// Apply rules if available
-		String basePrompt = prompt.toString();
-		if (ruleEngine != null && ruleEngine.isEnabled()) {
-			String serverName = inferServerFromTools(tools);
-			List<String> parameters = extractParameterNames(tools);
-			return ruleEngine.enhancePrompt(basePrompt, serverName, parameters);
-		}
-
-		return basePrompt;
-	}
-
-	private Map<Tool, Map<String, Object>> parseMultiToolSelection(String llmResponse, List<Tool> tools,
+	public Map<Tool, Map<String, Object>> parseMultiToolSelection(String llmResponse, List<Tool> tools,
 			String originalQuery) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -344,30 +181,7 @@ public class SemanticMatcher {
 		return Collections.emptyMap();
 	}
 
-	private String inferServerFromTools(List<Tool> tools) {
-		if (tools == null || tools.isEmpty()) {
-			return null;
-		}
-		String domain = tools.get(0).getDomain();
-		if ("time".equals(domain)) {
-			return "mcp-server-time";
-		} else if ("filesystem".equals(domain)) {
-			return "server-filesystem";
-		} else if ("weather".equals(domain)) {
-			return "server-weather";
-		}
-		return domain;
-	}
-
-	private List<String> extractParameterNames(List<Tool> tools) {
-		List<String> parameters = new ArrayList<>();
-		for (Tool tool : tools) {
-			Map<String, Object> properties = tool.getProperties();
-			if (properties != null) {
-				parameters.addAll(properties.keySet());
-			}
-		}
-		return parameters;
-	}
+	// REMOVIDO: inferServerFromTools() - movido para ToolMatcher
+	// REMOVIDO: extractParameterNames() - movido para ToolMatcher
 
 }

@@ -24,6 +24,8 @@ import com.gazapps.inference.simple.QueryAnalysis;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.domain.Server;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.mcp.matching.MatchingOptions;
+import com.gazapps.mcp.matching.ToolMatcher;
 import com.gazapps.mcp.rules.RuleEngine;
 
 public class MCPManager implements AutoCloseable {
@@ -561,68 +563,8 @@ public class MCPManager implements AutoCloseable {
 		return ruleEngine != null && ruleEngine.isEnabled();
 	}
 
-	public static class MatchingOptions {
-		public final boolean useSemanticMatching;
-		public final double confidenceThreshold;
-		public final int maxResults;
-		public final Set<String> includeDomains;
-		public final Set<String> excludeDomains;
-
-		public MatchingOptions(boolean useSemanticMatching, double confidenceThreshold, int maxResults,
-				Set<String> includeDomains, Set<String> excludeDomains) {
-			this.useSemanticMatching = useSemanticMatching;
-			this.confidenceThreshold = Math.max(0.0, Math.min(1.0, confidenceThreshold));
-			this.maxResults = Math.max(0, maxResults);
-			this.includeDomains = includeDomains != null ? Set.copyOf(includeDomains) : Collections.emptySet();
-			this.excludeDomains = excludeDomains != null ? Set.copyOf(excludeDomains) : Collections.emptySet();
-		}
-
-		public static MatchingOptions defaultOptions() {
-			return new MatchingOptions(true, 0.5, 10, Collections.emptySet(), Collections.emptySet());
-		}
-
-		public static Builder builder() {
-			return new Builder();
-		}
-
-		public static class Builder {
-			private boolean useSemanticMatching = false;
-			private double confidenceThreshold = 0.5;
-			private int maxResults = 10;
-			private Set<String> includeDomains = Collections.emptySet();
-			private Set<String> excludeDomains = Collections.emptySet();
-
-			public Builder useSemanticMatching(boolean use) {
-				this.useSemanticMatching = use;
-				return this;
-			}
-
-			public Builder confidenceThreshold(double threshold) {
-				this.confidenceThreshold = threshold;
-				return this;
-			}
-
-			public Builder maxResults(int max) {
-				this.maxResults = max;
-				return this;
-			}
-
-			public Builder includeDomains(Set<String> domains) {
-				this.includeDomains = domains != null ? Set.copyOf(domains) : Collections.emptySet();
-				return this;
-			}
-
-			public Builder excludeDomains(Set<String> domains) {
-				this.excludeDomains = domains != null ? Set.copyOf(domains) : Collections.emptySet();
-				return this;
-			}
-
-			public MatchingOptions build() {
-				return new MatchingOptions(useSemanticMatching, confidenceThreshold, maxResults, includeDomains,
-						excludeDomains);
-			}
-		}
-	}
+	// REMOVIDO: MatchingOptions movido para com.gazapps.mcp.matching.MatchingOptions
+	// para eliminar referência circular entre MCPManager e ToolMatcher
 
 	private static class DomainSelectionResult {
 		public final String domainName;
