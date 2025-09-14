@@ -1,6 +1,6 @@
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\JCliApp.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\DomainDefinition.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\exceptions\MCPConfigException.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\DomainRegistry.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\chat\ChatFormatter.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmCapabilities.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\reflection\Reflection.java
@@ -21,7 +21,6 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmProvider
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Groq.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\react\ReActLogger.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\tool\ToolCall.java
-C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\DomainRegistry.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\LlmConfig.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPConfig.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\react\ReAct.java
@@ -36,6 +35,7 @@ C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\MCPService.
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\config\EnvironmentSetup.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\jtp\JavaTree.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\llm\providers\Claude.java
+C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\domain\Domain.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\chat\wizard\ServerWizard.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\inference\simple\QueryAnalysis.java
 C:\Users\gazol\AppData\MCP\WRKGRP\JCli\src\main\java\com\gazapps\mcp\matching\ToolMatcher.java

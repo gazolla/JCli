@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.gazapps.exceptions.MCPConfigException;
-import com.gazapps.mcp.domain.DomainDefinition;
+import com.gazapps.mcp.domain.Domain;
 import com.gazapps.mcp.domain.Server;
 
 public class MCPConfig {
@@ -29,7 +29,7 @@ public class MCPConfig {
 	private final ObjectMapper objectMapper;
 	private final File configDirectory;
 	private final Map<String, ServerConfig> servers;
-	private final Map<String, DomainDefinition> domains;
+	private final Map<String, Domain> domains;
 
 	private boolean autoDiscoveryEnabled = true;
 	private String llmProvider = "groq";
@@ -53,7 +53,7 @@ public class MCPConfig {
 		return Map.copyOf(servers);
 	}
 
-	public Map<String, DomainDefinition> loadDomains() {
+	public Map<String, Domain> loadDomains() {
 		return Map.copyOf(domains);
 	}
 
@@ -80,9 +80,9 @@ public class MCPConfig {
 			}
 		}
 
-		for (Map.Entry<String, DomainDefinition> entry : domains.entrySet()) {
+		for (Map.Entry<String, Domain> entry : domains.entrySet()) {
 			String domainName = entry.getKey();
-			DomainDefinition domain = entry.getValue();
+			Domain domain = entry.getValue();
 
 			if (!domainName.equals(domain.getName())) {
 				errors.add("Domain name '" + domainName + "' does not match internal definition");
@@ -337,7 +337,7 @@ public class MCPConfig {
 				String domainName = entry.getKey();
 				Map<String, Object> domainData = entry.getValue();
 
-				DomainDefinition domain = DomainDefinition.fromConfigMap(domainData);
+				Domain domain = Domain.fromConfigMap(domainData);
 				domains.put(domainName, domain);
 			}
 
@@ -436,19 +436,19 @@ public class MCPConfig {
 		if (domains.isEmpty()) {
 			// Weather domain
 			domains.put("weather",
-					DomainDefinition.builder().name("weather")
+					Domain.builder().name("weather")
 							.description("Informações meteorológicas e previsões do tempo").addPattern("weather")
 							.addPattern("clima").addPattern("previsão").addPattern("temperatura")
 							.addSemanticKeyword("meteorologia").addSemanticKeyword("forecast").build());
 
 			// Time domain
 			domains.put("time",
-					DomainDefinition.builder().name("time").description("Informações de tempo, data e fuso horário")
+					Domain.builder().name("time").description("Informações de tempo, data e fuso horário")
 							.addPattern("time").addPattern("tempo").addPattern("data").addPattern("hora")
 							.addSemanticKeyword("timezone").addSemanticKeyword("calendar").build());
 
 			// Math domain
-			domains.put("math", DomainDefinition.builder().name("math").description("Operações matemáticas e cálculos")
+			domains.put("math", Domain.builder().name("math").description("Operações matemáticas e cálculos")
 					.addPattern("calcular").addPattern("calcule").addPattern("equação").addPattern("equacao")
 					.addPattern("matematica").addPattern("matemática").addPattern("soma").addPattern("subtração")
 					.addPattern("multiplicação").addPattern("divisão").addPattern("raiz").addPattern("sqr")
@@ -460,7 +460,7 @@ public class MCPConfig {
 					.addSemanticKeyword("compute").addSemanticKeyword("arithmetic").addSemanticKeyword("algebra")
 					.addSemanticKeyword("mathematics").addSemanticKeyword("formula").build());
 
-			domains.put("filesystem", DomainDefinition.builder().name("filesystem").description("filesystem Operations")
+			domains.put("filesystem", Domain.builder().name("filesystem").description("filesystem Operations")
 					.addPattern("arquivo").addPattern("file").addPattern("diretório").addPattern("pasta")
 					.addPattern("edit").addPattern("list").addPattern("directory").addPattern("write")
 					.addPattern("move").addPattern("create").addPattern("tree").addPattern("read")
@@ -469,7 +469,7 @@ public class MCPConfig {
 					.addSemanticKeyword("read").addSemanticKeyword("write").addSemanticKeyword("create").build());
 
 			domains.put("internet",
-					DomainDefinition.builder().name("internet").description("Operações de busca web e feeds RSS")
+					Domain.builder().name("internet").description("Operações de busca web e feeds RSS")
 							.addPattern("buscar").addPattern("busque").addPattern("fetch").addPattern("web")
 							.addPattern("internet").addPattern("site").addPattern("website").addPattern("url")
 							.addPattern("link").addPattern("download").addPattern("baixar").addPattern("rss")
@@ -504,9 +504,9 @@ public class MCPConfig {
 	private void saveDomainsConfig() throws IOException {
 		Map<String, Object> domainsConfig = new HashMap<>();
 
-		for (Map.Entry<String, DomainDefinition> entry : domains.entrySet()) {
+		for (Map.Entry<String, Domain> entry : domains.entrySet()) {
 			String domainName = entry.getKey();
-			DomainDefinition domain = entry.getValue();
+			Domain domain = entry.getValue();
 			domainsConfig.put(domainName, domain.toConfigMap());
 		}
 
@@ -530,7 +530,7 @@ public class MCPConfig {
 		}
 	}
 
-	public void updateDomainConfig(String domain, DomainDefinition definition) {
+	public void updateDomainConfig(String domain, Domain definition) {
 		Objects.requireNonNull(domain, "Domain cannot be null");
 		Objects.requireNonNull(definition, "Domain definition cannot be null");
 
@@ -630,7 +630,7 @@ public class MCPConfig {
 			return;
 		}
 
-		DomainDefinition newDomain = DomainDefinition.builder().name(domainName).description(description).build();
+		Domain newDomain = Domain.builder().name(domainName).description(description).build();
 
 		domains.put(domainName, newDomain);
 

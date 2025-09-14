@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.gazapps.inference.simple.QueryAnalysis;
 import com.gazapps.llm.Llm;
+import com.gazapps.mcp.domain.DomainRegistry;
 import com.gazapps.mcp.domain.Server;
 import com.gazapps.mcp.domain.Tool;
 import com.gazapps.mcp.matching.MatchingOptions;
