@@ -146,6 +146,11 @@ public class MCPManager implements AutoCloseable {
 	public QueryAnalysis analyzeQuery(String query, Llm llm) {
 		if (llm == null)
 			return new QueryAnalysis(QueryAnalysis.ExecutionType.DIRECT_ANSWER, "No LLM available");
+		
+		if (!llm.isHealthy()) {
+			logger.warn("LLM health check failed, attempting to continue");
+			return new QueryAnalysis(QueryAnalysis.ExecutionType.SINGLE_TOOL, "LLM unhealthy, using fallback analysis");
+		}
 
 		String prompt = """
 				Analyze the query and determine its execution requirements.
@@ -562,6 +567,32 @@ public class MCPManager implements AutoCloseable {
 
 	public boolean isRulesEnabled() {
 		return ruleEngine != null && ruleEngine.isEnabled();
+	}
+	
+	/**
+	 * KISS: Simple LLM health check with fallback strategy
+	 */
+	public boolean isLlmHealthy() {
+		if (llm == null) {
+			return false;
+		}
+		try {
+			return llm.isHealthy();
+		} catch (Exception e) {
+			logger.warn("Health check failed for LLM: {}", e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * KISS: Get LLM with automatic health verification
+	 */
+	public Llm getHealthyLlm() {
+		if (isLlmHealthy()) {
+			return llm;
+		}
+		logger.warn("LLM unhealthy, operations may be limited");
+		return llm; // Return anyway for graceful degradation
 	}
 
 	// REMOVIDO: MatchingOptions movido para com.gazapps.mcp.matching.MatchingOptions

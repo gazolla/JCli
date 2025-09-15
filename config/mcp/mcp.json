@@ -39,8 +39,8 @@
       "domain" : "weather",
       "description" : "Previsões meteorológicas via NWS",
       "env" : {
-        "REQUIRES_NODEJS" : "true",
-        "REQUIRES_ONLINE" : "true"
+        "REQUIRES_ONLINE" : "true",
+        "REQUIRES_NODEJS" : "true"
       },
       "priority" : 1,
       "command" : "npx @h1deya/mcp-server-weather",

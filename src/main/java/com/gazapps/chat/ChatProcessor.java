@@ -43,6 +43,12 @@ public class ChatProcessor implements InferenceObserver {
     
     public void processQuery(String query, InferenceStrategy strategy) {
     	queryStartTime = System.currentTimeMillis();
+    	
+    	// KISS: Simple capabilities check before processing
+    	if (!checkLlmCapabilities()) {
+    		return; // Error already displayed
+    	}
+    	
     	try {
             Map<String, Object> options = Map.of(
                 "observer", this, 
@@ -131,7 +137,56 @@ public class ChatProcessor implements InferenceObserver {
     @Override
     public void onError(String error, Exception exception) {
         logger.error("Inference error: {}", error, exception);
-        formatter.showError(error + (exception != null ? ": " + exception.getMessage() : ""));
+        
+        // KISS: Enhanced error display with user-friendly messages
+        String userMessage = formatUserFriendlyError(error, exception);
+        formatter.showError(userMessage);
+    }
+    
+    /**
+     * KISS: Simple LLM capabilities check
+     */
+    private boolean checkLlmCapabilities() {
+        if (llm == null) {
+            formatter.showError("❌ No LLM available");
+            return false;
+        }
+        
+        // Health check using MCPManager
+        if (!mcpManager.isLlmHealthy()) {
+            formatter.showError("⚠️ LLM health check failed - responses may be limited");
+            // Continue anyway for graceful degradation
+        }
+        
+        return true;
+    }
+    
+    /**
+     * KISS: Convert technical errors to user-friendly messages
+     */
+    private String formatUserFriendlyError(String error, Exception exception) {
+        if (exception != null) {
+            String exceptionMsg = exception.getMessage();
+            
+            // Common error patterns
+            if (exceptionMsg != null) {
+                if (exceptionMsg.contains("API key") || exceptionMsg.contains("authentication")) {
+                    return "❌ Authentication error - Please check your API key configuration";
+                }
+                if (exceptionMsg.contains("timeout") || exceptionMsg.contains("timed out")) {
+                    return "⏱️ Request timed out - Please try again";
+                }
+                if (exceptionMsg.contains("rate limit") || exceptionMsg.contains("429")) {
+                    return "🔄 Rate limit reached - Please wait a moment and try again";
+                }
+                if (exceptionMsg.contains("network") || exceptionMsg.contains("connection")) {
+                    return "🌐 Network error - Please check your internet connection";
+                }
+            }
+        }
+        
+        // Default: show original error with icon
+        return "❌ " + error + (exception != null ? ": " + exception.getMessage() : "");
     }
     
     // ===== SISTEMA DE COMANDOS =====

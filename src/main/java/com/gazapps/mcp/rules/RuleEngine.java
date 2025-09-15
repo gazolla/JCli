@@ -26,7 +26,112 @@ public class RuleEngine {
     public RuleEngine(String rulesPath, boolean enabled) {
         this.rulesPath = rulesPath;
         this.enabled = enabled;
+        
+        // FASE 2: Criar regras padrão se necessário
+        initializeDefaultRules();
         loadRules();
+    }
+    
+    // FASE 2: Métodos movidos de MCPConfig para centralizar rule management
+    
+    /**
+     * Inicializa regras padrão se ainda não existem.
+     * Método movido de MCPConfig.createDefaultRuleFiles().
+     */
+    private void initializeDefaultRules() {
+        try {
+            File rulesDir = new File(rulesPath);
+            if (!rulesDir.exists()) {
+                rulesDir.mkdirs();
+            }
+            
+            createFilesystemRules();
+            createTimeRules();
+            logger.info("Default rule files initialized at: {}", rulesPath);
+            
+        } catch (Exception e) {
+            logger.warn("Error creating default rule files", e);
+        }
+    }
+    
+    /**
+     * Cria regras padrão para sistema de arquivos.
+     * Método movido de MCPConfig.createFilesystemRules().
+     */
+    private void createFilesystemRules() {
+        try {
+            File filesystemRulesFile = new File(rulesPath, "server-filesystem.json");
+            
+            if (!filesystemRulesFile.exists()) {
+                Map<String, Object> filesystemRules = new HashMap<>();
+                filesystemRules.put("name", "server-filesystem");
+                filesystemRules.put("description", "Regras para sistema de arquivos");
+                filesystemRules.put("version", "1.0");
+
+                Map<String, Object> relativePathsItem = new HashMap<>();
+                relativePathsItem.put("name", "relative-paths");
+                relativePathsItem.put("triggers", List.of("path", "filename"));
+                relativePathsItem.put("contentKeywords",
+                        List.of("arquivo", "salvar", "criar", "documents", "pasta", "diretório", "path", "filesystem",
+                                "file", "folder", "directory", "caminho", "sistema de arquivos", "leitura", "escrita",
+                                "writing", "reading", "storage", "armazenamento"));
+
+                Map<String, Object> relativePathsRules = new HashMap<>();
+                relativePathsRules.put("context_add",
+                        "\n\nIMPORTANTE: Use sempre caminhos relativos simples (documents/arquivo.txt, não /documents/arquivo.txt).");
+                relativePathsItem.put("rules", relativePathsRules);
+
+                filesystemRules.put("items", List.of(relativePathsItem));
+
+                mapper.writerWithDefaultPrettyPrinter().writeValue(filesystemRulesFile, filesystemRules);
+                logger.debug("Criado arquivo de regras: {}", filesystemRulesFile);
+            }
+        } catch (Exception e) {
+            logger.warn("Error creating filesystem rules", e);
+        }
+    }
+    
+    /**
+     * Cria regras padrão para servidor de tempo.
+     * Método movido de MCPConfig.createTimeRules().
+     */
+    private void createTimeRules() {
+        try {
+            File timeRulesFile = new File(rulesPath, "mcp-server-time.json");
+            
+            if (!timeRulesFile.exists()) {
+                Map<String, Object> timeRules = new HashMap<>();
+                timeRules.put("name", "mcp-server-time");
+                timeRules.put("description", "Regras para servidor de tempo");
+                timeRules.put("version", "1.0");
+
+                Map<String, Object> timezoneItem = new HashMap<>();
+                timezoneItem.put("name", "timezone-inference");
+                timezoneItem.put("triggers", List.of("timezone", "tz"));
+                timezoneItem.put("contentKeywords",
+                        List.of("hora", "tempo", "data", "fuso horário", "datahora", "marcotemporal", "agendamento",
+                                "calendário", "duração", "intervalo", "recorrência", "time", "date", "timezone", "datetime",
+                                "timestamp", "UTC", "scheduling", "calendar", "duration", "interval", "recurrence"));
+
+                Map<String, Object> timezoneRules = new HashMap<>();
+                Map<String, Object> parameterReplace = new HashMap<>();
+                Map<String, Object> timezoneReplace = new HashMap<>();
+                timezoneReplace.put("pattern", "Use '[^']*' as local timezone[^.]*\\.");
+                timezoneReplace.put("replacement",
+                        "Busque infromações sobre timezone IANA. Use apenas timezones IANA válidas existentes. Não invente timezones.");
+                parameterReplace.put("timezone", timezoneReplace);
+                timezoneRules.put("parameter_replace", parameterReplace);
+
+                timezoneItem.put("rules", timezoneRules);
+
+                timeRules.put("items", List.of(timezoneItem));
+
+                mapper.writerWithDefaultPrettyPrinter().writeValue(timeRulesFile, timeRules);
+                logger.debug("Criado arquivo de regras: {}", timeRulesFile);
+            }
+        } catch (Exception e) {
+            logger.warn("Error creating time rules", e);
+        }
     }
 
     public String enhancePrompt(String prompt, String serverName, List<String> parameters) {
