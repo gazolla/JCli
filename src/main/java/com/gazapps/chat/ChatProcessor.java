@@ -12,6 +12,8 @@ import com.gazapps.inference.InferenceObserver;
 import com.gazapps.inference.InferenceStrategy;
 import com.gazapps.llm.Llm;
 import com.gazapps.mcp.MCPManager;
+import com.gazapps.session.Message;
+import com.gazapps.session.SessionManager;
 
 
 public class ChatProcessor implements InferenceObserver {
@@ -22,16 +24,19 @@ public class ChatProcessor implements InferenceObserver {
     private  Llm llm;
     private final CommandHandler commandHandler;
     private final ChatFormatter formatter;
+    private final SessionManager sessionManager;
+    
     
     private InferenceStrategy currentStrategy = InferenceStrategy.SIMPLE;
     private boolean debugMode = false;
     private long queryStartTime = 0;
     private final String RESPONSE_ICON = "⏱️";
     
-    public ChatProcessor(MCPManager mcpManager, Llm llm) {
+    public ChatProcessor(MCPManager mcpManager, Llm llm, SessionManager sessionManager) {
         this.mcpManager = mcpManager;
         this.llm = llm;
-        this.commandHandler = new CommandHandler(this, mcpManager);
+        this.sessionManager = sessionManager;
+        this.commandHandler = new CommandHandler(this, mcpManager, sessionManager);
         this.formatter = new ChatFormatter();
     }
     
@@ -44,26 +49,42 @@ public class ChatProcessor implements InferenceObserver {
     public void processQuery(String query, InferenceStrategy strategy) {
     	queryStartTime = System.currentTimeMillis();
     	
-    	// KISS: Simple capabilities check before processing
     	if (!checkLlmCapabilities()) {
     		return; // Error already displayed
     	}
     	
+     	try {
+            sessionManager.addUserMessage(query);
+        } catch (IllegalStateException e) {
+            formatter.showError("❌ No active session. Please create or load a session first.");
+            return;
+        }
+    	
+    	// Get conversational context from session
+    	List<Message> context = sessionManager.getContextForLlm();
+    	
     	try {
-            Map<String, Object> options = Map.of(
-                "observer", this, 
-                "debug", debugMode,
-                "maxIterations", 10
-            );
-            
-            Inference inference = InferenceFactory.createInference(strategy, mcpManager, llm, options);
-            inference.processQuery(query);
-            
-            inference.close();
-            
+            processWithContext(query, context, strategy);
         } catch (Exception e) {
             onError("Erro ao processar query", e);
         }
+    }
+    
+    /**
+     * Processes query with conversational context from session.
+     */
+    public void processWithContext(String query, List<Message> context, InferenceStrategy strategy) {
+        Map<String, Object> options = Map.of(
+            "observer", this, 
+            "debug", debugMode,
+            "maxIterations", 10,
+            "context", context  // Pass session context to inference
+        );
+        
+        Inference inference = InferenceFactory.createInference(strategy, mcpManager, llm, options);
+        inference.processQuery(query);
+        
+        inference.close();
     }
     
     // ===== OBSERVER CALLBACKS =====
@@ -113,6 +134,14 @@ public class ChatProcessor implements InferenceObserver {
     public void onInferenceComplete(String finalResponse) {
         if (finalResponse != null && !finalResponse.trim().isEmpty()) {
         	long duration = System.currentTimeMillis() - queryStartTime;
+        	
+        	// Add assistant response to session
+        	try {
+                sessionManager.addAssistantMessage(finalResponse);
+            } catch (IllegalStateException e) {
+                logger.warn("Could not save assistant message to session: {}", e.getMessage());
+            }
+        	
         	showFinalResponse(finalResponse, duration);
         } 
     }   
@@ -199,6 +228,9 @@ public class ChatProcessor implements InferenceObserver {
     
     public void setCurrentStrategy(InferenceStrategy strategy) {
         this.currentStrategy = strategy;
+        
+        // Update session configuration if we have an active session
+        sessionManager.changeInferenceStrategy(strategy);
     }
     
     public boolean changeLlm(Llm newLlm) {
@@ -220,6 +252,10 @@ public class ChatProcessor implements InferenceObserver {
                 this.mcpManager.close();
                 return false;
             }
+            
+            // Update SessionManager with new LLM
+            sessionManager.setLlm(newLlm);
+            sessionManager.changeLlmProvider(newLlm.getProviderName());
             
             logger.info("Successfully changed LLM to {}", newLlm.getProviderName());
             return true;
@@ -248,5 +284,9 @@ public class ChatProcessor implements InferenceObserver {
     
     public boolean isDebugMode() {
         return debugMode;
+    }
+    
+    public SessionManager getSessionManager() {
+        return sessionManager;
     }
 }

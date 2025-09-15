@@ -6,19 +6,24 @@ import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.mcp.MCPManager;
 import com.gazapps.mcp.domain.Server;
+import com.gazapps.session.SessionManager;
+import com.gazapps.session.SessionPersistence;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CommandHandler {
 
     private final ChatProcessor chatProcessor;
     private final MCPManager mcpManager;
+    private final SessionManager sessionManager;
 
-    public CommandHandler(ChatProcessor chatProcessor, MCPManager mcpManager) {
+    public CommandHandler(ChatProcessor chatProcessor, MCPManager mcpManager, SessionManager sessionManager) {
         this.chatProcessor = chatProcessor;
         this.mcpManager = mcpManager;
+        this.sessionManager = sessionManager;
     }
 
     public void handle(String command) {
@@ -38,6 +43,8 @@ public class CommandHandler {
             case "disable" -> disableServer(args);
             case "enable" -> enableServer(args);
             case "addserver" -> addNewServer();
+            case "session" -> handleSessionCommand(args);
+            case "context" -> handleContextCommand(args);
             case "quit", "exit" -> System.exit(0);
             default -> showUnknownCommand(cmd);
         }
@@ -311,6 +318,205 @@ public class CommandHandler {
 
     private List<String> getConnectedServerIds() {
         return new ArrayList<>(mcpManager.getConnectedServers().keySet());
+    }
+    
+    // ===== SESSION COMMANDS =====
+    
+    private void handleSessionCommand(String args) {
+        String[] parts = args.trim().split("\\s+", 2);
+        if (parts.length == 0 || parts[0].isEmpty()) {
+            showSessionHelp();
+            return;
+        }
+        
+        String subCommand = parts[0].toLowerCase();
+        String subArgs = parts.length > 1 ? parts[1] : "";
+        
+        switch (subCommand) {
+            case "new" -> createNewSession(subArgs);
+            case "load" -> loadSession(subArgs);
+            case "list" -> listSessions();
+            case "save" -> saveCurrentSession();
+            case "delete" -> deleteSession(subArgs);
+            default -> {
+                System.out.printf("❌ Unknown session command: %s%n", subCommand);
+                showSessionHelp();
+            }
+        }
+    }
+    
+    private void handleContextCommand(String args) {
+        String[] parts = args.trim().split("\\s+");
+        if (parts.length == 0 || parts[0].isEmpty()) {
+            showContextHelp();
+            return;
+        }
+        
+        String subCommand = parts[0].toLowerCase();
+        
+        switch (subCommand) {
+            case "clear" -> clearSessionHistory();
+            default -> {
+                System.out.printf("❌ Unknown context command: %s%n", subCommand);
+                showContextHelp();
+            }
+        }
+    }
+    
+    private void showSessionHelp() {
+        System.out.println("""
+                💬 Session Commands:
+                /session new [name]      - Create new session
+                /session load <id>       - Load existing session  
+                /session list            - List all sessions
+                /session save            - Save current session
+                /session delete <id>     - Delete session
+                """);
+    }
+    
+    private void showContextHelp() {
+        System.out.println("""
+                📝 Context Commands:
+                /context clear           - Clear current session history
+                """);
+    }
+    
+    private void createNewSession(String name) {
+        if (name.trim().isEmpty()) {
+            name = "session-" + System.currentTimeMillis();
+        }
+        
+        try {
+            var session = sessionManager.createNewSession(
+                name.trim(),
+                chatProcessor.getCurrentLlm(),
+                chatProcessor.getCurrentStrategy(),
+                mcpManager
+            );
+            
+            System.out.printf("✅ Created new session '%s'%n", session.getName());
+            System.out.printf("   ID: %s%n", session.getId());
+            System.out.println("   • Session is now active");
+            System.out.println("   • All conversations will be saved");
+            
+        } catch (Exception e) {
+            System.out.printf("❌ Failed to create session: %s%n", e.getMessage());
+        }
+    }
+    
+    private void loadSession(String sessionId) {
+        if (sessionId.trim().isEmpty()) {
+            System.out.println("❌ Session ID required");
+            System.out.println("Use /session list to see available sessions");
+            return;
+        }
+        
+        Optional<com.gazapps.session.Session> session = sessionManager.loadSession(sessionId.trim());
+        
+        if (session.isPresent()) {
+            var s = session.get();
+            System.out.printf("✅ Loaded session '%s'%n", s.getName());
+            System.out.printf("   ID: %s%n", s.getId());
+            System.out.printf("   Messages: %d%n", s.getMessages().size());
+            System.out.printf("   Total tokens: %d%n", s.getTotalTokens());
+            System.out.printf("   Last access: %s%n", s.getLastAccessAt());
+        } else {
+            System.out.printf("❌ Session not found: %s%n", sessionId);
+            System.out.println("Use /session list to see available sessions");
+        }
+    }
+    
+    private void listSessions() {
+        List<SessionPersistence.SessionMetadata> sessions = sessionManager.listSessions();
+        
+        if (sessions.isEmpty()) {
+            System.out.println("💬 No sessions found");
+            System.out.println("Use /session new to create your first session");
+            return;
+        }
+        
+        System.out.println("💬 Available Sessions:");
+        System.out.println();
+        
+        var currentSession = sessionManager.getCurrentSession();
+        String currentId = currentSession.map(s -> s.getId()).orElse(null);
+        
+        for (SessionPersistence.SessionMetadata session : sessions) {
+            String indicator = session.id.equals(currentId) ? "⭐" : "  ";
+            System.out.printf("%s [%s] %s%n", indicator, 
+                             session.id.substring(0, Math.min(8, session.id.length())), 
+                             session.name);
+            System.out.printf("     Messages: %d | Tokens: %d | Last: %s%n", 
+                             session.messageCount, session.totalTokens, session.lastAccessAt);
+            System.out.println();
+        }
+        
+        System.out.println("💫 Use /session load <id> to switch sessions");
+    }
+    
+    private void saveCurrentSession() {
+        boolean success = sessionManager.saveCurrentSession();
+        
+        if (success) {
+            System.out.println("✅ Current session saved successfully");
+        } else {
+            System.out.println("❌ Failed to save current session");
+        }
+    }
+    
+    private void deleteSession(String sessionId) {
+        if (sessionId.trim().isEmpty()) {
+            System.out.println("❌ Session ID required");
+            System.out.println("Use /session list to see available sessions");
+            return;
+        }
+        
+        System.out.printf("⚠️ Are you sure you want to delete session %s? (y/N): ", sessionId);
+        
+        try (var scanner = new java.util.Scanner(System.in)) {
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+            
+            if ("y".equals(confirmation) || "yes".equals(confirmation)) {
+                boolean success = sessionManager.deleteSession(sessionId.trim());
+                
+                if (success) {
+                    System.out.printf("✅ Session %s deleted successfully%n", sessionId);
+                } else {
+                    System.out.printf("❌ Failed to delete session %s%n", sessionId);
+                }
+            } else {
+                System.out.println("❌ Deletion cancelled");
+            }
+        }
+    }
+    
+    private void clearSessionHistory() {
+        var currentSession = sessionManager.getCurrentSession();
+        
+        if (currentSession.isEmpty()) {
+            System.out.println("❌ No active session to clear");
+            return;
+        }
+        
+        System.out.printf("⚠️ Clear history for session '%s'? (y/N): ", currentSession.get().getName());
+        
+        try (var scanner = new java.util.Scanner(System.in)) {
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+            
+            if ("y".equals(confirmation) || "yes".equals(confirmation)) {
+                boolean success = sessionManager.clearCurrentSessionHistory();
+                
+                if (success) {
+                    System.out.println("✅ Session history cleared successfully");
+                    System.out.println("   • Previous conversation removed");
+                    System.out.println("   • Session configuration preserved");
+                } else {
+                    System.out.println("❌ Failed to clear session history");
+                }
+            } else {
+                System.out.println("❌ Clear cancelled");
+            }
+        }
     }
 
     private void showUnknownCommand(String cmd) {

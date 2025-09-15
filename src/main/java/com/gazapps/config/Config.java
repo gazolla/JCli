@@ -27,14 +27,18 @@ public class Config {
 
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);
 	private static final String CONFIG_FILE = "config/application.properties";
+	private static final String SESSION_CONFIG_FILE = "config/session.properties";
 	
 	private final Properties properties;
+	private final Properties sessionProperties;
 	private final LlmConfig llmConfig;
 	private final MCPConfig mcpConfig;
 
 	public Config() {
 		this.properties = new Properties();
+		this.sessionProperties = new Properties();
 		loadApplicationProperties();
+		loadSessionProperties();
 		
 		this.llmConfig = new LlmConfig();
 		File configDir = new File("./config"); 
@@ -44,7 +48,7 @@ public class Config {
 			deleteAllLogFiles();
 		}
 
-		logger.info("📋 Configuration initialized with LlmConfig and MCPConfig");
+		logger.info("📋 Configuration initialized with LlmConfig, MCPConfig and SessionConfig");
 	}
 	
 	public LlmProvider getPreferredProvider() {
@@ -100,6 +104,22 @@ public class Config {
 			}
 		} catch (IOException e) {
 			logger.error("Error loading configuration: {}", e.getMessage());
+		}
+	}
+	
+	private void loadSessionProperties() {
+		try {
+			if (Files.exists(Paths.get(SESSION_CONFIG_FILE))) {
+				try (InputStream input = new FileInputStream(SESSION_CONFIG_FILE)) {
+					sessionProperties.load(input);
+					logger.info("📋 Session properties loaded: {}", new File(SESSION_CONFIG_FILE).getAbsolutePath());
+				}
+			} else {
+				logger.warn("Session configuration file not found: {}", SESSION_CONFIG_FILE);
+				// Use defaults - no need to create file as it already exists
+			}
+		} catch (IOException e) {
+			logger.error("Error loading session configuration: {}", e.getMessage());
 		}
 	}
 
@@ -212,5 +232,35 @@ public class Config {
 	    Logger postResetLogger = LoggerFactory.getLogger(Config.class);
 	    logMessages.forEach(msg -> postResetLogger.info(msg));
 	    errorMessages.forEach(msg -> postResetLogger.error(msg));
+	}
+	
+	// ===== SESSION CONFIGURATION GETTERS =====
+	
+	public int getSessionMaxTokens() {
+		return Integer.parseInt(sessionProperties.getProperty("session.max.tokens", "150000"));
+	}
+	
+	public int getSessionSummaryThreshold() {
+		return Integer.parseInt(sessionProperties.getProperty("session.summary.threshold", "100000"));
+	}
+	
+	public String getSessionDbPath() {
+		return sessionProperties.getProperty("session.db.path", "./data/sessions.db");
+	}
+	
+	public boolean isSessionAutoSave() {
+		return Boolean.parseBoolean(sessionProperties.getProperty("session.auto.save", "true"));
+	}
+	
+	public String getSessionDefaultName() {
+		return sessionProperties.getProperty("session.default.name", "main");
+	}
+	
+	public int getSessionCleanupDays() {
+		return Integer.parseInt(sessionProperties.getProperty("session.cleanup.days", "30"));
+	}
+	
+	public boolean isSessionContextOptimization() {
+		return Boolean.parseBoolean(sessionProperties.getProperty("session.context.optimization", "true"));
 	}
 }

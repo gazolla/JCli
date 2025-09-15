@@ -47,6 +47,14 @@ public class EnvironmentSetup {
             return false;
         }
         
+        if (!ensureSessionDirectories()) {
+            return false;
+        }
+        
+        if (!initializeSessionDatabase()) {
+            return false;
+        }
+        
          List<LlmProvider> configuredProviders = llmConfig.getAllConfiguredProviders();
         
         if (configuredProviders.isEmpty()) {
@@ -60,7 +68,7 @@ public class EnvironmentSetup {
     }
     
     private static boolean createDirectoryStructure() {
-        String[] dirs = {"config", "config/mcp", "documents", "log", "log/llm", "log/inference"};
+        String[] dirs = {"config", "config/mcp", "documents", "log", "log/llm", "log/inference", "data", "sessions"};
         
         try {
             for (String dir : dirs) {
@@ -141,6 +149,49 @@ public class EnvironmentSetup {
     public static void cleanup() {
         if (scanner != null) {
             scanner.close();
+        }
+    }
+    
+    /**
+     * Ensures session directories exist and are properly configured
+     */
+    public static boolean ensureSessionDirectories() {
+        try {
+            Path dataDir = Paths.get("./data");
+            Path sessionsDir = Paths.get("./sessions");
+            
+            Files.createDirectories(dataDir);
+            Files.createDirectories(sessionsDir);
+            
+            logger.info("Session directories verified: {} and {}", 
+                       dataDir.toAbsolutePath(), sessionsDir.toAbsolutePath());
+            return true;
+        } catch (IOException e) {
+            logger.error("Failed to create session directories: {}", e.getMessage());
+            System.out.println("❌ Error creating session directories: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Initializes the H2 session database and creates tables if needed
+     */
+    public static boolean initializeSessionDatabase() {
+        try {
+            // Just verify the database file path is accessible
+            // Actual initialization will be done by SessionDatabase class
+            Path dbPath = Paths.get("./data");
+            if (!Files.exists(dbPath)) {
+                Files.createDirectories(dbPath);
+            }
+            
+            logger.info("Session database path verified: {}", dbPath.toAbsolutePath());
+            System.out.println("💾 Session database configured");
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to initialize session database: {}", e.getMessage());
+            System.out.println("❌ Error initializing session database: " + e.getMessage());
+            return false;
         }
     }
 }

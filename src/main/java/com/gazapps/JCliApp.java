@@ -12,11 +12,11 @@ import com.gazapps.chat.ChatProcessor;
 import com.gazapps.config.Config;
 import com.gazapps.config.EnvironmentSetup;
 import com.gazapps.exceptions.ConfigurationException;
-import com.gazapps.jtp.JavaTree;
 import com.gazapps.llm.Llm;
 import com.gazapps.llm.LlmBuilder;
 import com.gazapps.llm.LlmProvider;
 import com.gazapps.mcp.MCPManager;
+import com.gazapps.session.SessionManager;
 import com.github.lalyos.jfiglet.FigletFont;
 
 public class JCliApp implements AutoCloseable {
@@ -29,6 +29,7 @@ public class JCliApp implements AutoCloseable {
     
     private final MCPManager mcpManager;
     private final Llm llm;
+    private final SessionManager sessionManager;
     private final ChatProcessor chatProcessor;
     private final Scanner scanner;
     private final Config config;
@@ -47,8 +48,12 @@ public class JCliApp implements AutoCloseable {
         this.llm = createLlmInstance(preferredProvider);
         
         this.mcpManager = new MCPManager(configDir, llm);
-        this.chatProcessor = new ChatProcessor(mcpManager, llm);
+        this.sessionManager = new SessionManager(config);
+        this.chatProcessor = new ChatProcessor(mcpManager, llm, sessionManager);
         this.scanner = new Scanner(System.in);
+        
+        // Create or load default session
+        initializeDefaultSession();
         
         showWelcome();
     }
@@ -61,6 +66,33 @@ public class JCliApp implements AutoCloseable {
             case CLAUDE -> LlmBuilder.claude(null);
             case OPENAI -> LlmBuilder.openai(null);
         };
+    }
+    
+    /**
+     * Initializes a default session or loads the most recent one.
+     */
+    private void initializeDefaultSession() {
+        try {
+            // Try to load the most recent session
+            var sessions = sessionManager.listSessions();
+            
+            if (!sessions.isEmpty()) {
+                // Load the most recently accessed session
+                var mostRecent = sessions.get(0); // Sessions are ordered by last access desc
+                sessionManager.loadSession(mostRecent.id);
+                System.out.printf("📂 Resumed session '%s'%n", mostRecent.name);
+            } else {
+                // Create a default session
+                String defaultName = config.getSessionDefaultName();
+                sessionManager.createNewSession(defaultName, llm, 
+                                               chatProcessor.getCurrentStrategy(), 
+                                               mcpManager);
+                System.out.printf("✨ Created default session '%s'%n", defaultName);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to initialize default session: {}", e.getMessage());
+            // Continue without session - user can create one manually
+        }
     }
     
     public static void main(String[] args) throws Exception {
@@ -118,6 +150,12 @@ public class JCliApp implements AutoCloseable {
         var connectedServers = mcpManager.getConnectedServers().size();
         var availableDomains = mcpManager.getAvailableDomains().size();
         
+        // Get current session info
+        var currentSession = sessionManager.getCurrentSession();
+        String sessionInfo = currentSession.map(s -> 
+            String.format("💬 Session: %s (%d messages)", s.getName(), s.getMessages().size())
+        ).orElse("⚠️ No active session");
+        
         System.out.printf("""
             
             🔧 MCPManager: %d servers connected
@@ -125,11 +163,13 @@ public class JCliApp implements AutoCloseable {
             🤖 LLM Provider: %s
             🧠 Current Strategy: %s
             %s
+            %s
             """,
             connectedServers,
             availableDomains,
             llm.getProviderName(),
             chatProcessor.getCurrentStrategy().name().toLowerCase(),
+            sessionInfo,
             mcpManager.isHealthy() ? "✅ System Ready" : "⚠️ Some servers unavailable"
         );
     }
@@ -138,6 +178,10 @@ public class JCliApp implements AutoCloseable {
     public void close() {
         if (scanner != null) {
             scanner.close();
+        }
+        
+        if (sessionManager != null) {
+            sessionManager.close();
         }
         
         if (mcpManager != null) {
