@@ -1,9 +1,13 @@
 package com.gazapps.inference;
 
+import java.util.List;
+import com.gazapps.session.Message;
 
 public interface Inference extends AutoCloseable {
     
     String processQuery(String query);
+    
+    String processQuery(String query, List<Message> context);
     
     String buildSystemPrompt();
     

@@ -1,6 +1,7 @@
 package com.gazapps.inference.reflection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,6 +19,8 @@ import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.MCPManager;
 import com.gazapps.mcp.MCPService;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.session.ConversationContextBuilder;
+import com.gazapps.session.Message;
 
 public class Reflection implements Inference {
     
@@ -54,6 +57,11 @@ public class Reflection implements Inference {
 
     @Override
     public String processQuery(String query) {
+        return processQuery(query, List.of());
+    }
+    
+    @Override
+    public String processQuery(String query, List<Message> context) {
         logger.debug("Processing query with Reflection: {}", query);
         
         if (observer != null) {
@@ -67,7 +75,7 @@ public class Reflection implements Inference {
         }
         
         try {
-            ReflectionResult result = executeReflectionCycle(query);
+            ReflectionResult result = executeReflectionCycle(query, context);
             
             if (observer != null) {
                 observer.onInferenceComplete(result.finalResponse);
@@ -97,11 +105,11 @@ public class Reflection implements Inference {
         }
     }
 
-    private ReflectionResult executeReflectionCycle(String query) {
+    private ReflectionResult executeReflectionCycle(String query, List<Message> context) {
         List<String> iterations = new ArrayList<>();
         
         // Step 1: Generate initial response
-        String currentResponse = generateInitialResponse(query);
+        String currentResponse = generateInitialResponse(query, context);
         iterations.add("Initial: " + currentResponse);
         
         if (conversationLogger.isInfoEnabled()) {
@@ -116,7 +124,7 @@ public class Reflection implements Inference {
             }
             
             // Critique current response
-            CritiqueResult critique = critique(currentResponse, query);
+            CritiqueResult critique = critique(currentResponse, query, context);
             
             if (conversationLogger.isInfoEnabled()) {
                 conversationLogger.info("Critique issues: {}", critique.issues);
@@ -133,7 +141,7 @@ public class Reflection implements Inference {
             }
             
             // Refine response
-            String refinedResponse = refineResponse(currentResponse, critique, query);
+            String refinedResponse = refineResponse(currentResponse, critique, query, context);
             iterations.add("Iteration " + i + ": " + refinedResponse);
             currentResponse = refinedResponse;
             
@@ -148,13 +156,13 @@ public class Reflection implements Inference {
         return new ReflectionResult(currentResponse, iterations, finalQuality);
     }
 
-    private String generateInitialResponse(String query) {
+    private String generateInitialResponse(String query, List<Message> context) {
         // Use unified query analysis (DRY)
         QueryAnalysis analysis = mcpManager.analyzeQuery(query, llm);
         
         // Handle direct answer capability (KISS)
         if (analysis.execution == QueryAnalysis.ExecutionType.DIRECT_ANSWER) {
-            return generateDirectResponse(query);
+            return generateDirectResponse(query, context);
         }
         
         // Find relevant tools based on analysis
@@ -163,7 +171,7 @@ public class Reflection implements Inference {
         if (!relevantTools.isEmpty()) {
             return generateToolBasedResponse(query, relevantTools);
         } else {
-            return generateDirectResponse(query);
+            return generateDirectResponse(query, context);
         }
     }
 
@@ -212,18 +220,22 @@ public class Reflection implements Inference {
         }
         
         if (response.length() == 0) {
-            return generateDirectResponse(query);
+            return generateDirectResponse(query, Collections.emptyList());
         }
         
         return synthesizeResponse(query, response.toString());
     }
 
-    private String generateDirectResponse(String query) {
-        String prompt = String.format(
-            "Responda à seguinte pergunta de forma completa e precisa:\n\n%s\n\n" +
-            "Forneça uma resposta detalhada e bem estruturada.",
-            query
-        );
+    private String generateDirectResponse(String query, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForReflection(context, 6);
+        String prompt = """
+                %s
+                
+                Responda à seguinte pergunta de forma completa e precisa:
+                %s
+                
+                Forneça uma resposta detalhada e bem estruturada considerando o contexto da conversa.
+                """.formatted(contextPrompt, query);
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() : "Não foi possível gerar resposta inicial.";
@@ -241,22 +253,28 @@ public class Reflection implements Inference {
         return response.isSuccess() ? response.getContent() : toolResults;
     }
 
-    private CritiqueResult critique(String response, String originalQuery) {
-        String prompt = String.format(
-            "Analise criticamente a seguinte resposta para a pergunta: \"%s\"\n\n" +
-            "Resposta a ser analisada:\n%s\n\n" +
-            "Avalie:\n" +
-            "1. Completude: A resposta aborda todos os aspectos da pergunta?\n" +
-            "2. Precisão: A informação está correta?\n" +
-            "3. Clareza: A resposta é fácil de entender?\n" +
-            "4. Relevância: A resposta está focada na pergunta?\n\n" +
-            "Responda no formato:\n" +
-            "ISSUES: [lista de problemas encontrados]\n" +
-            "SUGGESTIONS: [lista de melhorias sugeridas]\n" +
-            "CONFIDENCE: [número de 0.0 a 1.0]\n" +
-            "NEEDS_IMPROVEMENT: [true/false]",
-            originalQuery, response
-        );
+    private CritiqueResult critique(String response, String originalQuery, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForReflection(context, 6);
+        String prompt = """
+                %s
+                
+                Analise criticamente a seguinte resposta para a pergunta: "%s"
+                
+                Resposta a ser analisada:
+                %s
+                
+                Avalie considerando o contexto da conversa:
+                1. Completude: A resposta aborda todos os aspectos da pergunta?
+                2. Precisão: A informação está correta?
+                3. Clareza: A resposta é fácil de entender?
+                4. Relevância: A resposta está focada na pergunta e contexto?
+                
+                Responda no formato:
+                ISSUES: [lista de problemas encontrados]
+                SUGGESTIONS: [lista de melhorias sugeridas]
+                CONFIDENCE: [número de 0.0 a 1.0]
+                NEEDS_IMPROVEMENT: [true/false]
+                """.formatted(contextPrompt, originalQuery, response);
         
         LlmResponse llmResponse = llm.generateResponse(prompt);
         if (llmResponse.isSuccess()) {
@@ -266,9 +284,11 @@ public class Reflection implements Inference {
         return new CritiqueResult(List.of("Erro na análise crítica"), List.of(), 0.5, false);
     }
 
-    private String refineResponse(String originalResponse, CritiqueResult critique, String query) {
+    private String refineResponse(String originalResponse, CritiqueResult critique, String query, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForReflection(context, 4);
         StringBuilder prompt = new StringBuilder();
-        prompt.append(String.format("Melhore a seguinte resposta para: \"%s\"\n\n", query));
+        prompt.append(contextPrompt);
+        prompt.append(String.format("\nMelhore a seguinte resposta para: \"%s\"\n\n", query));
         prompt.append("Resposta original:\n").append(originalResponse).append("\n\n");
         
         if (!critique.issues.isEmpty()) {
@@ -287,7 +307,7 @@ public class Reflection implements Inference {
             prompt.append("\n");
         }
         
-        prompt.append("Forneça uma versão melhorada que resolva os problemas identificados.");
+        prompt.append("Forneça uma versão melhorada que resolva os problemas identificados e mantenha consistência com o contexto.");
         
         LlmResponse response = llm.generateResponse(prompt.toString());
         return response.isSuccess() ? response.getContent() : originalResponse;

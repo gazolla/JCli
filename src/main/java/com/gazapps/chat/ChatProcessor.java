@@ -82,7 +82,7 @@ public class ChatProcessor implements InferenceObserver {
         );
         
         Inference inference = InferenceFactory.createInference(strategy, mcpManager, llm, options);
-        inference.processQuery(query);
+        inference.processQuery(query, context);
         
         inference.close();
     }

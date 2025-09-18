@@ -16,6 +16,8 @@ import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.MCPManager;
 import com.gazapps.mcp.MCPService;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.session.Message;
+import com.gazapps.session.ConversationContextBuilder;
 
 public class ReAct implements Inference {
     
@@ -29,7 +31,8 @@ public class ReAct implements Inference {
     
     private String cachedQuery;
     private Map<Tool, Map<String, Object>> cachedTools;
-    private String lastToolResult = ""; 
+    private String lastToolResult = "";
+    private List<Message> sessionContext = List.of(); 
 
     public ReAct(MCPManager mcpManager, Llm llm, Map<String, Object> options) {
         this.mcpManager = Objects.requireNonNull(mcpManager, "MCPManager is required");
@@ -45,6 +48,12 @@ public class ReAct implements Inference {
 
     @Override
     public String processQuery(String query) {
+        return processQuery(query, List.of());
+    }
+    
+    @Override
+    public String processQuery(String query, List<Message> context) {
+        this.sessionContext = context;
         logger.logDebug("Processing query with ReAct: {}", query);
         if (observer != null) {
             observer.onInferenceStart(query, "ReAct");
@@ -75,7 +84,7 @@ public class ReAct implements Inference {
         // Check if direct answer is possible
         QueryAnalysis initialAnalysis = mcpManager.analyzeQuery(query, llm);
         if (initialAnalysis.execution == QueryAnalysis.ExecutionType.DIRECT_ANSWER) {
-            String directAnswer = generateDirectResponse(query);
+            String directAnswer = generateDirectResponse(query, sessionContext);
             ReActStep directStep = new ReActStep(
                 "This query can be answered with internal knowledge.", 
                 "Direct Answer", 
@@ -89,7 +98,7 @@ public class ReAct implements Inference {
         for (int i = 1; i <= maxIterations; i++) {
             logger.logIterationStart(i);
             
-            String thought = generateThought(query, context);
+            String thought = generateThought(query, context, sessionContext);
             logger.logThought(thought);
             
             if (observer != null) {
@@ -120,28 +129,36 @@ public class ReAct implements Inference {
         return new ReActResult(finalAnswer, iterations);
     }
 
-    private String generateThought(String query, String context) {
-    	String prompt = """
-    		    You are an assistant that uses the ReAct (Reasoning and Acting) method.
+    private String generateThought(String query, String context, List<Message> sessionContext) {
+        String conversationalContext = ConversationContextBuilder.buildForReAct(sessionContext, 4);
+        String fullContext = conversationalContext + context;
+        
+        String prompt = """
+                You are an assistant that uses the ReAct (Reasoning and Acting) method.
 
-    		    Current context:
-    		    %s
+                %s
+                
+                Current reasoning context:
+                %s
 
-    		    THINK about the next step to answer: "%s"
+                THINK about the next step to answer: "%s"
 
-    		    Analyze:
-    		    - What do you already know?
-    		    - What do you need to find out?
-    		    - Which tool can help?
+                Analyze:
+                - What do you already know from previous conversation?
+                - What do you need to find out?
+                - Which tool can help?
 
-    		    Respond only with your reasoning/thought.
-    		    """.formatted(context, query);
-    	LlmResponse response = llm.generateResponse(prompt);
+                Respond only with your reasoning/thought.
+                """.formatted(conversationalContext, context, query);
+                
+        LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() : "Não consegui processar o pensamento.";
     }
     
-    private String generateDirectResponse(String query) {
-        String prompt = "Answer the following question using your knowledge:\n\n" + query;
+    private String generateDirectResponse(String query, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForSimple(context, 3);
+        String prompt = contextPrompt + "Answer the following question using your knowledge:\n\n" + query;
+        
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
                                     : "Failed to generate response: " + response.getErrorMessage();

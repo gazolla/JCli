@@ -18,6 +18,8 @@ import com.gazapps.llm.LlmResponse;
 import com.gazapps.mcp.MCPManager;
 import com.gazapps.mcp.MCPService;
 import com.gazapps.mcp.domain.Tool;
+import com.gazapps.session.Message;
+import com.gazapps.session.ConversationContextBuilder;
 
 public class Simple implements Inference {
     
@@ -37,6 +39,11 @@ public class Simple implements Inference {
 
     @Override
     public String processQuery(String query) {
+        return processQuery(query, List.of());
+    }
+    
+    @Override
+    public String processQuery(String query, List<Message> context) {
         logger.logDebug("Processing query: {}", query);
         logger.logInferenceStart(query);
         
@@ -50,15 +57,15 @@ public class Simple implements Inference {
             
             return switch (analysis.execution) {
                 case DIRECT_ANSWER -> {
-                    String result = generateDirectResponse(query);
+                    String result = generateDirectResponse(query, context);
                     if (observer != null) {
                         observer.onInferenceComplete(result);
                     }
                     logger.logInferenceEnd(result);
                     yield result;
                 }
-                case MULTI_TOOL -> executeWithTools(query, mcpManager.findMultiStepTools(query));
-                case SINGLE_TOOL -> executeWithTools(query, mcpManager.findSingleStepTools(query));
+                case MULTI_TOOL -> executeWithTools(query, mcpManager.findMultiStepTools(query), context);
+                case SINGLE_TOOL -> executeWithTools(query, mcpManager.findSingleStepTools(query), context);
             };
             
         } catch (Exception e) {
@@ -70,7 +77,7 @@ public class Simple implements Inference {
         }
     }
     
-    private String executeWithTools(String query, Optional<Map<Tool, Map<String, Object>>> optionalSelections) {
+    private String executeWithTools(String query, Optional<Map<Tool, Map<String, Object>>> optionalSelections, List<Message> context) {
         Map<Tool, Map<String, Object>> selections = optionalSelections.orElse(Map.of());
         
         if (observer != null && !selections.isEmpty()) {
@@ -83,12 +90,12 @@ public class Simple implements Inference {
         
         String result;
         if (selections.isEmpty()) {
-            result = generateDirectResponse(query);
+            result = generateDirectResponse(query, context);
         } else if (selections.size() == 1) {
             Map.Entry<Tool, Map<String, Object>> selection = selections.entrySet().iterator().next();
-            result = executeSingleTool(query, selection.getKey(), selection.getValue());
+            result = executeSingleTool(query, selection.getKey(), selection.getValue(), context);
         } else {
-            result = executeMultiStep(query, selections);
+            result = executeMultiStep(query, selections, context);
         }
         
         if (observer != null) {
@@ -99,16 +106,17 @@ public class Simple implements Inference {
         return result;
     }
     
-    private String generateDirectResponse(String query) {
+    private String generateDirectResponse(String query, List<Message> context) {
         logger.logDebug("Generating direct LLM response");
-        LlmResponse response = llm.generateResponse(
-            "Answer the following question using your knowledge:\n\n" + query
-        );
+        String contextPrompt = ConversationContextBuilder.buildForSimple(context, 3);
+        String prompt = contextPrompt + "Answer the following question using your knowledge:\n\n" + query;
+        
+        LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
                                     : "Failed to generate response: " + response.getErrorMessage();
     }
     
-    private String executeSingleTool(String query, Tool tool, Map<String, Object> parameters) {
+    private String executeSingleTool(String query, Tool tool, Map<String, Object> parameters, List<Message> context) {
         logger.logDebug("Executing single tool: {} with parameters: {}", tool.getName(), parameters);
         if (observer != null) {
             observer.onToolSelection(tool.getName(), parameters);
@@ -122,14 +130,14 @@ public class Simple implements Inference {
                 return "Tool execution failed: " + result.content;
             }
             
-            return generateContextualResponse(query, tool, result.content);
+            return generateContextualResponse(query, tool, result.content, context);
             
         } catch (Exception e) {
             return "Failed to execute tool: " + e.getMessage();
         }
     }
     
-    private String executeMultiStep(String query, Map<Tool, Map<String, Object>> selections) {
+    private String executeMultiStep(String query, Map<Tool, Map<String, Object>> selections, List<Message> context) {
         logger.logDebug("Executing multi-step with {} tools", selections.size());
         
         StringBuilder results = new StringBuilder();
@@ -173,7 +181,7 @@ public class Simple implements Inference {
                          step, tool.getName(), result.message));
             step++;
         }
-        return generateConsolidatedResponse(query, results.toString());
+        return generateConsolidatedResponse(query, results.toString(), context);
     }
     
     private List<Map.Entry<Tool, Map<String, Object>>> orderToolsByDependencies(
@@ -238,32 +246,36 @@ public class Simple implements Inference {
         return resolved;
     }
     
-    private String generateContextualResponse(String query, Tool tool, String toolResult) {
+    private String generateContextualResponse(String query, Tool tool, String toolResult, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForToolContext(context, tool.getDomain(), 4);
         String prompt = """
+                %s
                 Based on the tool execution result, provide a comprehensive response:
 
                 Original query: %s
                 Tool used: %s
                 Result: %s
 
-                Provide a natural, always in the same language of the original query, helpful response incorporating the tool result.
-                """.formatted(query, tool.getName(), toolResult);
+                Provide a natural response that connects with the conversation context.
+                """.formatted(contextPrompt, query, tool.getName(), toolResult);
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
                                     : "Tool executed successfully: " + toolResult;
     }
     
-    private String generateConsolidatedResponse(String query, String results) {
+    private String generateConsolidatedResponse(String query, String results, List<Message> context) {
+        String contextPrompt = ConversationContextBuilder.buildForSimple(context, 4);
         String prompt = """
+                %s
                 Consolidate these multi-step results into a final response:
 
                 Original query: %s
                 Execution results:
                 %s
 
-                Provide a consolidated, helpful summary always in the same language of the original query.
-                """.formatted(query, results);
+                Provide a consolidated summary that fits naturally with the ongoing conversation.
+                """.formatted(contextPrompt, query, results);
         
         LlmResponse response = llm.generateResponse(prompt);
         return response.isSuccess() ? response.getContent() 
